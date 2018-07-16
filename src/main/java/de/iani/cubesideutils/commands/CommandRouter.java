@@ -44,6 +44,11 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
         command.setTabCompleter(this);
     }
 
+    public void addPluginCommand(PluginCommand command) {
+        command.setExecutor(this);
+        command.setTabCompleter(this);
+    }
+
     public void addCommandMapping(SubCommand command, String... route) {
         CommandMap current = commands;
         for (int i = 0; i < route.length; i++) {
@@ -64,6 +69,37 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
             throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is already mapped!");
         }
         current.executor = command;
+    }
+
+    public void addAlias(String alias, String... route) {
+        if (route.length == 0) {
+            throw new IllegalArgumentException("Route may not be empty!");
+        }
+        alias = alias.toLowerCase().trim();
+        CommandMap current = commands;
+        for (int i = 0; i < route.length - 1; i++) {
+            if (current.subCommands == null) {
+                throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
+            }
+            String routePart = route[i].toLowerCase();
+            CommandMap part = current.subCommands.get(routePart);
+            if (part == null) {
+                throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
+            }
+            current = part;
+        }
+        CommandMap createAliasFor = current.subCommands.get(route[route.length - 1]);
+        if (createAliasFor == null) {
+            throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
+        }
+        if (current.subCommands.get(alias) != null) {
+            route = route.clone();
+            route[route.length - 1] = alias;
+            throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is already mapped!");
+        }
+
+        current.subCommands.put(alias, createAliasFor);
+        // dont add to current.subcommandsOrdered, because it should not be shown in the help message
     }
 
     @Override
@@ -99,7 +135,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                     String key = e.getKey();
                     if (StringUtil.startsWithIgnoreCase(key, partial)) {
                         CommandMap subcmd = e.getValue();
-                        if (subcmd.executor == null || ((subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) && subcmd.executor.isAvailable(sender))) {
+                        if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
                             if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
                                 rv.add(key);
                             }
