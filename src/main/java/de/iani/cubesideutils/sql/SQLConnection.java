@@ -43,7 +43,7 @@ public class SQLConnection {
         connect();
     }
 
-    private synchronized void connect() throws SQLException {
+    public synchronized void disconnect() {
         if (this.connection != null) {
             try {
                 this.connection.close();
@@ -53,6 +53,10 @@ public class SQLConnection {
             this.connection = null;
         }
         this.cachedStatements.clear();
+    }
+
+    private synchronized void connect() throws SQLException {
+        disconnect();
         this.connection = user != null ? DriverManager.getConnection(connectURL, user, password) : DriverManager.getConnection(connectURL);
         this.connection.setAutoCommit(false);
     }
