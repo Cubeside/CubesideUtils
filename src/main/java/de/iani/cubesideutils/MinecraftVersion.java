@@ -4,7 +4,6 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
-// hi there
 public class MinecraftVersion {
     public static final int MAJOR;
     public static final int MINOR;
