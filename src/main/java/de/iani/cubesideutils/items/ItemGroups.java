@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.blocks;
+package de.iani.cubesideutils.items;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.bukkit.Material;
 
-public class BlockGroups {
-    private BlockGroups() {
+public class ItemGroups {
+    private ItemGroups() {
         // prevents instances
     }
 
