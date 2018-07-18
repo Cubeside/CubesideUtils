@@ -11,6 +11,7 @@ public class ItemGroups {
         // prevents instances
     }
 
+    // colorable
     private static final EnumSet<Material> CONCRETE_POWDER_INTERNAL = EnumSet.noneOf(Material.class);
     private static final EnumSet<Material> CONCRETE_INTERNAL = EnumSet.noneOf(Material.class);
     private static final EnumSet<Material> WOOL_INTERNAL = EnumSet.noneOf(Material.class);
@@ -32,6 +33,9 @@ public class ItemGroups {
     public static final Set<Material> CARPET = Collections.unmodifiableSet(CARPET_INTERNAL);
     public static final Set<Material> TERRACOTTA = Collections.unmodifiableSet(TERRACOTTA_INTERNAL);
     public static final Set<Material> GLAZED_TERRACOTTA = Collections.unmodifiableSet(GLAZED_TERRACOTTA_INTERNAL);
+
+    private static final EnumSet<Material> SPAWN_EGGS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> SPAWN_EGGS = Collections.unmodifiableSet(SPAWN_EGGS_INTERNAL);
 
     static {
         for (Material m : Material.values()) {
@@ -57,6 +61,8 @@ public class ItemGroups {
                     TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("_GLAZED_TERRACOTTA")) {
                     GLAZED_TERRACOTTA_INTERNAL.add(m);
+                } else if (name.endsWith("_SPAWN_EGG")) {
+                    SPAWN_EGGS_INTERNAL.add(m);
                 }
             }
         }
@@ -100,5 +106,9 @@ public class ItemGroups {
 
     public static boolean isGlazedTerracotta(Material m) {
         return GLAZED_TERRACOTTA_INTERNAL.contains(m);
+    }
+
+    public static boolean isSpawnEgg(Material m) {
+        return SPAWN_EGGS_INTERNAL.contains(m);
     }
 }
