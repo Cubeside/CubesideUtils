@@ -47,6 +47,9 @@ public class ItemGroups {
     private static final EnumSet<Material> PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> PLANTS = Collections.unmodifiableSet(PLANTS_INTERNAL);
 
+    private static final EnumSet<Material> CROPS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> CROPS = Collections.unmodifiableSet(CROPS_INTERNAL);
+
     static {
         for (Material m : Material.values()) {
             String name = m.name();
@@ -83,6 +86,14 @@ public class ItemGroups {
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SUNFLOWER);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.PEONY);
 
+        CROPS_INTERNAL.add(Material.NETHER_WART);
+        CROPS_INTERNAL.add(Material.WHEAT);
+        CROPS_INTERNAL.add(Material.CARROTS);
+        CROPS_INTERNAL.add(Material.POTATOES);
+        CROPS_INTERNAL.add(Material.BEETROOTS);
+        CROPS_INTERNAL.add(Material.PUMPKIN_STEM);
+        CROPS_INTERNAL.add(Material.MELON_STEM);
+
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.POPPY);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DANDELION);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.BLUE_ORCHID);
@@ -95,15 +106,8 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.OXEYE_DAISY);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.GRASS);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.FERN);
-
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DEAD_BUSH);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.NETHER_WART);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.WHEAT);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CARROTS);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.POTATOES);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.BEETROOTS);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PUMPKIN_STEM);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.MELON_STEM);
+        SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
         PLANTS_INTERNAL.addAll(DOUBLE_BLOCK_PLANTS_INTERNAL);
@@ -163,6 +167,10 @@ public class ItemGroups {
 
     public static boolean isPlant(Material m) {
         return PLANTS_INTERNAL.contains(m);
+    }
+
+    public static boolean isCrop(Material m) {
+        return CROPS_INTERNAL.contains(m);
     }
 
     public static Material getWoolForDyeColor(DyeColor color) {
