@@ -191,7 +191,7 @@ public class ItemGroups {
                 return Material.PINK_WOOL;
             case GRAY:
                 return Material.GRAY_WOOL;
-            case SILVER:
+            case LIGHT_GRAY:
                 return Material.LIGHT_GRAY_WOOL;
             case CYAN:
                 return Material.CYAN_WOOL;
@@ -229,7 +229,7 @@ public class ItemGroups {
                 return Material.PINK_CONCRETE;
             case GRAY:
                 return Material.GRAY_CONCRETE;
-            case SILVER:
+            case LIGHT_GRAY:
                 return Material.LIGHT_GRAY_CONCRETE;
             case CYAN:
                 return Material.CYAN_CONCRETE;
