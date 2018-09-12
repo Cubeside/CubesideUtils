@@ -50,6 +50,9 @@ public class ItemGroups {
     private static final EnumSet<Material> CROPS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> CROPS = Collections.unmodifiableSet(CROPS_INTERNAL);
 
+    private static final EnumSet<Material> FISHES_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> FISHES = Collections.unmodifiableSet(FISHES_INTERNAL);
+
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
@@ -169,6 +172,11 @@ public class ItemGroups {
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
         PLANTS_INTERNAL.addAll(DOUBLE_BLOCK_PLANTS_INTERNAL);
+
+        FISHES_INTERNAL.add(Material.COD);
+        FISHES_INTERNAL.add(Material.SALMON);
+        FISHES_INTERNAL.add(Material.PUFFERFISH);
+        FISHES_INTERNAL.add(Material.TROPICAL_FISH);
     }
 
     public static boolean isConcretePowder(Material m) {
@@ -233,6 +241,10 @@ public class ItemGroups {
 
     public static boolean isCrop(Material m) {
         return CROPS_INTERNAL.contains(m);
+    }
+
+    public static boolean isFish(Material m) {
+        return FISHES_INTERNAL.contains(m);
     }
 
     public static Material getWoolForDyeColor(DyeColor color) {
