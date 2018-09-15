@@ -346,23 +346,23 @@ public class ItemGroups {
     }
 
     public static boolean isFenceGate(Material m) {
-        return BOATS_INTERNAL.contains(m);
+        return FENCE_GATES_INTERNAL.contains(m);
     }
 
     public static boolean isDoor(Material m) {
-        return BOATS_INTERNAL.contains(m);
+        return DOORS_INTERNAL.contains(m);
     }
 
     public static boolean isTrapdoor(Material m) {
-        return BOATS_INTERNAL.contains(m);
+        return TRAPDOORS_INTERNAL.contains(m);
     }
 
     public static boolean isButton(Material m) {
-        return BOATS_INTERNAL.contains(m);
+        return BUTTONS_INTERNAL.contains(m);
     }
 
     public static boolean isPressurePlate(Material m) {
-        return BOATS_INTERNAL.contains(m);
+        return PRESSURE_PLATES_INTERNAL.contains(m);
     }
 
     public static boolean isSpawnEgg(Material m) {
