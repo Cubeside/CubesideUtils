@@ -5,7 +5,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -38,6 +37,48 @@ public class ItemGroups {
     public static final Set<Material> TERRACOTTA = Collections.unmodifiableSet(TERRACOTTA_INTERNAL);
     public static final Set<Material> GLAZED_TERRACOTTA = Collections.unmodifiableSet(GLAZED_TERRACOTTA_INTERNAL);
 
+    // wood-made
+    private static final EnumSet<Material> LOGS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> LEAVES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> PLANKS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> SAPLINGS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_SLABS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_STAIRS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_FENCES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_FENCE_GATES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_DOORS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_TRAPDOORS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_BUTTONS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WOODEN_PRESSURE_PLATES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> BOATS_INTERNAL = EnumSet.noneOf(Material.class);
+
+    public static final Set<Material> LOGS = Collections.unmodifiableSet(LOGS_INTERNAL);
+    public static final Set<Material> LEAVES = Collections.unmodifiableSet(LEAVES_INTERNAL);
+    public static final Set<Material> PLANKS = Collections.unmodifiableSet(PLANKS_INTERNAL);
+    public static final Set<Material> SAPLINGS = Collections.unmodifiableSet(SAPLINGS_INTERNAL);
+    public static final Set<Material> WOODEN_SLABLS = Collections.unmodifiableSet(WOODEN_SLABS_INTERNAL);
+    public static final Set<Material> WOODEN_STAIRS = Collections.unmodifiableSet(WOODEN_STAIRS_INTERNAL);
+    public static final Set<Material> WOODEN_FENCES = Collections.unmodifiableSet(WOODEN_FENCES_INTERNAL);
+    public static final Set<Material> WOODEN_FENCE_GATES = Collections.unmodifiableSet(WOODEN_FENCE_GATES_INTERNAL);
+    public static final Set<Material> WOODEN_DOORS = Collections.unmodifiableSet(WOODEN_DOORS_INTERNAL);
+    public static final Set<Material> WOODEN_TRAPDOORS = Collections.unmodifiableSet(WOODEN_TRAPDOORS_INTERNAL);
+    public static final Set<Material> WOODEN_BUTTONS = Collections.unmodifiableSet(WOODEN_BUTTONS_INTERNAL);
+    public static final Set<Material> WOODEN_PRESSURE_PLATES = Collections.unmodifiableSet(WOODEN_PRESSURE_PLATES_INTERNAL);
+    public static final Set<Material> BOATS = Collections.unmodifiableSet(BOATS_INTERNAL);
+
+    // redstone stuff
+    private static final EnumSet<Material> FENCE_GATES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> DOORS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> TRAPDOORS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> BUTTONS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> PRESSURE_PLATES_INTERNAL = EnumSet.noneOf(Material.class);
+
+    public static final Set<Material> FENCE_GATES = Collections.unmodifiableSet(FENCE_GATES_INTERNAL);
+    public static final Set<Material> DOORS = Collections.unmodifiableSet(DOORS_INTERNAL);
+    public static final Set<Material> TRAPDOORS = Collections.unmodifiableSet(TRAPDOORS_INTERNAL);
+    public static final Set<Material> BUTTONS = Collections.unmodifiableSet(BUTTONS_INTERNAL);
+    public static final Set<Material> PRESSURE_PLATES = Collections.unmodifiableSet(PRESSURE_PLATES_INTERNAL);
+
     private static final EnumSet<Material> DOUBLE_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> DOUBLE_BLOCK_PLANTS = Collections.unmodifiableSet(DOUBLE_BLOCK_PLANTS_INTERNAL);
 
@@ -49,9 +90,6 @@ public class ItemGroups {
 
     private static final EnumSet<Material> CROPS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> CROPS = Collections.unmodifiableSet(CROPS_INTERNAL);
-
-    private static final EnumSet<Material> FISHES_INTERNAL = EnumSet.noneOf(Material.class);
-    public static final Set<Material> FISHES = Collections.unmodifiableSet(FISHES_INTERNAL);
 
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
@@ -133,6 +171,47 @@ public class ItemGroups {
                     TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("_GLAZED_TERRACOTTA")) {
                     GLAZED_TERRACOTTA_INTERNAL.add(m);
+                } else if (name.endsWith("_LOG") || name.equals("_WOOD")) {
+                    LOGS_INTERNAL.add(m);
+                } else if (name.endsWith("_LEAVES")) {
+                    LEAVES_INTERNAL.add(m);
+                } else if (name.endsWith("_PLANKS")) {
+                    PLANKS_INTERNAL.add(m);
+                } else if (name.endsWith("_SAPLINGS")) {
+                    SAPLINGS_INTERNAL.add(m);
+                } else if (name.endsWith("OAK_SLAB") || name.equals("SPRUCE_SLAB") || name.equals("BIRCH_SLAB") || name.equals("JUNGLE_SLAB") || name.equals("ACACIA_SLAB")) {
+                    WOODEN_SLABS_INTERNAL.add(m);
+                } else if (name.endsWith("OAK_STAIRS") || name.equals("SPRUCE_STAIRS") || name.equals("BIRCH_STAIRS") || name.equals("JUNGLE_STAIRS") || name.equals("ACACIA_STAIRS")) {
+                    WOODEN_STAIRS_INTERNAL.add(m);
+                } else if (name.endsWith("OAK_FENCE") || name.equals("SPRUCE_FENCE") || name.equals("BIRCH_FENCE") || name.equals("JUNGLE_FENCE") || name.equals("ACACIA_FENCE")) {
+                    WOODEN_FENCES_INTERNAL.add(m);
+                } else if (name.endsWith("_FENCE_GATE")) {
+                    if (name.endsWith("OAK_FENCE_GATE") || name.equals("SPRUCE_FENCE_GATE") || name.equals("BIRCH_FENCE_GATE") || name.equals("JUNGLE_FENCE_GATE") || name.equals("ACACIA_FENCE_GATE")) {
+                        WOODEN_FENCE_GATES_INTERNAL.add(m);
+                    }
+                    FENCE_GATES_INTERNAL.add(m);
+                } else if (name.endsWith("_DOOR")) {
+                    if (name.endsWith("OAK_DOOR") || name.equals("SPRUCE_DOOR") || name.equals("BIRCH_DOOR") || name.equals("JUNGLE_DOOR") || name.equals("ACACIA_DOOR")) {
+                        WOODEN_DOORS_INTERNAL.add(m);
+                    }
+                    DOORS_INTERNAL.add(m);
+                } else if (name.endsWith("_TRAPDOOR")) {
+                    if (name.endsWith("OAK_TRAPDOOR") || name.equals("SPRUCE_TRAPDOOR") || name.equals("BIRCH_TRAPDOOR") || name.equals("JUNGLE_TRAPDOOR") || name.equals("ACACIA_TRAPDOOR")) {
+                        WOODEN_TRAPDOORS_INTERNAL.add(m);
+                    }
+                    TRAPDOORS_INTERNAL.add(m);
+                } else if (name.endsWith("_BUTTON")) {
+                    if (name.endsWith("OAK_BUTTON") || name.equals("SPRUCE_BUTTON") || name.equals("BIRCH_BUTTON") || name.equals("JUNGLE_BUTTON") || name.equals("ACACIA_BUTTON")) {
+                        WOODEN_BUTTONS_INTERNAL.add(m);
+                    }
+                    BUTTONS_INTERNAL.add(m);
+                } else if (name.endsWith("_PRESSURE_PLATE")) {
+                    if (name.endsWith("OAK_PRESSURE_PLATE") || name.equals("SPRUCE_PRESSURE_PLATE") || name.equals("BIRCH_PRESSURE_PLATE") || name.equals("JUNGLE_PRESSURE_PLATE") || name.equals("ACACIA_PRESSURE_PLATE")) {
+                        WOODEN_PRESSURE_PLATES_INTERNAL.add(m);
+                    }
+                    PRESSURE_PLATES_INTERNAL.add(m);
+                } else if (name.endsWith("_BOAT")) {
+                    BOATS_INTERNAL.add(m);
                 } else if (name.endsWith("_SPAWN_EGG")) {
                     if (!SPAWN_EGGS_INTERNAL.containsKey(m)) {
                         SPAWN_EGGS_INTERNAL.put(m, EntityType.UNKNOWN);
@@ -172,11 +251,6 @@ public class ItemGroups {
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
         PLANTS_INTERNAL.addAll(DOUBLE_BLOCK_PLANTS_INTERNAL);
-
-        FISHES_INTERNAL.add(Material.COD);
-        FISHES_INTERNAL.add(Material.SALMON);
-        FISHES_INTERNAL.add(Material.PUFFERFISH);
-        FISHES_INTERNAL.add(Material.TROPICAL_FISH);
     }
 
     public static boolean isConcretePowder(Material m) {
@@ -219,6 +293,78 @@ public class ItemGroups {
         return GLAZED_TERRACOTTA_INTERNAL.contains(m);
     }
 
+    public static boolean isLog(Material m) {
+        return LOGS_INTERNAL.contains(m);
+    }
+
+    public static boolean isLeaves(Material m) {
+        return LEAVES_INTERNAL.contains(m);
+    }
+
+    public static boolean isPlanks(Material m) {
+        return PLANKS_INTERNAL.contains(m);
+    }
+
+    public static boolean isSapling(Material m) {
+        return SAPLINGS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenSlab(Material m) {
+        return WOODEN_SLABS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenStairs(Material m) {
+        return WOODEN_STAIRS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenFence(Material m) {
+        return WOODEN_FENCES_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenFenceGate(Material m) {
+        return WOODEN_FENCE_GATES_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenDoor(Material m) {
+        return WOODEN_DOORS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenTrapdoor(Material m) {
+        return WOODEN_TRAPDOORS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenButton(Material m) {
+        return WOODEN_BUTTONS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWoodenPressurePlate(Material m) {
+        return WOODEN_PRESSURE_PLATES_INTERNAL.contains(m);
+    }
+
+    public static boolean isBoat(Material m) {
+        return BOATS_INTERNAL.contains(m);
+    }
+
+    public static boolean isFenceGate(Material m) {
+        return BOATS_INTERNAL.contains(m);
+    }
+
+    public static boolean isDoor(Material m) {
+        return BOATS_INTERNAL.contains(m);
+    }
+
+    public static boolean isTrapdoor(Material m) {
+        return BOATS_INTERNAL.contains(m);
+    }
+
+    public static boolean isButton(Material m) {
+        return BOATS_INTERNAL.contains(m);
+    }
+
+    public static boolean isPressurePlate(Material m) {
+        return BOATS_INTERNAL.contains(m);
+    }
+
     public static boolean isSpawnEgg(Material m) {
         return SPAWN_EGGS_INTERNAL.containsKey(m);
     }
@@ -241,10 +387,6 @@ public class ItemGroups {
 
     public static boolean isCrop(Material m) {
         return CROPS_INTERNAL.contains(m);
-    }
-
-    public static boolean isFish(Material m) {
-        return FISHES_INTERNAL.contains(m);
     }
 
     public static Material getWoolForDyeColor(DyeColor color) {
@@ -281,44 +423,6 @@ public class ItemGroups {
                 return Material.RED_WOOL;
             case BLACK:
                 return Material.BLACK_WOOL;
-        }
-        throw new IllegalArgumentException("Dye " + color + " unknown");
-    }
-
-    public static Material getBedForDyeColor(DyeColor color) {
-        switch (color) {
-            case WHITE:
-                return Material.WHITE_BED;
-            case ORANGE:
-                return Material.ORANGE_BED;
-            case MAGENTA:
-                return Material.MAGENTA_BED;
-            case LIGHT_BLUE:
-                return Material.LIGHT_BLUE_BED;
-            case YELLOW:
-                return Material.YELLOW_BED;
-            case LIME:
-                return Material.LIME_BED;
-            case PINK:
-                return Material.PINK_BED;
-            case GRAY:
-                return Material.GRAY_BED;
-            case LIGHT_GRAY:
-                return Material.LIGHT_GRAY_BED;
-            case CYAN:
-                return Material.CYAN_BED;
-            case PURPLE:
-                return Material.PURPLE_BED;
-            case BLUE:
-                return Material.BLUE_BED;
-            case BROWN:
-                return Material.BROWN_BED;
-            case GREEN:
-                return Material.GREEN_BED;
-            case RED:
-                return Material.RED_BED;
-            case BLACK:
-                return Material.BLACK_BED;
         }
         throw new IllegalArgumentException("Dye " + color + " unknown");
     }
