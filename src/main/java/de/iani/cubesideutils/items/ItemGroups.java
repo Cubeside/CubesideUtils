@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -90,6 +91,11 @@ public class ItemGroups {
 
     private static final EnumSet<Material> CROPS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> CROPS = Collections.unmodifiableSet(CROPS_INTERNAL);
+
+    private static final EnumSet<Material> FISHES_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> FISHES = Collections.unmodifiableSet(FISHES_INTERNAL);
+
+    private static final EnumSet<Material> POTTED_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
 
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
@@ -216,6 +222,8 @@ public class ItemGroups {
                     if (!SPAWN_EGGS_INTERNAL.containsKey(m)) {
                         SPAWN_EGGS_INTERNAL.put(m, EntityType.UNKNOWN);
                     }
+                } else if (name.startsWith("POTTED_")) {
+                    POTTED_PLANTS_INTERNAL.add(m);
                 }
             }
         }
@@ -251,6 +259,11 @@ public class ItemGroups {
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
         PLANTS_INTERNAL.addAll(DOUBLE_BLOCK_PLANTS_INTERNAL);
+
+        FISHES_INTERNAL.add(Material.COD);
+        FISHES_INTERNAL.add(Material.SALMON);
+        FISHES_INTERNAL.add(Material.PUFFERFISH);
+        FISHES_INTERNAL.add(Material.TROPICAL_FISH);
     }
 
     public static boolean isConcretePowder(Material m) {
@@ -389,6 +402,14 @@ public class ItemGroups {
         return CROPS_INTERNAL.contains(m);
     }
 
+    public static boolean isFish(Material m) {
+        return FISHES_INTERNAL.contains(m);
+    }
+
+    public static boolean isPottedPlant(Material m) {
+        return POTTED_PLANTS_INTERNAL.contains(m);
+    }
+
     public static Material getWoolForDyeColor(DyeColor color) {
         switch (color) {
             case WHITE:
@@ -423,6 +444,44 @@ public class ItemGroups {
                 return Material.RED_WOOL;
             case BLACK:
                 return Material.BLACK_WOOL;
+        }
+        throw new IllegalArgumentException("Dye " + color + " unknown");
+    }
+
+    public static Material getBedForDyeColor(DyeColor color) {
+        switch (color) {
+            case WHITE:
+                return Material.WHITE_BED;
+            case ORANGE:
+                return Material.ORANGE_BED;
+            case MAGENTA:
+                return Material.MAGENTA_BED;
+            case LIGHT_BLUE:
+                return Material.LIGHT_BLUE_BED;
+            case YELLOW:
+                return Material.YELLOW_BED;
+            case LIME:
+                return Material.LIME_BED;
+            case PINK:
+                return Material.PINK_BED;
+            case GRAY:
+                return Material.GRAY_BED;
+            case LIGHT_GRAY:
+                return Material.LIGHT_GRAY_BED;
+            case CYAN:
+                return Material.CYAN_BED;
+            case PURPLE:
+                return Material.PURPLE_BED;
+            case BLUE:
+                return Material.BLUE_BED;
+            case BROWN:
+                return Material.BROWN_BED;
+            case GREEN:
+                return Material.GREEN_BED;
+            case RED:
+                return Material.RED_BED;
+            case BLACK:
+                return Material.BLACK_BED;
         }
         throw new IllegalArgumentException("Dye " + color + " unknown");
     }
