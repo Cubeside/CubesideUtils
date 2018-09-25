@@ -1,12 +1,12 @@
 package de.iani.cubesideutils;
 
 
-public class Pair<T> {
+public class Pair<T, S> {
 
     public final T first;
-    public final T second;
+    public final S second;
 
-    public Pair(T first, T second) {
+    public Pair(T first, S second) {
         this.first = first;
         this.second = second;
     }
