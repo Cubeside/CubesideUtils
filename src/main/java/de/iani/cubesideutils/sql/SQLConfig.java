@@ -12,7 +12,7 @@ public class SQLConfig {
 
     private String database = "CHANGETHIS";
 
-    private String tableprefix = "cubeQuest";
+    private String tableprefix = "CHANGETHIS";
 
     public SQLConfig(ConfigurationSection section) {
         if (section != null) {
