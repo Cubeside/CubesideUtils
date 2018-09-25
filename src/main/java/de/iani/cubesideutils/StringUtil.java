@@ -1,5 +1,6 @@
 package de.iani.cubesideutils;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 public class StringUtil {
@@ -38,5 +39,36 @@ public class StringUtil {
 
     public static String formatBlockLocationWithoutWorld(Location loc) {
         return loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+    }
+
+    public static String convertColors(String text) {
+        if (text == null) {
+            return null;
+        }
+        StringBuilder builder = null;
+        int len = text.length();
+        for (int i = 0; i < len; i++) {
+            char current = text.charAt(i);
+            if (current == '&' && i + 1 < len) {
+                char next = text.charAt(i + 1);
+                // if next is a "&" skip next char
+                // if its a color char replace the "&"
+                if (ChatColor.getByChar(next) != null || next == '&') {
+                    if (builder == null) {
+                        builder = new StringBuilder();
+                        builder.append(text, 0, i);
+                    }
+                    i++;
+                    if (next != '&') {
+                        builder.append(ChatColor.COLOR_CHAR).append(next);
+                        continue;
+                    }
+                }
+            }
+            if (builder != null) {
+                builder.append(current);
+            }
+        }
+        return builder == null ? text : builder.toString();
     }
 }
