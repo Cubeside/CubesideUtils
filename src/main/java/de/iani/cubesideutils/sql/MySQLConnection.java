@@ -8,4 +8,8 @@ public class MySQLConnection extends SQLConnection {
         super("jdbc:mysql://" + host + "/" + database, database, user, password, "com.mysql.jdbc.Driver");
     }
 
+    public MySQLConnection(SQLConfig config) throws SQLException {
+        this(config.getHost(), config.getDatabase(), config.getUser(), config.getPassword());
+    }
+
 }
