@@ -50,6 +50,11 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
     }
 
     public void addCommandMapping(SubCommand command, String... route) {
+        if (route.length == 1 && route[0].contains(" ")) {
+            addCommandMapping(command, route[0].split(" "));
+            return;
+        }
+
         CommandMap current = commands;
         for (int i = 0; i < route.length; i++) {
             if (current.subCommands == null) {
@@ -75,6 +80,11 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
         if (route.length == 0) {
             throw new IllegalArgumentException("Route may not be empty!");
         }
+        if (route.length == 1 && route[0].contains(" ")) {
+            addAlias(alias, route[0].split(" "));
+            return;
+        }
+
         alias = alias.toLowerCase().trim();
         CommandMap current = commands;
         for (int i = 0; i < route.length - 1; i++) {
@@ -137,7 +147,12 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                         CommandMap subcmd = e.getValue();
                         if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
                             if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                                rv.add(key);
+                                try {
+                                    rv.add(key);
+                                } catch (UnsupportedOperationException exc) {
+                                    rv = new ArrayList<>(rv);
+                                    rv.add(key);
+                                }
                             }
                         }
                     }
