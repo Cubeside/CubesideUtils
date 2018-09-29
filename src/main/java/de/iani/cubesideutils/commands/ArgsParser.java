@@ -1,6 +1,10 @@
 package de.iani.cubesideutils.commands;
 
-public class ArgsParser {
+import java.text.ParseException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class ArgsParser implements Iterator<String> {
     private String[] args;
 
     private int current;
@@ -15,6 +19,7 @@ public class ArgsParser {
         this.current = -1 + skipParts;
     }
 
+    @Override
     public boolean hasNext() {
         return current < args.length - 1;
     }
@@ -55,6 +60,19 @@ public class ArgsParser {
         return args[current];
     }
 
+    @Override
+    public String next() {
+        return getNext();
+    }
+
+    public String getNext() {
+        String res = getNext(null);
+        if (res == null) {
+            throw new NoSuchElementException();
+        }
+        return res;
+    }
+
     public int getNext(int def) {
         String next = getNext(null);
         if (next == null) {
@@ -90,5 +108,31 @@ public class ArgsParser {
             return Boolean.FALSE;
         }
         return null;
+    }
+
+    public long getNextTimespan() throws NumberFormatException, ParseException {
+        String string = getNext();
+        string = string.toLowerCase();
+        long res = 0;
+        if (string.endsWith("s")) {
+            res += Integer.parseInt(string.substring(0, string.length() - 1)) * 1000;
+        } else if (string.endsWith("m")) {
+            res += Integer.parseInt(string.substring(0, string.length() - 1)) * 1000 * 60;
+        } else if (string.endsWith("h")) {
+            res += Integer.parseInt(string.substring(0, string.length() - 1)) * 1000 * 60 * 60;
+        } else if (string.endsWith("d")) {
+            res += Integer.parseInt(string.substring(0, string.length() - 1)) * 1000 * 60 * 60 * 24;
+        } else {
+            throw new ParseException("String doesn't end with s, m h or d", string.length() - 1);
+        }
+        return res;
+    }
+
+    public long getAllTimespan() throws NumberFormatException, ParseException {
+        long res = 0;
+        while (hasNext()) {
+            res += getNextTimespan();
+        }
+        return res;
     }
 }
