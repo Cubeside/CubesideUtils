@@ -112,6 +112,34 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
         // dont add to current.subcommandsOrdered, because it should not be shown in the help message
     }
 
+    // untested!
+    public SubCommand getSubCommand(String path) {
+        String[] args = path.split(" ");
+        CommandMap currentMap = commands;
+        int nr = 0;
+        while (currentMap != null) {
+            String currentCmdPart = args.length > nr ? args[nr] : null;
+            if (currentCmdPart != null) {
+                currentCmdPart = currentCmdPart.toLowerCase();
+            }
+            // descend to subcommand?
+            if (currentCmdPart != null && currentMap.subCommands != null) {
+                CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
+                if (subMap != null) {
+                    nr += 1;
+                    currentMap = subMap;
+                    continue;
+                }
+            }
+            // found?
+            SubCommand toExecute = currentMap.executor;
+            if (toExecute != null) {
+                return toExecute;
+            }
+        }
+        return null;
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         String partial = args.length > 0 ? args[args.length - 1] : "";
