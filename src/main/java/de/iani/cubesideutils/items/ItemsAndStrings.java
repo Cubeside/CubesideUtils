@@ -24,6 +24,8 @@ import org.bukkit.potion.PotionEffect;
 
 public class ItemsAndStrings {
 
+    public static final String LORE_COLOR = "" + ChatColor.ITALIC + ChatColor.DARK_PURPLE;
+
     public static String toNiceString(ItemStack[] items) {
         return toNiceString(items, "");
     }
