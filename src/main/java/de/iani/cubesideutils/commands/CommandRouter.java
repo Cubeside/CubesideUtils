@@ -136,6 +136,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
             if (toExecute != null) {
                 return toExecute;
             }
+            return null;
         }
         return null;
     }
