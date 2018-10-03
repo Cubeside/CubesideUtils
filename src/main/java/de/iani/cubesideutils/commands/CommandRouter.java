@@ -20,7 +20,7 @@ import org.bukkit.util.StringUtil;
 
 public class CommandRouter implements CommandExecutor, TabCompleter {
 
-    public static final String UNKOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
+    public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
 
     private class CommandMap {
         private String name;
