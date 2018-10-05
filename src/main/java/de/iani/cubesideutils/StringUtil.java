@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.BiPredicate;
+import java.util.function.ToIntFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
@@ -22,6 +24,22 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 
 public class StringUtil {
+
+    public static final ToIntFunction<String> CASE_IGNORING_HASHER = s -> {
+        if (s == null) {
+            return 0;
+        }
+
+        int hash = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i);
+            hash = 31 * hash + Character.toLowerCase(c);
+        }
+        return hash;
+    };
+
+    public static final BiPredicate<String, String> CASE_IGNOREING_EQUALITY = (s1, s2) -> s1 == null? s2 == null : s1.equalsIgnoreCase(s2);
+
     /**
      * Capitalize the first letter of every word, lowercase everything else.
      *
