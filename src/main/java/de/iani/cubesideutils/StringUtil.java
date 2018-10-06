@@ -108,6 +108,16 @@ public class StringUtil {
         return builder == null ? text : builder.toString();
     }
 
+    private static final Pattern AND_PATTERN = Pattern.compile("\\&");
+    private static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
+
+    public static String revertColors(String converted) {
+        if (converted == null) {
+            return null;
+        }
+        return COLOR_CHAR_PATTERN.matcher(AND_PATTERN.matcher(converted).replaceAll("&&")).replaceAll("&");
+    }
+
     // Line breaking
 
     public static final Pattern MATCH_COLOR_CODES =
