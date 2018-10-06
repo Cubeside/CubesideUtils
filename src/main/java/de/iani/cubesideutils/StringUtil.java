@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
@@ -106,6 +107,25 @@ public class StringUtil {
             }
         }
         return builder == null ? text : builder.toString();
+    }
+
+    private static final Pattern PIPE_PATTERN = Pattern.compile(" \\| ");
+    private static final Pattern REMOVE_PIPE_PATTERN = Pattern.compile("\\|([^\\|])");
+
+    public static Pair<String, String> splitAtPipe(String args) {
+        Matcher matcher = PIPE_PATTERN.matcher(args);
+        if (!matcher.find()) {
+            return null;
+        }
+
+        int splitIndex = matcher.start();
+        String first = args.substring(0, splitIndex);
+        String second = args.substring(splitIndex + 3);
+
+        first = REMOVE_PIPE_PATTERN.matcher(first).replaceAll("$1");
+        second = REMOVE_PIPE_PATTERN.matcher(second).replaceAll("$1");
+
+        return new Pair<>(first, second);
     }
 
     private static final Pattern AND_PATTERN = Pattern.compile("\\&");
