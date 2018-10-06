@@ -2,6 +2,7 @@ package de.iani.cubesideutils.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -163,35 +164,31 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                     continue;
                 }
             }
-            ArrayList<String> rv = null;
+            Collection<String> options = null;
+            List<String> rv = null;
             // get tabcomplete options from command
             if (currentMap.executor != null) {
-                rv = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
+                options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
             }
             // get tabcomplete options from subcommands
             if (currentMap.subCommands != null) {
-                if (rv == null) {
-                    rv = new ArrayList<>();
-                }
                 for (Entry<String, CommandMap> e : currentMap.subCommands.entrySet()) {
                     String key = e.getKey();
                     if (StringUtil.startsWithIgnoreCase(key, partial)) {
                         CommandMap subcmd = e.getValue();
                         if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
                             if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                                try {
-                                    rv.add(key);
-                                } catch (UnsupportedOperationException exc) {
-                                    rv = new ArrayList<>(rv);
-                                    rv.add(key);
+                                if (rv == null) {
+                                    rv = options == null? new ArrayList<>() : new ArrayList<>(options);
                                 }
+                                rv.add(key);
                             }
                         }
                     }
                 }
             }
-            if (rv != null) {
-                rv = StringUtil.copyPartialMatches(partial, rv, new ArrayList<String>());
+            if (rv != null || options != null) {
+                rv = StringUtil.copyPartialMatches(partial, rv != null? rv : options, new ArrayList<String>());
                 Collections.sort(rv);
             }
             return rv;
