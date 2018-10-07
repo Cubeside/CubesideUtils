@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class ArgsParser implements Iterator<String> {
+public class ArgsParser implements Iterable<String>, Iterator<String> {
     private String[] args;
 
     private int current;
@@ -134,5 +134,17 @@ public class ArgsParser implements Iterator<String> {
             res += getNextTimespan();
         }
         return res;
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return clone();
+    }
+
+    @Override
+    public ArgsParser clone() {
+        ArgsParser result = new ArgsParser(args);
+        result.current = this.current;
+        return result;
     }
 }
