@@ -13,8 +13,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemGroups {
     private ItemGroups() {
-        // prevents instances
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // really prevents instances
     }
+
+    private static final EnumSet<Material> AIRS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> AIRS = Collections.unmodifiableSet(AIRS_INTERNAL);
 
     // colorable
     private static final EnumSet<Material> CONCRETE_POWDER_INTERNAL = EnumSet.noneOf(Material.class);
@@ -97,12 +101,17 @@ public class ItemGroups {
     public static final Set<Material> FISHES = Collections.unmodifiableSet(FISHES_INTERNAL);
 
     private static final EnumSet<Material> POTTED_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> POTTED_PLANTS = Collections.unmodifiableSet(POTTED_PLANTS_INTERNAL);
 
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
 
     static {
+        AIRS_INTERNAL.add(Material.AIR);
+        AIRS_INTERNAL.add(Material.CAVE_AIR);
+        AIRS_INTERNAL.add(Material.VOID_AIR);
+
         SPAWN_EGGS_INTERNAL.put(Material.BAT_SPAWN_EGG, EntityType.BAT);
         SPAWN_EGGS_INTERNAL.put(Material.BLAZE_SPAWN_EGG, EntityType.BLAZE);
         SPAWN_EGGS_INTERNAL.put(Material.CAVE_SPIDER_SPAWN_EGG, EntityType.CAVE_SPIDER);
@@ -228,6 +237,7 @@ public class ItemGroups {
                 }
             }
         }
+
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.LARGE_FERN);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_GRASS);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.ROSE_BUSH);
@@ -268,7 +278,11 @@ public class ItemGroups {
     }
 
     public static boolean isEmpty(ItemStack item) {
-        return item == null || item.getType() == Material.AIR;
+        return item == null || isAir(item.getType());
+    }
+
+    public static boolean isAir(Material m) {
+        return AIRS_INTERNAL.contains(m);
     }
 
     public static boolean isConcretePowder(Material m) {
