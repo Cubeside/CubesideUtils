@@ -9,6 +9,7 @@ import java.util.Set;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
 
 public class ItemGroups {
     private ItemGroups() {
@@ -264,6 +265,10 @@ public class ItemGroups {
         FISHES_INTERNAL.add(Material.SALMON);
         FISHES_INTERNAL.add(Material.PUFFERFISH);
         FISHES_INTERNAL.add(Material.TROPICAL_FISH);
+    }
+
+    public static boolean isEmpty(ItemStack item) {
+        return item == null || item.getType() == Material.AIR;
     }
 
     public static boolean isConcretePowder(Material m) {
