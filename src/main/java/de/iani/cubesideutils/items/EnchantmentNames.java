@@ -1,8 +1,10 @@
 package de.iani.cubesideutils.items;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 
 import de.iani.cubesideutils.StringUtil;
@@ -52,5 +54,30 @@ public class EnchantmentNames {
             return name;
         }
         return StringUtil.capitalizeFirstLetter(enchantment.getKey().getKey(), true);
+    }
+
+    public static Enchantment getByName(String name) {
+        name = name.toLowerCase();
+
+        Enchantment result = null;
+        try {
+            result = Enchantment.getByKey(NamespacedKey.minecraft(name));
+        } catch (Exception e) {
+            // ignore
+        }
+        if (result != null) {
+            return result;
+        }
+
+        name = StringUtil.SPACES_AND_UNDERSCORES_PATTERN.matcher(name).replaceAll("");
+        for (Entry<Enchantment, String> pair : enchantmentToName.entrySet()) {
+            String simpleName = StringUtil.MATCH_COLOR_CODES.matcher(pair.getValue()).replaceAll("");
+            simpleName = StringUtil.SPACES_AND_UNDERSCORES_PATTERN.matcher(simpleName).replaceAll("");
+            if (simpleName.equalsIgnoreCase(name)) {
+                return pair.getKey();
+            }
+        }
+
+        return null;
     }
 }

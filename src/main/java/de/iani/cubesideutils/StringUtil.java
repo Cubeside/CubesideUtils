@@ -41,6 +41,8 @@ public class StringUtil {
 
     public static final BiPredicate<String, String> CASE_IGNOREING_EQUALITY = (s1, s2) -> s1 == null? s2 == null : s1.equalsIgnoreCase(s2);
 
+    public static final Pattern SPACES_AND_UNDERSCORES_PATTERN = Pattern.compile("[\\ \\_]");
+
     /**
      * Capitalize the first letter of every word, lowercase everything else.
      *
@@ -480,4 +482,5 @@ public class StringUtil {
                 Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2)
                         + Math.pow(c1.getGreen() - c2.getGreen(), 2));
     }
+
 }
