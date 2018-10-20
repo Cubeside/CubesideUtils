@@ -100,6 +100,9 @@ public class ItemGroups {
     private static final EnumSet<Material> FISHES_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> FISHES = Collections.unmodifiableSet(FISHES_INTERNAL);
 
+    private static final EnumSet<Material> FISH_BUCKETS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> FISH_BUCKETS = Collections.unmodifiableSet(FISH_BUCKETS_INTERNAL);
+
     private static final EnumSet<Material> POTTED_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> POTTED_PLANTS = Collections.unmodifiableSet(POTTED_PLANTS_INTERNAL);
 
@@ -275,6 +278,11 @@ public class ItemGroups {
         FISHES_INTERNAL.add(Material.SALMON);
         FISHES_INTERNAL.add(Material.PUFFERFISH);
         FISHES_INTERNAL.add(Material.TROPICAL_FISH);
+
+        FISH_BUCKETS_INTERNAL.add(Material.COD_BUCKET);
+        FISH_BUCKETS_INTERNAL.add(Material.SALMON_BUCKET);
+        FISH_BUCKETS_INTERNAL.add(Material.PUFFERFISH_BUCKET);
+        FISH_BUCKETS_INTERNAL.add(Material.TROPICAL_FISH_BUCKET);
     }
 
     public static boolean isEmpty(ItemStack item) {
@@ -423,6 +431,10 @@ public class ItemGroups {
 
     public static boolean isFish(Material m) {
         return FISHES_INTERNAL.contains(m);
+    }
+
+    public static boolean isFishBucket(Material m) {
+        return FISH_BUCKETS_INTERNAL.contains(m);
     }
 
     public static boolean isPottedPlant(Material m) {
