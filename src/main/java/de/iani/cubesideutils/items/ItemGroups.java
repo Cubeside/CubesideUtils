@@ -110,6 +110,18 @@ public class ItemGroups {
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
 
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_DYE = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_WOOL = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_CONCRETE = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_CONCRETE_POWDER = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_TERRACOTTA = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_GLAZED_TERRACOTTA = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS_PANE = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_BED = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_SHULKER_BOX = new EnumMap<>(DyeColor.class);
+    private static final EnumMap<Material, DyeColor> MATERIAL_TO_DYE_COLOR = new EnumMap<>(Material.class);
+
     static {
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
@@ -283,6 +295,187 @@ public class ItemGroups {
         FISH_BUCKETS_INTERNAL.add(Material.SALMON_BUCKET);
         FISH_BUCKETS_INTERNAL.add(Material.PUFFERFISH_BUCKET);
         FISH_BUCKETS_INTERNAL.add(Material.TROPICAL_FISH_BUCKET);
+
+        DYE_COLOR_TO_DYE.put(DyeColor.WHITE, Material.BONE_MEAL);
+        DYE_COLOR_TO_DYE.put(DyeColor.ORANGE, Material.ORANGE_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.MAGENTA, Material.MAGENTA_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.YELLOW, Material.DANDELION_YELLOW);
+        DYE_COLOR_TO_DYE.put(DyeColor.LIME, Material.LIME_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.PINK, Material.PINK_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.GRAY, Material.GRAY_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.CYAN, Material.CYAN_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.PURPLE, Material.PURPLE_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.BLUE, Material.LAPIS_LAZULI);
+        DYE_COLOR_TO_DYE.put(DyeColor.BROWN, Material.COCOA_BEANS);
+        DYE_COLOR_TO_DYE.put(DyeColor.GREEN, Material.CACTUS_GREEN);
+        DYE_COLOR_TO_DYE.put(DyeColor.RED, Material.ROSE_RED);
+        DYE_COLOR_TO_DYE.put(DyeColor.BLACK, Material.INK_SAC);
+        DYE_COLOR_TO_DYE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_WOOL.put(DyeColor.WHITE, Material.WHITE_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.ORANGE, Material.ORANGE_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.MAGENTA, Material.MAGENTA_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.YELLOW, Material.YELLOW_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.LIME, Material.LIME_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.PINK, Material.PINK_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.GRAY, Material.GRAY_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.CYAN, Material.CYAN_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.PURPLE, Material.PURPLE_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.BLUE, Material.BLUE_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.BROWN, Material.BROWN_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.GREEN, Material.GREEN_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.RED, Material.RED_WOOL);
+        DYE_COLOR_TO_WOOL.put(DyeColor.BLACK, Material.BLACK_WOOL);
+        DYE_COLOR_TO_WOOL.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.WHITE, Material.WHITE_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.ORANGE, Material.ORANGE_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.MAGENTA, Material.MAGENTA_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.YELLOW, Material.YELLOW_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.LIME, Material.LIME_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.PINK, Material.PINK_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.GRAY, Material.GRAY_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.CYAN, Material.CYAN_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.PURPLE, Material.PURPLE_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.BLUE, Material.BLUE_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.BROWN, Material.BROWN_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.GREEN, Material.GREEN_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.RED, Material.RED_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.put(DyeColor.BLACK, Material.BLACK_CONCRETE);
+        DYE_COLOR_TO_CONCRETE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.WHITE, Material.WHITE_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.ORANGE, Material.ORANGE_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.MAGENTA, Material.MAGENTA_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.YELLOW, Material.YELLOW_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.LIME, Material.LIME_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.PINK, Material.PINK_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.GRAY, Material.GRAY_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.CYAN, Material.CYAN_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.PURPLE, Material.PURPLE_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.BLUE, Material.BLUE_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.BROWN, Material.BROWN_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.GREEN, Material.GREEN_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.RED, Material.RED_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.put(DyeColor.BLACK, Material.BLACK_CONCRETE_POWDER);
+        DYE_COLOR_TO_CONCRETE_POWDER.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.WHITE, Material.WHITE_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.ORANGE, Material.ORANGE_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.MAGENTA, Material.MAGENTA_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.YELLOW, Material.YELLOW_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.LIME, Material.LIME_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.PINK, Material.PINK_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.GRAY, Material.GRAY_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.CYAN, Material.CYAN_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.PURPLE, Material.PURPLE_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.BLUE, Material.BLUE_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.BROWN, Material.BROWN_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.GREEN, Material.GREEN_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.RED, Material.RED_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.put(DyeColor.BLACK, Material.BLACK_TERRACOTTA);
+        DYE_COLOR_TO_TERRACOTTA.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.WHITE, Material.WHITE_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.ORANGE, Material.ORANGE_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.MAGENTA, Material.MAGENTA_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.YELLOW, Material.YELLOW_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.LIME, Material.LIME_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.PINK, Material.PINK_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.GRAY, Material.GRAY_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.CYAN, Material.CYAN_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.PURPLE, Material.PURPLE_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.BLUE, Material.BLUE_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.BROWN, Material.BROWN_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.GREEN, Material.GREEN_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.RED, Material.RED_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.put(DyeColor.BLACK, Material.BLACK_GLAZED_TERRACOTTA);
+        DYE_COLOR_TO_GLAZED_TERRACOTTA.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.WHITE, Material.WHITE_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.ORANGE, Material.ORANGE_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.MAGENTA, Material.MAGENTA_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.YELLOW, Material.YELLOW_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.LIME, Material.LIME_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.PINK, Material.PINK_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.GRAY, Material.GRAY_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.CYAN, Material.CYAN_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.PURPLE, Material.PURPLE_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.BLUE, Material.BLUE_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.BROWN, Material.BROWN_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.GREEN, Material.GREEN_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.RED, Material.RED_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.put(DyeColor.BLACK, Material.BLACK_STAINED_GLASS);
+        DYE_COLOR_TO_STAINED_GLASS.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.WHITE, Material.WHITE_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.ORANGE, Material.ORANGE_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.MAGENTA, Material.MAGENTA_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.YELLOW, Material.YELLOW_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.LIME, Material.LIME_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.PINK, Material.PINK_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.GRAY, Material.GRAY_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.CYAN, Material.CYAN_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.PURPLE, Material.PURPLE_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.BLUE, Material.BLUE_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.BROWN, Material.BROWN_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.GREEN, Material.GREEN_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.RED, Material.RED_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.put(DyeColor.BLACK, Material.BLACK_STAINED_GLASS_PANE);
+        DYE_COLOR_TO_STAINED_GLASS_PANE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_BED.put(DyeColor.WHITE, Material.WHITE_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.ORANGE, Material.ORANGE_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.MAGENTA, Material.MAGENTA_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.YELLOW, Material.YELLOW_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.LIME, Material.LIME_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.PINK, Material.PINK_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.GRAY, Material.GRAY_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.CYAN, Material.CYAN_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.PURPLE, Material.PURPLE_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.BLUE, Material.BLUE_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.BROWN, Material.BROWN_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.GREEN, Material.GREEN_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.RED, Material.RED_BED);
+        DYE_COLOR_TO_BED.put(DyeColor.BLACK, Material.BLACK_BED);
+        DYE_COLOR_TO_BED.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.WHITE, Material.WHITE_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.ORANGE, Material.ORANGE_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.MAGENTA, Material.MAGENTA_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.YELLOW, Material.YELLOW_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.LIME, Material.LIME_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.PINK, Material.PINK_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.GRAY, Material.GRAY_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.CYAN, Material.CYAN_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.PURPLE, Material.PURPLE_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.BLUE, Material.BLUE_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.BROWN, Material.BROWN_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.GREEN, Material.GREEN_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.RED, Material.RED_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.BLACK, Material.BLACK_SHULKER_BOX);
+        DYE_COLOR_TO_SHULKER_BOX.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
     }
 
     public static boolean isEmpty(ItemStack item) {
@@ -441,117 +634,47 @@ public class ItemGroups {
         return POTTED_PLANTS_INTERNAL.contains(m);
     }
 
-    public static Material getWoolForDyeColor(DyeColor color) {
-        switch (color) {
-            case WHITE:
-                return Material.WHITE_WOOL;
-            case ORANGE:
-                return Material.ORANGE_WOOL;
-            case MAGENTA:
-                return Material.MAGENTA_WOOL;
-            case LIGHT_BLUE:
-                return Material.LIGHT_BLUE_WOOL;
-            case YELLOW:
-                return Material.YELLOW_WOOL;
-            case LIME:
-                return Material.LIME_WOOL;
-            case PINK:
-                return Material.PINK_WOOL;
-            case GRAY:
-                return Material.GRAY_WOOL;
-            case LIGHT_GRAY:
-                return Material.LIGHT_GRAY_WOOL;
-            case CYAN:
-                return Material.CYAN_WOOL;
-            case PURPLE:
-                return Material.PURPLE_WOOL;
-            case BLUE:
-                return Material.BLUE_WOOL;
-            case BROWN:
-                return Material.BROWN_WOOL;
-            case GREEN:
-                return Material.GREEN_WOOL;
-            case RED:
-                return Material.RED_WOOL;
-            case BLACK:
-                return Material.BLACK_WOOL;
-        }
-        throw new IllegalArgumentException("Dye " + color + " unknown");
+    public static Material getDyeForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_DYE.get(color);
     }
 
-    public static Material getBedForDyeColor(DyeColor color) {
-        switch (color) {
-            case WHITE:
-                return Material.WHITE_BED;
-            case ORANGE:
-                return Material.ORANGE_BED;
-            case MAGENTA:
-                return Material.MAGENTA_BED;
-            case LIGHT_BLUE:
-                return Material.LIGHT_BLUE_BED;
-            case YELLOW:
-                return Material.YELLOW_BED;
-            case LIME:
-                return Material.LIME_BED;
-            case PINK:
-                return Material.PINK_BED;
-            case GRAY:
-                return Material.GRAY_BED;
-            case LIGHT_GRAY:
-                return Material.LIGHT_GRAY_BED;
-            case CYAN:
-                return Material.CYAN_BED;
-            case PURPLE:
-                return Material.PURPLE_BED;
-            case BLUE:
-                return Material.BLUE_BED;
-            case BROWN:
-                return Material.BROWN_BED;
-            case GREEN:
-                return Material.GREEN_BED;
-            case RED:
-                return Material.RED_BED;
-            case BLACK:
-                return Material.BLACK_BED;
-        }
-        throw new IllegalArgumentException("Dye " + color + " unknown");
+    public static Material getWoolForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_WOOL.get(color);
     }
 
     public static Material getConcreteForDyeColor(DyeColor color) {
-        switch (color) {
-            case WHITE:
-                return Material.WHITE_CONCRETE;
-            case ORANGE:
-                return Material.ORANGE_CONCRETE;
-            case MAGENTA:
-                return Material.MAGENTA_CONCRETE;
-            case LIGHT_BLUE:
-                return Material.LIGHT_BLUE_CONCRETE;
-            case YELLOW:
-                return Material.YELLOW_CONCRETE;
-            case LIME:
-                return Material.LIME_CONCRETE;
-            case PINK:
-                return Material.PINK_CONCRETE;
-            case GRAY:
-                return Material.GRAY_CONCRETE;
-            case LIGHT_GRAY:
-                return Material.LIGHT_GRAY_CONCRETE;
-            case CYAN:
-                return Material.CYAN_CONCRETE;
-            case PURPLE:
-                return Material.PURPLE_CONCRETE;
-            case BLUE:
-                return Material.BLUE_CONCRETE;
-            case BROWN:
-                return Material.BROWN_CONCRETE;
-            case GREEN:
-                return Material.GREEN_CONCRETE;
-            case RED:
-                return Material.RED_CONCRETE;
-            case BLACK:
-                return Material.BLACK_CONCRETE;
-        }
-        throw new IllegalArgumentException("Dye " + color + " unknown");
+        return DYE_COLOR_TO_CONCRETE.get(color);
+    }
+
+    public static Material getConcretePowderForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_CONCRETE_POWDER.get(color);
+    }
+
+    public static Material getTerracottaForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_TERRACOTTA.get(color);
+    }
+
+    public static Material getGlazedTerracottaForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_GLAZED_TERRACOTTA.get(color);
+    }
+
+    public static Material getStainedGlassForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_STAINED_GLASS.get(color);
+    }
+
+    public static Material getStainedGlassPaneForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_STAINED_GLASS_PANE.get(color);
+    }
+
+    public static Material getBedForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_BED.get(color);
+    }
+
+    public static Material getShulkerBoxForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_SHULKER_BOX.get(color);
+    }
+
+    public static DyeColor getDyeColorFor(Material colorable) {
+        return MATERIAL_TO_DYE_COLOR.get(colorable);
     }
 }
