@@ -106,6 +106,9 @@ public class ItemGroups {
     private static final EnumSet<Material> POTTED_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> POTTED_PLANTS = Collections.unmodifiableSet(POTTED_PLANTS_INTERNAL);
 
+    private static final EnumSet<Material> MUSIC_DISCS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> MUSIC_DISCS = Collections.unmodifiableSet(MUSIC_DISCS_INTERNAL);
+
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
@@ -249,6 +252,8 @@ public class ItemGroups {
                     }
                 } else if (name.startsWith("POTTED_")) {
                     POTTED_PLANTS_INTERNAL.add(m);
+                } else if (name.startsWith("MUSIC_DISC_")) {
+                    MUSIC_DISCS_INTERNAL.add(m);
                 }
             }
         }
@@ -632,6 +637,10 @@ public class ItemGroups {
 
     public static boolean isPottedPlant(Material m) {
         return POTTED_PLANTS_INTERNAL.contains(m);
+    }
+
+    public static boolean isMusicDisc(Material type) {
+        return MUSIC_DISCS_INTERNAL.contains(type);
     }
 
     public static Material getDyeForDyeColor(DyeColor color) {
