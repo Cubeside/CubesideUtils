@@ -11,30 +11,30 @@ public class PotionNames {
     static {
         potionToName = new HashMap<PotionType, String>();
 
-        addEnchantment(PotionType.AWKWARD, "Awkward Potion");
-        addEnchantment(PotionType.FIRE_RESISTANCE, "Potion of Fire Resistance");
-        addEnchantment(PotionType.INSTANT_DAMAGE, "Potion of Harming");
-        addEnchantment(PotionType.INSTANT_HEAL, "Potion of Healing");
-        addEnchantment(PotionType.INVISIBILITY, "Potion of Invisibility");
-        addEnchantment(PotionType.JUMP, "Potion of Leaping");
-        addEnchantment(PotionType.LUCK, "Potion of Luck");
-        addEnchantment(PotionType.MUNDANE, "Mundane Potion");
-        addEnchantment(PotionType.NIGHT_VISION, "Potion of Night Vision");
-        addEnchantment(PotionType.POISON, "Potion of Poison");
-        addEnchantment(PotionType.REGEN, "Potion of Regeneration");
-        addEnchantment(PotionType.SLOWNESS, "Potion of Slowness");
-        addEnchantment(PotionType.SPEED, "Potion of Swiftness");
-        addEnchantment(PotionType.STRENGTH, "Potion of Strength");
-        addEnchantment(PotionType.THICK, "Thick Potion");
-        addEnchantment(PotionType.UNCRAFTABLE, "Uncraftable Potion");
-        addEnchantment(PotionType.WATER, "Water Bottle");
-        addEnchantment(PotionType.WATER_BREATHING, "Potion of Water Breathing");
-        addEnchantment(PotionType.WEAKNESS, "Potion of Weakness");
-        addEnchantment(PotionType.TURTLE_MASTER, "Potion of the Turtle Master");
-        addEnchantment(PotionType.SLOW_FALLING, "Potion of Slow Falling");
+        addPotion(PotionType.AWKWARD, "Awkward Potion");
+        addPotion(PotionType.FIRE_RESISTANCE, "Potion of Fire Resistance");
+        addPotion(PotionType.INSTANT_DAMAGE, "Potion of Harming");
+        addPotion(PotionType.INSTANT_HEAL, "Potion of Healing");
+        addPotion(PotionType.INVISIBILITY, "Potion of Invisibility");
+        addPotion(PotionType.JUMP, "Potion of Leaping");
+        addPotion(PotionType.LUCK, "Potion of Luck");
+        addPotion(PotionType.MUNDANE, "Mundane Potion");
+        addPotion(PotionType.NIGHT_VISION, "Potion of Night Vision");
+        addPotion(PotionType.POISON, "Potion of Poison");
+        addPotion(PotionType.REGEN, "Potion of Regeneration");
+        addPotion(PotionType.SLOWNESS, "Potion of Slowness");
+        addPotion(PotionType.SPEED, "Potion of Swiftness");
+        addPotion(PotionType.STRENGTH, "Potion of Strength");
+        addPotion(PotionType.THICK, "Thick Potion");
+        addPotion(PotionType.UNCRAFTABLE, "Uncraftable Potion");
+        addPotion(PotionType.WATER, "Water Bottle");
+        addPotion(PotionType.WATER_BREATHING, "Potion of Water Breathing");
+        addPotion(PotionType.WEAKNESS, "Potion of Weakness");
+        addPotion(PotionType.TURTLE_MASTER, "Potion of the Turtle Master");
+        addPotion(PotionType.SLOW_FALLING, "Potion of Slow Falling");
     }
 
-    private static void addEnchantment(PotionType potion, String name) {
+    private static void addPotion(PotionType potion, String name) {
         potionToName.put(potion, name);
     }
 
