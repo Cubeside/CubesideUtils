@@ -158,12 +158,25 @@ public class StringUtil {
         return breakLines(text, lineLength, MATCH_COLOR_CODES, forceLineBreak);
     }
 
+    public static List<String> breakLinesForMinecraft(String text, int lineLength, boolean forceLineBreak, boolean preserveColorCodes) {
+        return breakLines(text, lineLength, MATCH_COLOR_CODES, forceLineBreak, preserveColorCodes);
+    }
+
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength) {
         return breakLines(text, lineLength, ignoreForLength, false);
     }
 
+    public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength, boolean forceLineBreak) {
+        return breakLines(text, lineLength, ignoreForLength, forceLineBreak, ignoreForLength == MATCH_COLOR_CODES);
+    }
+
+    // preserveColorCodes without ignoreForLength set to MATCH_COLOR_CODES may lead to strange results
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength,
-            boolean forceLineBreak) {
+            boolean forceLineBreak, boolean preserveColorCodes) {
+        if (lineLength <= 0) {
+            throw new IllegalArgumentException("lineLength must be positive");
+        }
+
         List<String> result = new ArrayList<>();
 
         StringBuilder currentBuilder = new StringBuilder();
@@ -172,10 +185,36 @@ public class StringUtil {
         int lastBlank = -1;
         int lastBreak = 0;
 
+        boolean magic = false;
+        boolean bold = false;
+        boolean strikethrough = false;
+        boolean underline = false;
+        boolean italic = false;
+        ChatColor color = null;
+
         for (; index < chars.length;) {
             char current = chars[index];
             if (current == ' ') {
                 lastBlank = index;
+            } else if (preserveColorCodes && current == ChatColor.COLOR_CHAR && index + 1 < chars.length) {
+                char next = chars[index + 1];
+                ChatColor col = ChatColor.getByChar(next);
+                if (col != null) {
+                    switch (col) {
+                        case MAGIC: magic = true; break;
+                        case BOLD: bold = true; break;
+                        case STRIKETHROUGH: strikethrough = true; break;
+                        case UNDERLINE: underline = true; break;
+                        case ITALIC: italic = true; break;
+                        default:
+                            color = col == ChatColor.RESET? null : col;
+                            magic = false;
+                            bold = false;
+                            strikethrough = false;
+                            underline = false;
+                            italic = false;
+                    }
+                }
             }
 
             currentBuilder.append(current);
@@ -188,14 +227,22 @@ public class StringUtil {
                     result.add(currentBuilder.toString());
                     currentBuilder = new StringBuilder();
 
+                    if (preserveColorCodes) {
+                        addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
+                    }
+
                     index = lastBlank + 1;
                     lastBreak = index;
                     continue;
-                } else if (forceLineBreak) {
+                } else if (forceLineBreak && index != lastBreak) {
                     currentBuilder.delete(currentBuilder.length() - 1, currentBuilder.length());
 
                     result.add(currentBuilder.toString());
                     currentBuilder = new StringBuilder();
+
+                    if (preserveColorCodes) {
+                        addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
+                    }
 
                     lastBreak = index;
                     continue;
@@ -215,6 +262,28 @@ public class StringUtil {
     private static boolean tooLong(String string, int limit, Pattern ignoreForLength) {
         string = ignoreForLength == null ? string : ignoreForLength.matcher(string).replaceAll("");
         return string.length() > limit;
+    }
+
+    private static void addColorCodes(StringBuilder builder, boolean magic, boolean bold, boolean strikethrough,
+            boolean underline, boolean italic, ChatColor color) {
+        if (color != null) {
+            builder.append(color);
+        }
+        if (magic) {
+            builder.append(ChatColor.MAGIC);
+        }
+        if (bold) {
+            builder.append(ChatColor.BOLD);
+        }
+        if (strikethrough) {
+            builder.append(ChatColor.STRIKETHROUGH);
+        }
+        if (underline) {
+            builder.append(ChatColor.UNDERLINE);
+        }
+        if (italic) {
+            builder.append(ChatColor.ITALIC);
+        }
     }
 
     // Safe file names
