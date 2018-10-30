@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.collections;
 
+import java.util.Objects;
 import java.util.Random;
 
 import com.google.common.base.Preconditions;
@@ -50,5 +51,15 @@ public class Arrays {
         int tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
+    }
+
+    @SafeVarargs
+    public static <T> int indexOf(T element, T... array) {
+        for (int i=0; i<array.length; i++) {
+            if (Objects.equals(element, array[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
