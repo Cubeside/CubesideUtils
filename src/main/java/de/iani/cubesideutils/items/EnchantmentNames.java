@@ -10,6 +10,11 @@ import org.bukkit.enchantments.Enchantment;
 import de.iani.cubesideutils.StringUtil;
 
 public class EnchantmentNames {
+    private EnchantmentNames() {
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // prevents instances
+    }
+
     private static final HashMap<Enchantment, String> enchantmentToName;
     static {
         enchantmentToName = new HashMap<Enchantment, String>();

@@ -23,6 +23,10 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 
 public class ItemsAndStrings {
+    private ItemsAndStrings() {
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // prevents instances
+    }
 
     public static final String LORE_COLOR = "" + ChatColor.ITALIC + ChatColor.DARK_PURPLE;
 

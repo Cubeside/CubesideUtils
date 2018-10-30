@@ -7,6 +7,11 @@ import org.bukkit.potion.PotionType;
 import de.iani.cubesideutils.StringUtil;
 
 public class PotionNames {
+    private PotionNames() {
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // prevents instances
+    }
+
     private static final HashMap<PotionType, String> potionToName;
     static {
         potionToName = new HashMap<PotionType, String>();
