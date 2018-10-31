@@ -191,6 +191,7 @@ public class StringUtil {
         boolean underline = false;
         boolean italic = false;
         ChatColor color = null;
+        int currentPrefixLength = 0;
 
         for (; index < chars.length;) {
             char current = chars[index];
@@ -220,7 +221,7 @@ public class StringUtil {
             currentBuilder.append(current);
             if (tooLong(currentBuilder.toString(), lineLength, ignoreForLength)) {
                 if (lastBlank > lastBreak) {
-                    int start = lastBlank - lastBreak;
+                    int start = lastBlank + currentPrefixLength - lastBreak;
                     int end = currentBuilder.length();
                     currentBuilder.delete(start, end);
 
@@ -228,7 +229,7 @@ public class StringUtil {
                     currentBuilder = new StringBuilder();
 
                     if (preserveColorCodes) {
-                        addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
+                        currentPrefixLength = addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
                     }
 
                     index = lastBlank + 1;
@@ -241,7 +242,7 @@ public class StringUtil {
                     currentBuilder = new StringBuilder();
 
                     if (preserveColorCodes) {
-                        addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
+                        currentPrefixLength = addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
                     }
 
                     lastBreak = index;
@@ -264,26 +265,34 @@ public class StringUtil {
         return string.length() > limit;
     }
 
-    private static void addColorCodes(StringBuilder builder, boolean magic, boolean bold, boolean strikethrough,
+    private static int addColorCodes(StringBuilder builder, boolean magic, boolean bold, boolean strikethrough,
             boolean underline, boolean italic, ChatColor color) {
+        int length = 0;
         if (color != null) {
             builder.append(color);
+            length += 2;
         }
         if (magic) {
             builder.append(ChatColor.MAGIC);
+            length += 2;
         }
         if (bold) {
             builder.append(ChatColor.BOLD);
+            length += 2;
         }
         if (strikethrough) {
             builder.append(ChatColor.STRIKETHROUGH);
+            length += 2;
         }
         if (underline) {
             builder.append(ChatColor.UNDERLINE);
+            length += 2;
         }
         if (italic) {
             builder.append(ChatColor.ITALIC);
+            length += 2;
         }
+        return length;
     }
 
     // Safe file names
