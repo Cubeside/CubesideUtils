@@ -1,5 +1,7 @@
 package de.iani.cubesideutils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,6 +76,30 @@ public class StringUtil {
             cap[i] = c;
         }
         return new String(cap);
+    }
+
+    public static String replaceLast(String in, String sequence, String replacement) {
+        int index = in.lastIndexOf(sequence);
+        if (index < 0) {
+            return in;
+        }
+
+        return in.substring(0, index) + replacement
+                + in.substring(index + sequence.length(), in.length());
+    }
+
+    public static String repeat(String arg, int times) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            builder.append(arg);
+        }
+        return builder.toString();
+    }
+
+    public static String exceptionToString(Throwable e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
 
     public static String formatBlockLocationWithoutWorld(Location loc) {
