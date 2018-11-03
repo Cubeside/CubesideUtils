@@ -9,6 +9,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -92,5 +93,22 @@ public class ItemStacks {
         }
         itemStack.setItemMeta(meta);
         return itemStack;
+    }
+
+    public static ItemStack[] deepCopy(ItemStack[] of) {
+        ItemStack[] result = new ItemStack[of.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = of[i] == null ? null : new ItemStack(of[i]);
+        }
+        return result;
+    }
+
+    public static boolean addToInventoryIfFits(Inventory inventory, ItemStack... items) {
+        ItemStack[] contents = deepCopy(inventory.getContents());
+        if (!inventory.addItem(items).isEmpty()) {
+            inventory.setContents(contents);
+            return false;
+        }
+        return true;
     }
 }
