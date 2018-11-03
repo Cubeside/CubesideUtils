@@ -104,9 +104,9 @@ public class ItemStacks {
     }
 
     public static boolean addToInventoryIfFits(Inventory inventory, ItemStack... items) {
-        ItemStack[] contents = deepCopy(inventory.getContents());
+        ItemStack[] contents = deepCopy(inventory.getStorageContents());
         if (!inventory.addItem(items).isEmpty()) {
-            inventory.setContents(contents);
+            inventory.setStorageContents(contents);
             return false;
         }
         return true;
