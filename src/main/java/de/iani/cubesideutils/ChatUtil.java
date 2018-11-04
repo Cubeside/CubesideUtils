@@ -2,6 +2,7 @@ package de.iani.cubesideutils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -79,12 +80,12 @@ public class ChatUtil {
 
         int numPages = (int) Math.ceil(messages.size() / (double) PAGE_LENGTH);
         if (page >= numPages) {
-            sendMessage(recipient, pluginPrefix, warningColor.toString(), name, " hat keine Seite " + (page + 1));
+            sendMessage(recipient, pluginPrefix, warningColor.toString(), name, " hat keine Seite ", (page + 1));
             return;
         }
 
         if (numPages > 1) {
-            sendMessage(recipient, pluginPrefix, normalColor.toString(), name, " (Seite " + (page + 1), "/" + numPages, "):");
+            sendMessage(recipient, pluginPrefix, normalColor.toString(), name, " (Seite ", (page + 1), "/",  numPages, "):");
         } else {
             sendMessage(recipient, pluginPrefix, normalColor.toString(), name, ":");
         }
@@ -142,14 +143,14 @@ public class ChatUtil {
         }
     }
 
-    public static void sendMessage(CommandSender sender, String pluginPrefix, String colors, String message,
-            String... messageParts) {
+    public static void sendMessage(CommandSender sender, String pluginPrefix, String colors, Object message,
+            Object... messageParts) {
         if (messageParts.length == 0) {
             sender.sendMessage(pluginPrefix + " " + colors + message);
         } else {
             StringBuilder builder = new StringBuilder(pluginPrefix).append(" ").append(colors).append(message);
-            for (String s : messageParts) {
-                builder.append(ChatColor.RESET).append(colors).append(s);
+            for (Object s : messageParts) {
+                builder.append(ChatColor.RESET).append(colors).append(Objects.toString(s));
             }
             sender.sendMessage(builder.toString());
         }
