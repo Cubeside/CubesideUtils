@@ -105,10 +105,58 @@ public class ItemStacks {
 
     public static boolean addToInventoryIfFits(Inventory inventory, ItemStack... items) {
         ItemStack[] contents = deepCopy(inventory.getStorageContents());
-        if (!inventory.addItem(items).isEmpty()) {
-            inventory.setStorageContents(contents);
-            return false;
+        for (ItemStack item : items) {
+            if (item != null && !ItemGroups.isAir(item.getType())) {
+                int remaining = item.getAmount();
+                // fill partial stacks
+                int firstPartial = -1;
+                while (remaining > 0) {
+                    firstPartial = getFirstPartial(item, contents, firstPartial + 1);
+                    if (firstPartial < 0) {
+                        break;
+                    }
+                    ItemStack content = contents[firstPartial];
+                    int add = Math.min(content.getMaxStackSize() - content.getAmount(), remaining);
+                    content.setAmount(content.getAmount() + add);
+                    remaining -= add;
+                }
+                // create new stacks
+                int firstFree = -1;
+                while (remaining > 0) {
+                    firstFree = getFirstFree(contents, firstFree + 1);
+                    if (firstFree < 0) {
+                        return false; // no free place found
+                    }
+                    ItemStack content = new ItemStack(item);
+                    contents[firstFree] = content;
+                    // max stack size might return -1, in this case assume 1
+                    int add = Math.min(Math.max(content.getMaxStackSize(), 1), remaining);
+                    content.setAmount(add);
+                    remaining -= add;
+                }
+            }
         }
+        inventory.setStorageContents(contents);
         return true;
+    }
+
+    private static int getFirstPartial(ItemStack item, ItemStack[] contents, int start) {
+        for (int i = start; i < contents.length; i++) {
+            ItemStack content = contents[i];
+            if (content != null && content.isSimilar(item) && content.getAmount() < content.getMaxStackSize()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static int getFirstFree(ItemStack[] contents, int start) {
+        for (int i = start; i < contents.length; i++) {
+            ItemStack content = contents[i];
+            if (content == null || content.getAmount() == 0 || ItemGroups.isAir(content.getType())) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
