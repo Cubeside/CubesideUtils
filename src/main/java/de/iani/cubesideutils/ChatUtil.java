@@ -146,11 +146,14 @@ public class ChatUtil {
     public static void sendMessage(CommandSender sender, String pluginPrefix, String colors, Object message,
             Object... messageParts) {
         if (messageParts.length == 0) {
-            sender.sendMessage(pluginPrefix + " " + colors + message);
+            sender.sendMessage(pluginPrefix + " " + (colors == null? "" : colors) + message);
         } else {
-            StringBuilder builder = new StringBuilder(pluginPrefix).append(" ").append(colors).append(message);
+            StringBuilder builder = new StringBuilder(pluginPrefix).append(" ").append(colors == null? "" : colors).append(message);
             for (Object s : messageParts) {
-                builder.append(ChatColor.RESET).append(colors).append(Objects.toString(s));
+                if (colors != null) {
+                    builder.append(ChatColor.RESET).append(colors);
+                }
+                builder.append(Objects.toString(s));
             }
             sender.sendMessage(builder.toString());
         }

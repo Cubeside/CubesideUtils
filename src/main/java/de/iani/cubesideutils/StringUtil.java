@@ -41,7 +41,34 @@ public class StringUtil {
         return hash;
     };
 
-    public static final BiPredicate<String, String> CASE_IGNOREING_EQUALITY = (s1, s2) -> s1 == null? s2 == null : s1.equalsIgnoreCase(s2);
+    public static final BiPredicate<String, String> CASE_IGNORING_EQUALITY = (s1, s2) -> s1 == null? s2 == null : s1.equalsIgnoreCase(s2);
+
+    public static final ToIntFunction<String> CASE_AND_COLORS_IGNORING_HASHER = s -> {
+        if (s == null) {
+            return 0;
+        }
+
+        int hash = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i);
+            if (c == ChatColor.COLOR_CHAR && i + 1 < s.length() && ChatColor.getByChar(s.charAt(i + 1)) != null) {
+                 i++;
+                 continue;
+            }
+            hash = 31 * hash + Character.toLowerCase(c);
+        }
+        return hash;
+    };
+
+    public static final BiPredicate<String, String> CASE_AND_COLORS_IGNORING_EQUALITY = (s1, s2) -> {
+        if (s2 == null) {
+            return false;
+        }
+
+        s1 = ChatColor.stripColor(s1);
+        s2 = ChatColor.stripColor(s2);
+        return s1.equalsIgnoreCase(s2);
+    };
 
     public static final Pattern SPACES_AND_UNDERSCORES_PATTERN = Pattern.compile("[\\ \\_]");
 
