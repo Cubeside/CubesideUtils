@@ -73,6 +73,9 @@ public class ItemStacks {
     }
 
     public static ItemStack fastPvP(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
+            return itemStack;
+        }
         ItemMeta meta = itemStack.getItemMeta();
         Material type = itemStack.getType();
         double addDamage = Double.NaN;
