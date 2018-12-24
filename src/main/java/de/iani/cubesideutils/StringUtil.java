@@ -615,7 +615,7 @@ public class StringUtil {
     }
 
     public static String flip(String s) {
-        char[] data = s .toCharArray();
+        char[] data = s.toCharArray();
         de.iani.cubesideutils.collections.Arrays.flip(data);
         return String.valueOf(data);
     }
