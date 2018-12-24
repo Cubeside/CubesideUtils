@@ -616,11 +616,7 @@ public class StringUtil {
 
     public static String flip(String s) {
         char[] data = s .toCharArray();
-        for (int i=0; i<data.length/2; i++) {
-            char c = data[i];
-            data[i] = data[data.length - i - 1];
-            data[data.length - i - 1] = c;
-        }
+        de.iani.cubesideutils.collections.Arrays.flip(data);
         return String.valueOf(data);
     }
 
