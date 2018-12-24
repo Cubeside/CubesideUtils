@@ -614,4 +614,14 @@ public class StringUtil {
                         + Math.pow(c1.getGreen() - c2.getGreen(), 2));
     }
 
+    public static String flip(String s) {
+        char[] data = s .toCharArray();
+        for (int i=0; i<data.length/2; i++) {
+            char c = data[i];
+            data[i] = data[data.length - i - 1];
+            data[data.length - i - 1] = c;
+        }
+        return String.valueOf(data);
+    }
+
 }
