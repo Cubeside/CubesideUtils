@@ -193,6 +193,38 @@ public class StringUtil {
         return COLOR_CHAR_PATTERN.matcher(AND_PATTERN.matcher(converted).replaceAll("&&")).replaceAll("&");
     }
 
+    private static final Pattern ESCAPE_CHARACTER_PATTERN = Pattern.compile("\\\\.");
+
+    public static String convertEscaped(String text) {
+        Matcher matcher = ESCAPE_CHARACTER_PATTERN.matcher(text);
+        StringBuffer buffer = null;
+
+        while (matcher.find()) {
+            if (buffer == null) {
+                buffer = new StringBuffer();
+            }
+
+            char escaped = matcher.group().charAt(1);
+            String replacement;
+            switch (escaped) {
+                case '\\': replacement = "\\";
+                    break;
+                case 'n': replacement = "\n";
+                    break;
+                default: replacement = String.valueOf(escaped);
+            }
+
+            matcher.appendReplacement(buffer, replacement);
+        }
+
+        if (buffer == null) {
+            return text;
+        }
+
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
     // Line breaking
 
     public static final Pattern MATCH_COLOR_CODES =
