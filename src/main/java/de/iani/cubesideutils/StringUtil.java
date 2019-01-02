@@ -207,7 +207,7 @@ public class StringUtil {
             char escaped = matcher.group().charAt(1);
             String replacement;
             switch (escaped) {
-                case '\\': replacement = "\\";
+                case '\\': replacement = "\\\\";
                     break;
                 case 'n': replacement = "\n";
                     break;
