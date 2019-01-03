@@ -652,7 +652,7 @@ public class StringUtil {
 
     public static String flip(String s) {
         char[] data = s.toCharArray();
-        de.iani.cubesideutils.collections.Arrays.flip(data);
+        de.iani.cubesideutils.collections.ArrayUtils.flip(data);
         return String.valueOf(data);
     }
 

@@ -5,8 +5,8 @@ import java.util.Random;
 
 import com.google.common.base.Preconditions;
 
-public class Arrays {
-    private Arrays() {
+public class ArrayUtils {
+    private ArrayUtils() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
