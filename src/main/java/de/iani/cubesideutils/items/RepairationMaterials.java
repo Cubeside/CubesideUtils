@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
 @SuppressWarnings("deprecation")
@@ -48,7 +49,10 @@ public class RepairationMaterials {
             if (repairationMaterialsInternal.containsKey(mat)) {
                 continue;
             }
-            if (!(Damageable.class.isAssignableFrom(mat.data))) {
+            if (!mat.isItem()) {
+                continue;
+            }
+            if (!(new ItemStack(mat).getItemMeta() instanceof Damageable)) {
                 continue;
             }
 
