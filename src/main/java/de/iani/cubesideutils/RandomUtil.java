@@ -1,5 +1,6 @@
 package de.iani.cubesideutils;
 
+import java.util.List;
 import java.util.Random;
 
 public class RandomUtil {
@@ -27,6 +28,14 @@ public class RandomUtil {
 
     public static double pseudoGaussian(double bound) {
         return pseudoGaussian(bound, SHARED_RANDOM);
+    }
+
+    public static <T> T randomElement(List<T> list, Random ran) {
+        return list.get(ran.nextInt(list.size()));
+    }
+
+    public static <T> T randomElement(List<T> list) {
+        return randomElement(list, SHARED_RANDOM);
     }
 
 }
