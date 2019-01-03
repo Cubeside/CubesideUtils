@@ -11,6 +11,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.command.CommandSender;
 
 public class ChatUtil {
+    private ChatUtil() {
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // prevents instances
+    }
 
     public static interface Sendable {
 

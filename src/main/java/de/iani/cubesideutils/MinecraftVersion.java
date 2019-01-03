@@ -5,6 +5,11 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 
 public class MinecraftVersion {
+    private MinecraftVersion() {
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // prevents instances
+    }
+
     public static final int MAJOR;
     public static final int MINOR;
     public static final int RELEASE;

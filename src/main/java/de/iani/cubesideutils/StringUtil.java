@@ -27,6 +27,10 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 
 public class StringUtil {
+    private StringUtil() {
+        throw new UnsupportedOperationException("No instance for you, Sir!");
+        // prevents instances
+    }
 
     public static final ToIntFunction<String> CASE_IGNORING_HASHER = s -> {
         if (s == null) {
