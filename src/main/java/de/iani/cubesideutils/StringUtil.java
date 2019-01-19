@@ -3,6 +3,7 @@ package de.iani.cubesideutils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class StringUtil {
         return hash;
     };
 
-    public static final BiPredicate<String, String> CASE_IGNORING_EQUALITY = (s1, s2) -> s1 == null? s2 == null : s1.equalsIgnoreCase(s2);
+    public static final BiPredicate<String, String> CASE_IGNORING_EQUALITY = (s1, s2) -> s1 == null ? s2 == null : s1.equalsIgnoreCase(s2);
 
     public static final ToIntFunction<String> CASE_AND_COLORS_IGNORING_HASHER = s -> {
         if (s == null) {
@@ -56,8 +57,8 @@ public class StringUtil {
         for (int i = 0; i < s.length(); i++) {
             int c = s.charAt(i);
             if (c == ChatColor.COLOR_CHAR && i + 1 < s.length() && ChatColor.getByChar(s.charAt(i + 1)) != null) {
-                 i++;
-                 continue;
+                i++;
+                continue;
             }
             hash = 31 * hash + Character.toLowerCase(c);
         }
@@ -115,8 +116,7 @@ public class StringUtil {
             return in;
         }
 
-        return in.substring(0, index) + replacement
-                + in.substring(index + sequence.length(), in.length());
+        return in.substring(0, index) + replacement + in.substring(index + sequence.length(), in.length());
     }
 
     public static String repeat(String arg, int times) {
@@ -211,11 +211,14 @@ public class StringUtil {
             char escaped = matcher.group().charAt(1);
             String replacement;
             switch (escaped) {
-                case '\\': replacement = "\\\\";
+                case '\\':
+                    replacement = "\\\\";
                     break;
-                case 'n': replacement = "\n";
+                case 'n':
+                    replacement = "\n";
                     break;
-                default: replacement = String.valueOf(escaped);
+                default:
+                    replacement = String.valueOf(escaped);
             }
 
             matcher.appendReplacement(buffer, replacement);
@@ -231,13 +234,7 @@ public class StringUtil {
 
     // Line breaking
 
-    public static final Pattern MATCH_COLOR_CODES =
-            Pattern.compile(
-                    "\\" + ChatColor.COLOR_CHAR + "["
-                            + Arrays.stream(ChatColor.values()).map(ChatColor::getChar)
-                                    .map(String::valueOf).collect(Collectors.joining())
-                            + "]",
-                    Pattern.CASE_INSENSITIVE);
+    public static final Pattern MATCH_COLOR_CODES = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "[" + Arrays.stream(ChatColor.values()).map(ChatColor::getChar).map(String::valueOf).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength) {
         return breakLines(text, lineLength, MATCH_COLOR_CODES);
@@ -260,8 +257,7 @@ public class StringUtil {
     }
 
     // preserveColorCodes without ignoreForLength set to MATCH_COLOR_CODES may lead to strange results
-    public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength,
-            boolean forceLineBreak, boolean preserveColorCodes) {
+    public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength, boolean forceLineBreak, boolean preserveColorCodes) {
         if (lineLength <= 0) {
             throw new IllegalArgumentException("lineLength must be positive");
         }
@@ -291,13 +287,23 @@ public class StringUtil {
                 ChatColor col = ChatColor.getByChar(next);
                 if (col != null) {
                     switch (col) {
-                        case MAGIC: magic = true; break;
-                        case BOLD: bold = true; break;
-                        case STRIKETHROUGH: strikethrough = true; break;
-                        case UNDERLINE: underline = true; break;
-                        case ITALIC: italic = true; break;
+                        case MAGIC:
+                            magic = true;
+                            break;
+                        case BOLD:
+                            bold = true;
+                            break;
+                        case STRIKETHROUGH:
+                            strikethrough = true;
+                            break;
+                        case UNDERLINE:
+                            underline = true;
+                            break;
+                        case ITALIC:
+                            italic = true;
+                            break;
                         default:
-                            color = col == ChatColor.RESET? null : col;
+                            color = col == ChatColor.RESET ? null : col;
                             magic = false;
                             bold = false;
                             strikethrough = false;
@@ -354,8 +360,7 @@ public class StringUtil {
         return string.length() > limit;
     }
 
-    private static int addColorCodes(StringBuilder builder, boolean magic, boolean bold, boolean strikethrough,
-            boolean underline, boolean italic, ChatColor color) {
+    private static int addColorCodes(StringBuilder builder, boolean magic, boolean bold, boolean strikethrough, boolean underline, boolean italic, ChatColor color) {
         int length = 0;
         if (color != null) {
             builder.append(color);
@@ -393,8 +398,7 @@ public class StringUtil {
         for (char c = 0x00; c <= 0x1F; c++) {
             illegals.add(c);
         }
-        for (char c : new char[] {'|', '\\', '/', '?', '!', '*', '+', '%', '<', '>', '"', ':', ';',
-                ',', '.', '=', '[', ']', '@', (char) 0x7F}) {
+        for (char c : new char[] { '|', '\\', '/', '?', '!', '*', '+', '%', '<', '>', '"', ':', ';', ',', '.', '=', '[', ']', '@', (char) 0x7F }) {
             illegals.add(c);
         }
         CHARS_ILLEGAL_IN_FILENAME = Collections.unmodifiableSet(illegals);
@@ -451,29 +455,26 @@ public class StringUtil {
     public static final String TIME_SECONDS_FORMAT_STRING = "HH:mm:ss";
     public static final String DATE_AND_TIME_FORMAT_STRING = "dd.MM.yyyy HH:mm";
     public static final String DATE_AND_TIME_SECONDS_FORMAT_STRING = "dd.MM.yyyy HH:mm:ss";
+    public static final String TIMESTAMP_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
 
     private static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
     private static final DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT_STRING);
-    private static final DateFormat timeSecondsFormat =
-            new SimpleDateFormat(TIME_SECONDS_FORMAT_STRING);
+    private static final DateFormat timeSecondsFormat = new SimpleDateFormat(TIME_SECONDS_FORMAT_STRING);
+    private static final DateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING);
 
     public static String formatTimespan(long ms) {
         return formatTimespan(ms, "d", "h", "m", "s", "", "");
     }
 
-    public static String formatTimespan(long ms, String d, String h, String m, String s,
-            String delimiter, String lastDelimiter) {
+    public static String formatTimespan(long ms, String d, String h, String m, String s, String delimiter, String lastDelimiter) {
         return formatTimespan(ms, d, h, m, s, delimiter, lastDelimiter, true);
     }
 
-    public static String formatTimespan(long ms, String d, String h, String m, String s,
-            String delimiter, String lastDelimiter, boolean dropAllLowerIfZero) {
+    public static String formatTimespan(long ms, String d, String h, String m, String s, String delimiter, String lastDelimiter, boolean dropAllLowerIfZero) {
         return formatTimespan(ms, d, h, m, s, delimiter, lastDelimiter, dropAllLowerIfZero, false);
     }
 
-    public static String formatTimespan(long ms, String d, String h, String m, String s,
-            String delimiter, String lastDelimiter, boolean dropAllLowerIfZero,
-            boolean forceMinutesAndTwoDigitsForTime) {
+    public static String formatTimespan(long ms, String d, String h, String m, String s, String delimiter, String lastDelimiter, boolean dropAllLowerIfZero, boolean forceMinutesAndTwoDigitsForTime) {
         long days = ms / (1000L * 60L * 60L * 24L);
         ms -= days * (1000L * 60L * 60L * 24L);
         long hours = ms / (1000L * 60L * 60L);
@@ -546,8 +547,7 @@ public class StringUtil {
             if (lessThanSeconds != 0) {
                 builder.append(".");
                 String lessThanSecondsString = "" + lessThanSeconds;
-                lessThanSecondsString =
-                        lessThanSecondsString.substring(lessThanSecondsString.indexOf('.') + 1);
+                lessThanSecondsString = lessThanSecondsString.substring(lessThanSecondsString.indexOf('.') + 1);
                 builder.append(lessThanSecondsString);
             }
             builder.append(s);
@@ -578,9 +578,47 @@ public class StringUtil {
             return result;
         }
 
-        result += " " + (second == 0 ? timeFormat.format(date) : timeSecondsFormat.format(date))
-                + " Uhr";
+        result += " " + (second == 0 ? timeFormat.format(date) : timeSecondsFormat.format(date)) + " Uhr";
         return result;
+    }
+
+    public static synchronized Date parseDate(String arg) {
+        if (arg.isEmpty()) {
+            throw new IllegalArgumentException("empty String");
+        }
+
+        String[] args = arg.split(" ");
+        if (args.length > 2) {
+            throw new IllegalArgumentException("Only one space allowed.");
+        }
+
+        Date result;
+        try {
+            result = StringUtil.dateFormat.parse(args[0]);
+            if (args.length > 1) {
+                long time;
+                if (args[1].split("\\:").length == 2) {
+                    time = timeFormat.parse(args[1]).getTime();
+                } else {
+                    time = timeSecondsFormat.parse(args[1]).getTime();
+                }
+                result = new Date(result.getTime() + time);
+            }
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        return result;
+    }
+
+    public static synchronized String formatTimestamp(long date) {
+        return formatTimestamp(new Date(date));
+    }
+
+    public static synchronized String formatTimestamp(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return timestampFormat.format(date);
     }
 
     // Colors
@@ -608,8 +646,7 @@ public class StringUtil {
         constantColors.put(Color.YELLOW, "yellow");
 
         for (DyeColor dc : DyeColor.values()) {
-            constantColors.put(dc.getColor(),
-                    dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
+            constantColors.put(dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
         }
 
         CONSTANT_COLORS = Collections.unmodifiableMap(constantColors);
@@ -645,9 +682,7 @@ public class StringUtil {
     }
 
     private static double diff(Color c1, Color c2) {
-        return Math.sqrt(
-                Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2)
-                        + Math.pow(c1.getGreen() - c2.getGreen(), 2));
+        return Math.sqrt(Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2));
     }
 
     public static String flip(String s) {
