@@ -1,5 +1,6 @@
 package de.iani.cubesideutils;
 
+import de.iani.cubesideutils.collections.LinkedGeneralHashMap;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -74,6 +75,19 @@ public class StringUtil {
         s2 = ChatColor.stripColor(s2);
         return s1.equalsIgnoreCase(s2);
     };
+
+    public static final Set<String> TRUE_STRINGS;
+    public static final Set<String> FALSE_STRINGS;
+
+    static {
+        Set<String> trueStrings = Collections.newSetFromMap(new LinkedGeneralHashMap<>(CASE_IGNORING_HASHER, String::equalsIgnoreCase));
+        trueStrings.addAll(Arrays.asList("true", "t", "ja", "j", "wahr", "w"));
+        TRUE_STRINGS = Collections.unmodifiableSet(trueStrings);
+
+        Set<String> falseStrings = Collections.newSetFromMap(new LinkedGeneralHashMap<>(CASE_IGNORING_HASHER, String::equalsIgnoreCase));
+        falseStrings.addAll(Arrays.asList("false", "f", "nein", "n", "falsch"));
+        FALSE_STRINGS = Collections.unmodifiableSet(falseStrings);
+    }
 
     public static final Pattern SPACES_AND_UNDERSCORES_PATTERN = Pattern.compile("[\\ \\_]");
 
