@@ -1,6 +1,5 @@
 package de.iani.cubesideutils;
 
-import de.iani.cubesideutils.collections.LinkedGeneralHashMap;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -80,12 +79,12 @@ public class StringUtil {
     public static final Set<String> FALSE_STRINGS;
 
     static {
-        Set<String> trueStrings = Collections.newSetFromMap(new LinkedGeneralHashMap<>(CASE_IGNORING_HASHER, String::equalsIgnoreCase));
-        trueStrings.addAll(Arrays.asList("true", "t", "ja", "j", "wahr", "w"));
+        Set<String> trueStrings = Collections.newSetFromMap(new TreeMap<>(String.CASE_INSENSITIVE_ORDER));
+        trueStrings.addAll(Arrays.asList("1", "true", "t", "ja", "j", "wahr", "w"));
         TRUE_STRINGS = Collections.unmodifiableSet(trueStrings);
 
-        Set<String> falseStrings = Collections.newSetFromMap(new LinkedGeneralHashMap<>(CASE_IGNORING_HASHER, String::equalsIgnoreCase));
-        falseStrings.addAll(Arrays.asList("false", "f", "nein", "n", "falsch"));
+        Set<String> falseStrings = Collections.newSetFromMap(new TreeMap<>(String.CASE_INSENSITIVE_ORDER));
+        falseStrings.addAll(Arrays.asList("0", "false", "f", "nein", "n", "falsch"));
         FALSE_STRINGS = Collections.unmodifiableSet(falseStrings);
     }
 
