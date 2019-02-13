@@ -636,48 +636,69 @@ public class StringUtil {
 
     // Colors
 
-    private static final Map<Color, String> CONSTANT_COLORS;
+    private static final Map<Color, String> CONSTANT_COLOR_NAMES;
+    private static final Map<String, Color> CONSTANT_COLORS_BY_NAMES;
 
     static {
-        Map<Color, String> constantColors = new LinkedHashMap<>();
-        constantColors.put(Color.AQUA, "aqua");
-        constantColors.put(Color.BLACK, "black");
-        constantColors.put(Color.BLUE, "blue");
-        constantColors.put(Color.FUCHSIA, "fuchsia");
-        constantColors.put(Color.GRAY, "gray");
-        constantColors.put(Color.GREEN, "greeen");
-        constantColors.put(Color.LIME, "lime");
-        constantColors.put(Color.MAROON, "maroon");
-        constantColors.put(Color.NAVY, "navy");
-        constantColors.put(Color.OLIVE, "olive");
-        constantColors.put(Color.ORANGE, "orange");
-        constantColors.put(Color.PURPLE, "purple");
-        constantColors.put(Color.RED, "Aqua");
-        constantColors.put(Color.SILVER, "red");
-        constantColors.put(Color.TEAL, "teal");
-        constantColors.put(Color.WHITE, "white");
-        constantColors.put(Color.YELLOW, "yellow");
+        Map<Color, String> constantColorNames = new LinkedHashMap<>();
+        Map<String, Color> constantColorsByNames = new LinkedHashMap<>();
+
+        registerColor(constantColorNames, constantColorsByNames, Color.AQUA, "aqua");
+        registerColor(constantColorNames, constantColorsByNames, Color.BLACK, "black");
+        registerColor(constantColorNames, constantColorsByNames, Color.BLUE, "blue");
+        registerColor(constantColorNames, constantColorsByNames, Color.FUCHSIA, "fuchsia");
+        registerColor(constantColorNames, constantColorsByNames, Color.GRAY, "gray");
+        registerColor(constantColorNames, constantColorsByNames, Color.GREEN, "greeen");
+        registerColor(constantColorNames, constantColorsByNames, Color.LIME, "lime");
+        registerColor(constantColorNames, constantColorsByNames, Color.MAROON, "maroon");
+        registerColor(constantColorNames, constantColorsByNames, Color.NAVY, "navy");
+        registerColor(constantColorNames, constantColorsByNames, Color.OLIVE, "olive");
+        registerColor(constantColorNames, constantColorsByNames, Color.ORANGE, "orange");
+        registerColor(constantColorNames, constantColorsByNames, Color.PURPLE, "purple");
+        registerColor(constantColorNames, constantColorsByNames, Color.RED, "red");
+        registerColor(constantColorNames, constantColorsByNames, Color.SILVER, "silver");
+        registerColor(constantColorNames, constantColorsByNames, Color.TEAL, "teal");
+        registerColor(constantColorNames, constantColorsByNames, Color.WHITE, "white");
+        registerColor(constantColorNames, constantColorsByNames, Color.YELLOW, "yellow");
 
         for (DyeColor dc : DyeColor.values()) {
-            constantColors.put(dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
+            registerColor(constantColorNames, constantColorsByNames, dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
         }
 
-        CONSTANT_COLORS = Collections.unmodifiableMap(constantColors);
+        CONSTANT_COLOR_NAMES = Collections.unmodifiableMap(constantColorNames);
+        CONSTANT_COLORS_BY_NAMES = Collections.unmodifiableMap(constantColorsByNames);
+    }
+
+    private static void registerColor(Map<Color, String> colorToName, Map<String, Color> nameToColor, Color color, String name) {
+        colorToName.put(color, name);
+        nameToColor.put(name, color);
+    }
+
+    public static Set<Color> getConstantColors() {
+        return CONSTANT_COLOR_NAMES.keySet();
+    }
+
+    public static Color getConstantColor(String name) {
+        return CONSTANT_COLORS_BY_NAMES.get(name.toLowerCase());
+    }
+
+    public static String getConstantColorName(Color color) {
+        return CONSTANT_COLOR_NAMES.get(color);
     }
 
     public static String toNiceString(Color color) {
-        if (CONSTANT_COLORS.containsKey(color)) {
-            return CONSTANT_COLORS.get(color);
+        if (CONSTANT_COLOR_NAMES.containsKey(color)) {
+            return CONSTANT_COLOR_NAMES.get(color);
         }
 
         double lowestDiff = Double.MAX_VALUE;
         String bestMatch = null;
 
-        for (Color other : CONSTANT_COLORS.keySet()) {
+        for (Color other : CONSTANT_COLOR_NAMES.keySet()) {
             double diff = diff(color, other);
             if (diff < lowestDiff) {
                 lowestDiff = diff;
-                bestMatch = CONSTANT_COLORS.get(other);
+                bestMatch = CONSTANT_COLOR_NAMES.get(other);
             }
         }
 

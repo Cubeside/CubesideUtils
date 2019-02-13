@@ -1,10 +1,9 @@
 package de.iani.cubesideutils.items;
 
-import java.util.HashMap;
-
-import org.bukkit.potion.PotionType;
-
 import de.iani.cubesideutils.StringUtil;
+import java.util.EnumMap;
+import java.util.Map;
+import org.bukkit.potion.PotionType;
 
 public class PotionNames {
     private PotionNames() {
@@ -12,9 +11,9 @@ public class PotionNames {
         // prevents instances
     }
 
-    private static final HashMap<PotionType, String> potionToName;
+    private static final Map<PotionType, String> potionToName;
     static {
-        potionToName = new HashMap<PotionType, String>();
+        potionToName = new EnumMap<>(PotionType.class);
 
         addPotion(PotionType.AWKWARD, "Awkward Potion");
         addPotion(PotionType.FIRE_RESISTANCE, "Potion of Fire Resistance");
