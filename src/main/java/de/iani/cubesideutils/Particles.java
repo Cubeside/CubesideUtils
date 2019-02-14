@@ -70,13 +70,13 @@ public class Particles {
                     return;
                 }
 
-                Location loc = location.getLocation();
-                Object data = (datas == null || datas.length == 0) ? null : datas[RandomUtil.SHARED_RANDOM.nextInt(datas.length)];
-                spawnParticles(player, particle, amountPerTick, loc, offsetX, offsetY, offsetZ, extra, data);
-
                 if (this.count >= 0 && ++this.count >= numberOfTicks) {
                     cancel();
                 }
+
+                Location loc = location.getLocation();
+                Object data = (datas == null || datas.length == 0) ? null : datas[RandomUtil.SHARED_RANDOM.nextInt(datas.length)];
+                spawnParticles(player, particle, amountPerTick, loc, offsetX, offsetY, offsetZ, extra, data);
             }
 
         }.runTaskTimer(plugin, 0, 1);
