@@ -31,7 +31,7 @@ public class Particles {
                 data = new DustOptions(Color.fromRGB(RandomUtil.SHARED_RANDOM.nextInt(MAX_COLOR_VALUE)), 1.0f);
             }
 
-            player.spawnParticle(Particle.REDSTONE, newX, newY, newZ, 1, 0.0f, 0.0f, 0.0f, extra, data);
+            player.spawnParticle(particle, newX, newY, newZ, 1, 0.0f, 0.0f, 0.0f, extra, data);
         }
 
     }
