@@ -471,8 +471,10 @@ public class StringUtil {
     public static final String TIMESTAMP_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
 
     private static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_STRING);
-    private static final DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT_STRING);
-    private static final DateFormat timeSecondsFormat = new SimpleDateFormat(TIME_SECONDS_FORMAT_STRING);
+    // private static final DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT_STRING);
+    // private static final DateFormat timeSecondsFormat = new SimpleDateFormat(TIME_SECONDS_FORMAT_STRING);
+    private static final DateFormat dateAndTimeFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT_STRING);
+    private static final DateFormat dateAndTimeSecondsFormat = new SimpleDateFormat(DATE_AND_TIME_SECONDS_FORMAT_STRING);
     private static final DateFormat timestampFormat = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING);
 
     public static String formatTimespan(long ms) {
@@ -582,17 +584,14 @@ public class StringUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        String result = dateFormat.format(date);
-
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
         if (hour == 0 && minute == 0 && second == 0) {
-            return result;
+            return dateFormat.format(date);
         }
 
-        result += " " + (second == 0 ? timeFormat.format(date) : timeSecondsFormat.format(date)) + " Uhr";
-        return result;
+        return (second == 0 ? dateAndTimeFormat.format(date) : dateAndTimeSecondsFormat.format(date)) + " Uhr";
     }
 
     public static synchronized Date parseDate(String arg) {
@@ -605,23 +604,24 @@ public class StringUtil {
             throw new IllegalArgumentException("Only one space allowed.");
         }
 
-        Date result;
         try {
-            result = StringUtil.dateFormat.parse(args[0]);
-            if (args.length > 1) {
-                long time;
-                if (args[1].split("\\:").length == 2) {
-                    time = timeFormat.parse(args[1]).getTime();
-                } else {
-                    time = timeSecondsFormat.parse(args[1]).getTime();
-                }
-                result = new Date(result.getTime() + time);
+            if (args.length == 1) {
+                return dateFormat.parse(arg);
             }
+
+            String[] args2 = args[1].split("\\:");
+            if (args2.length < 2 || args2.length > 3) {
+                throw new IllegalArgumentException("Only one or two colons allowed in time block.");
+            }
+
+            if (args2.length == 1) {
+                return dateAndTimeFormat.parse(arg);
+            }
+
+            return dateAndTimeSecondsFormat.parse(arg);
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
-
-        return result;
     }
 
     public static synchronized String formatTimestamp(long date) {
