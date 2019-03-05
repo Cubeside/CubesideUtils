@@ -614,7 +614,7 @@ public class StringUtil {
                 throw new IllegalArgumentException("Only one or two colons allowed in time block.");
             }
 
-            if (args2.length == 1) {
+            if (args2.length == 2) {
                 return dateAndTimeFormat.parse(arg);
             }
 
