@@ -576,6 +576,47 @@ public class StringUtil {
         return ("0" + s).trim();
     }
 
+    public static long parseTimespan(String arg) {
+        return parseTimespan(arg, "d", "h", "m", "s", "");
+    }
+
+    public static long parseTimespan(String arg, String d, String h, String m, String s, String delimiter) {
+        return parseTimespan(arg, d, h, m, s, delimiter, delimiter);
+    }
+
+    public static long parseTimespan(String arg, String d, String h, String m, String s, String delimiter1, String delimiter2) {
+        String delimiterExpression = delimiter1.isEmpty() && delimiter2.isEmpty() ? "(\\z?)" : ("((\\z)" + (!delimiter1.isEmpty() ? "|(" + Pattern.quote(delimiter1) + ")" : "") + (!delimiter2.isEmpty() ? "|(" + Pattern.quote(delimiter2) + ")" : "") + ")");
+        Pattern dayPattern = Pattern.compile("(?<days>(\\d+))" + Pattern.quote(d) + delimiterExpression, Pattern.CASE_INSENSITIVE);
+        Pattern hourPattern = Pattern.compile("(?<hours>(\\d+))" + Pattern.quote(h) + delimiterExpression, Pattern.CASE_INSENSITIVE);
+        Pattern minutePattern = Pattern.compile("(?<minutes>(\\d+))" + Pattern.quote(m) + delimiterExpression, Pattern.CASE_INSENSITIVE);
+        Pattern secondPattern = Pattern.compile("(?<seconds>(\\d+(\\.\\d+)?))" + Pattern.quote(s) + delimiterExpression, Pattern.CASE_INSENSITIVE);
+
+        long result = 0;
+
+        Matcher dayMatcher = dayPattern.matcher(arg);
+        if (dayMatcher.find()) {
+            result += Long.parseLong(dayMatcher.group("days")) * 24L * 60L * 60L * 1000L;
+        }
+
+        Matcher hourMatcher = hourPattern.matcher(arg);
+        if (hourMatcher.find()) {
+            result += Long.parseLong(hourMatcher.group("hours")) * 60L * 60L * 1000L;
+        }
+
+        Matcher minuteMatcher = minutePattern.matcher(arg);
+        if (minuteMatcher.find()) {
+            result += Long.parseLong(minuteMatcher.group("minutes")) * 60L * 1000L;
+        }
+
+        Matcher secondMatcher = secondPattern.matcher(arg);
+        if (secondMatcher.find()) {
+            result += (long) (Double.parseDouble(secondMatcher.group("seconds")) * 1000d);
+        }
+
+        return result;
+
+    }
+
     public static synchronized String formatDate(long date) {
         return formatDate(new Date(date));
     }
