@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -179,7 +178,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                         if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
                             if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
                                 if (rv == null) {
-                                    rv = options == null? new ArrayList<>() : new ArrayList<>(options);
+                                    rv = options == null ? new ArrayList<>() : new ArrayList<>(options);
                                 }
                                 rv.add(key);
                             }
@@ -188,7 +187,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                 }
             }
             if (rv != null || options != null) {
-                rv = StringUtil.copyPartialMatches(partial, rv != null? rv : options, new ArrayList<String>());
+                rv = StringUtil.copyPartialMatches(partial, rv != null ? rv : options, new ArrayList<String>());
                 Collections.sort(rv);
             }
             return rv;
@@ -264,7 +263,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                 } else {
                     if ((subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
-                            sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage());
+                            sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
                     }
                 }

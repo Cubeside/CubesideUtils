@@ -1,7 +1,6 @@
 package de.iani.cubesideutils.commands;
 
 import java.util.Collection;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -26,6 +25,10 @@ public abstract class SubCommand {
 
     public Collection<String> onTabComplete(CommandSender sender, Command command, String alias, ArgsParser args) {
         return null;
+    }
+
+    public String getUsage(CommandSender sender) {
+        return getUsage();
     }
 
     public String getUsage() {
