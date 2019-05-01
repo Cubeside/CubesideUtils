@@ -5,6 +5,8 @@ import org.bukkit.OfflinePlayer;
 
 public class PlayerDataCache {
 
+    // must deal with async accesses!
+
     public PlayerData getData(UUID playerId) {
         // TODO;
         return null;

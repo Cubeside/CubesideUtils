@@ -2,19 +2,16 @@ package de.iani.cubesideutils.plugin;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import org.bukkit.Bukkit;
 
 public class PlayerData {
 
     private UUID playerId;
 
     private boolean afk;
-    private long lastAction;
 
     private String rank;
-
-    public PlayerData(UUID playerId) {
-        this(playerId, false, UtilsPlugin.getInstance().getDefaultRank());
-    }
 
     public PlayerData(UUID playerId, boolean afk, String rank) {
         this.playerId = Objects.requireNonNull(playerId);
@@ -26,31 +23,45 @@ public class PlayerData {
         return this.playerId;
     }
 
-    // TODO: what about player on two servers, afk at one? save lastAction in DB, but only on afk-change?
+    public boolean isOnline() {
+        if (Bukkit.isPrimaryThread()) {
+            return Bukkit.getPlayer(playerId) != null;
+        }
+
+        try {
+            return Bukkit.getScheduler().callSyncMethod(UtilsPlugin.getInstance(), () -> (Bukkit.getPlayer(playerId) != null)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public OnlinePlayerData getOnlineData() {
+        if (this instanceof OnlinePlayerData) {
+            return (OnlinePlayerData) this;
+        }
+
+        // TODO: possible that player is online of this is no OnlinePlayerData?
+        if (!isOnline()) {
+            throw new IllegalStateException("The player isn't online.");
+        }
+
+        // TODO: create OnlinePlayerData, replace in caches, return (synchronized!)
+        // TODO: OR OnlinePlayerData must already have been created on login, get from cache.
+        return null;
+    }
+
     public synchronized boolean isAfk() {
         return this.afk;
     }
 
-    public synchronized void checkAfk() {
-        if (this.afk) {
-            return;
+    protected synchronized boolean setAfkInternal(boolean afk) {
+        if (this.afk == afk) {
+            return false;
         }
 
-        if (System.currentTimeMillis() - this.lastAction < UtilsPlugin.AFK_THRESHOLD) {
-            this.afk = true;
-            saveChanges();
-        }
-    }
-
-    public synchronized void madeAction() {
-        this.lastAction = System.currentTimeMillis();
-
-        if (!this.afk) {
-            return;
-        }
-
-        this.afk = false;
+        this.afk = afk;
         saveChanges();
+        return true;
     }
 
     public synchronized String getRank() {
@@ -66,9 +77,13 @@ public class PlayerData {
         saveChanges();
     }
 
-    private void saveChanges() {
+    protected synchronized void saveChanges() {
+        saveChanges(false);
+    }
+
+    protected synchronized void saveChanges(boolean soft) {
         // TODO: save in database
-        // TODO: send message to other servers
+        // TODO: send message to other servers if not soft
     }
 
 }
