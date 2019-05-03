@@ -1,5 +1,8 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.plugin.database.Database;
+import java.util.UUID;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class UtilsPlugin extends JavaPlugin {
@@ -12,6 +15,7 @@ public class UtilsPlugin extends JavaPlugin {
         return instance;
     }
 
+    private Database database;
     private PlayerDataCache playerDataCache;
 
     public UtilsPlugin() {
@@ -22,11 +26,24 @@ public class UtilsPlugin extends JavaPlugin {
             instance = this;
         }
 
+        this.database = new Database();
         this.playerDataCache = new PlayerDataCache();
     }
 
-    public PlayerDataCache getPlayerDataCache() {
+    Database getDatabase() {
+        return database;
+    }
+
+    PlayerDataCache getPlayerDataCache() {
         return this.playerDataCache;
+    }
+
+    public PlayerData getPlayerData(OfflinePlayer player) {
+        return getPlayerData(player.getUniqueId());
+    }
+
+    public PlayerData getPlayerData(UUID playerId) {
+        return this.playerDataCache.get(playerId);
     }
 
     public String getDefaultRank() {

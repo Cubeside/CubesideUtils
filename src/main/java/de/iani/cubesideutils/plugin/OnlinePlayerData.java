@@ -48,6 +48,7 @@ public class OnlinePlayerData extends PlayerData {
         if (isAfk()) {
             setAfk(false);
         } else if (System.currentTimeMillis() - this.lastSaved >= SAVE_LAST_ACTION_THRESNHOLD) {
+            // TODO: instead check whether online on any other server first?
             saveChanges(true);
         }
     }
