@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -165,10 +164,15 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                 }
             }
             Collection<String> options = null;
-            List<String> rv = null;
+            List<String> optionsList = null;
             // get tabcomplete options from command
             if (currentMap.executor != null) {
-                options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
+                options = Collections.emptyList();
+                if (currentMap.executor.getRequiredPermission() == null || sender.hasPermission(currentMap.executor.getRequiredPermission())) {
+                    if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
+                        options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
+                    }
+                }
             }
             // get tabcomplete options from subcommands
             if (currentMap.subCommands != null) {
@@ -178,20 +182,21 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                         CommandMap subcmd = e.getValue();
                         if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
                             if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                                if (rv == null) {
-                                    rv = options == null? new ArrayList<>() : new ArrayList<>(options);
+                                if (optionsList == null) {
+                                    optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
+                                    options = optionsList;
                                 }
-                                rv.add(key);
+                                optionsList.add(key);
                             }
                         }
                     }
                 }
             }
-            if (rv != null || options != null) {
-                rv = StringUtil.copyPartialMatches(partial, rv != null? rv : options, new ArrayList<String>());
-                Collections.sort(rv);
+            if (options != null) {
+                optionsList = StringUtil.copyPartialMatches(partial, options, new ArrayList<String>());
+                Collections.sort(optionsList);
             }
-            return rv;
+            return optionsList;
         }
         return null;
     }
