@@ -269,7 +269,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                 } else {
                     if ((subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
-                            sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage());
+                            sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
                     }
                 }
