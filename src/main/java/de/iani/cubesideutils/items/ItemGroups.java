@@ -124,6 +124,13 @@ public class ItemGroups {
     private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_SHULKER_BOX = new EnumMap<>(DyeColor.class);
     private static final EnumMap<Material, DyeColor> MATERIAL_TO_DYE_COLOR = new EnumMap<>(Material.class);
 
+    private static final EnumSet<Material> SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> SIGNS = Collections.unmodifiableSet(SIGNS_INTERNAL);
+    private static final EnumSet<Material> WALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> WALL_SIGNS = Collections.unmodifiableSet(WALL_SIGNS_INTERNAL);
+    private static final EnumSet<Material> ALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> ALL_SIGNS = Collections.unmodifiableSet(ALL_SIGNS_INTERNAL);
+
     static {
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
@@ -180,6 +187,14 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_PIGMAN_SPAWN_EGG, EntityType.PIG_ZOMBIE);
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_SPAWN_EGG, EntityType.ZOMBIE);
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_VILLAGER_SPAWN_EGG, EntityType.ZOMBIE_VILLAGER);
+
+        SPAWN_EGGS_INTERNAL.put(Material.CAT_SPAWN_EGG, EntityType.CAT);
+        SPAWN_EGGS_INTERNAL.put(Material.FOX_SPAWN_EGG, EntityType.FOX);
+        SPAWN_EGGS_INTERNAL.put(Material.PANDA_SPAWN_EGG, EntityType.PANDA);
+        SPAWN_EGGS_INTERNAL.put(Material.RAVAGER_SPAWN_EGG, EntityType.RAVAGER);
+        SPAWN_EGGS_INTERNAL.put(Material.PILLAGER_SPAWN_EGG, EntityType.PILLAGER);
+        SPAWN_EGGS_INTERNAL.put(Material.TRADER_LLAMA_SPAWN_EGG, EntityType.TRADER_LLAMA);
+        SPAWN_EGGS_INTERNAL.put(Material.WANDERING_TRADER_SPAWN_EGG, EntityType.WANDERING_TRADER);
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -243,6 +258,10 @@ public class ItemGroups {
                         WOODEN_PRESSURE_PLATES_INTERNAL.add(m);
                     }
                     PRESSURE_PLATES_INTERNAL.add(m);
+                } else if (name.endsWith("_WALL_SIGN")) {
+                    WALL_SIGNS_INTERNAL.add(m);
+                } else if (name.endsWith("_SIGN")) {
+                    SIGNS_INTERNAL.add(m);
                 } else if (name.endsWith("_BOAT")) {
                     BOATS_INTERNAL.add(m);
                 } else if (name.endsWith("_SPAWN_EGG")) {
@@ -285,6 +304,7 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.GRASS);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.FERN);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DEAD_BUSH);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SWEET_BERRY_BUSH);
         SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
@@ -480,6 +500,8 @@ public class ItemGroups {
         DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.BLACK, Material.BLACK_SHULKER_BOX);
         DYE_COLOR_TO_SHULKER_BOX.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
 
+        ALL_SIGNS_INTERNAL.addAll(SIGNS_INTERNAL);
+        ALL_SIGNS_INTERNAL.addAll(WALL_SIGNS_INTERNAL);
     }
 
     public static boolean isEmpty(ItemStack item) {
