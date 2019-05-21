@@ -5,7 +5,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -305,7 +304,7 @@ public class ItemGroups {
         DYE_COLOR_TO_DYE.put(DyeColor.ORANGE, Material.ORANGE_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.MAGENTA, Material.MAGENTA_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_DYE);
-        DYE_COLOR_TO_DYE.put(DyeColor.YELLOW, Material.DANDELION_YELLOW);
+        DYE_COLOR_TO_DYE.put(DyeColor.YELLOW, Material.YELLOW_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.LIME, Material.LIME_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.PINK, Material.PINK_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.GRAY, Material.GRAY_DYE);
@@ -314,8 +313,8 @@ public class ItemGroups {
         DYE_COLOR_TO_DYE.put(DyeColor.PURPLE, Material.PURPLE_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.BLUE, Material.LAPIS_LAZULI);
         DYE_COLOR_TO_DYE.put(DyeColor.BROWN, Material.COCOA_BEANS);
-        DYE_COLOR_TO_DYE.put(DyeColor.GREEN, Material.CACTUS_GREEN);
-        DYE_COLOR_TO_DYE.put(DyeColor.RED, Material.ROSE_RED);
+        DYE_COLOR_TO_DYE.put(DyeColor.GREEN, Material.GREEN_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.RED, Material.RED_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.BLACK, Material.INK_SAC);
         DYE_COLOR_TO_DYE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
 
