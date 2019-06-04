@@ -29,7 +29,7 @@ public class EventListener implements Listener {
     }
 
     private void madeAction(Player player) {
-        PlayerData data = plugin.getPlayerDataCache().getData(player);
+        PlayerData data = plugin.getPlayerDataCache().get(player.getUniqueId());
         data.getOnlineData().madeAction();
     }
 

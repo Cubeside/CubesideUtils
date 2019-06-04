@@ -19,7 +19,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
     private static final long serialVersionUID = 2279901989917386890L;
     private static final int MAX_SIZE = 16;
 
-    private Map<UUID, PlayerData> onlinePlayers;
+    private Map<UUID, OnlinePlayerData> onlinePlayers;
 
     private ReadWriteLock lock;
 
@@ -45,7 +45,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
             if (isOnline) {
                 try {
-                    data = UtilsPlugin.getInstance().getDatabase().getPlayerData(playerId, isOnline, false);
+                    data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, false);
                 } catch (SQLException e) {
                     // TODO: handle
                     return;
@@ -53,7 +53,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
                 if (data == null) {
                     // TODO: handle
                 } else {
-                    this.onlinePlayers.put(playerId, data);
+                    this.onlinePlayers.put(playerId, (OnlinePlayerData) data);
                 }
             }
         } finally {
@@ -63,7 +63,8 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
     private void left(UUID playerId) {
         this.lock.writeLock().lock();
-        this.onlinePlayers.remove(playerId);
+        OnlinePlayerData data = this.onlinePlayers.remove(playerId);
+        data.quit();
         this.lock.writeLock().unlock();
     }
 
@@ -73,9 +74,9 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
         this.lock.writeLock().lock();
         try {
             invalidate(playerId);
-            PlayerData data;
+            OnlinePlayerData data;
             try {
-                data = UtilsPlugin.getInstance().getDatabase().getPlayerData(playerId, true, true);
+                data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true);
             } catch (SQLException e) {
                 // TODO: handle
                 // TODO: disallow?
@@ -141,7 +142,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
                 return super.computeIfAbsent((UUID) key, k -> {
                     PlayerData data;
                     try {
-                        data = UtilsPlugin.getInstance().getDatabase().getPlayerData(k, false, createIfMissing);
+                        data = UtilsPlugin.getInstance().getDatabase().getPlayerData(k, createIfMissing);
                     } catch (SQLException e) {
                         // TODO: handle
                         return null;
@@ -154,6 +155,10 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
         } finally {
             this.lock.readLock().unlock();
         }
+    }
+
+    public OnlinePlayerData getOnline(UUID key) {
+        return onlinePlayers.get(key);
     }
 
     // May be accessed asynchronously.

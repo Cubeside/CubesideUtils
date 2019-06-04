@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.plugin.database;
 
+import de.iani.cubesideutils.plugin.OnlinePlayerData;
 import de.iani.cubesideutils.plugin.PlayerData;
 import de.inani.cubesidesecurity.SecurityPlayer;
 import java.sql.PreparedStatement;
@@ -9,8 +10,18 @@ import java.util.UUID;
 
 public class Database {
 
+    // TODO: Use relation table for player, server, afk.
+
+    public PlayerData getPlayerData(UUID playerId, boolean insertIfMissing) throws SQLException {
+        return getPlayerData(playerId, false, insertIfMissing);
+    }
+
+    public OnlinePlayerData getOnlinePlayerData(UUID playerId, boolean insertIfMissing) throws SQLException {
+        return (OnlinePlayerData) getPlayerData(playerId, true, insertIfMissing);
+    }
+
     // TODO: isOnline = insertIfMissing?
-    public PlayerData getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing) throws SQLException {
+    private PlayerData getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing) throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerDataString);
             smt.setString(1, playerId.toString());
@@ -29,7 +40,12 @@ public class Database {
                 return result;
             }
 
-            PlayerData result = new PlayerData(playerId, /*TODO*/);
+            PlayerData result;
+            if (isOnline) {//TODO
+                result = new OnlinePlayerData(playerId, /*TODO*/);
+            } else {
+                result = new PlayerData(playerId, /*TODO*/);
+            }
             rs.close();
             return result;
         });

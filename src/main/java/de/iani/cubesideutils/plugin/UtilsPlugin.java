@@ -1,5 +1,8 @@
 package de.iani.cubesideutils.plugin;
 
+import de.cubeside.connection.ConnectionAPI;
+import de.cubeside.connection.GlobalClientPlugin;
+import de.cubeside.connection.PlayerMessageAPI;
 import de.iani.cubesideutils.plugin.database.Database;
 import java.util.UUID;
 import org.bukkit.OfflinePlayer;
@@ -17,6 +20,8 @@ public class UtilsPlugin extends JavaPlugin {
 
     private Database database;
     private PlayerDataCache playerDataCache;
+    private ConnectionAPI connectionApi;
+    private PlayerMessageAPI playerMsgApi;
 
     public UtilsPlugin() {
         synchronized (UtilsPlugin.class) {
@@ -28,6 +33,10 @@ public class UtilsPlugin extends JavaPlugin {
 
         this.database = new Database();
         this.playerDataCache = new PlayerDataCache();
+
+        GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
+        this.connectionApi = connectionPlugin.getConnectionAPI();
+        this.playerMsgApi = connectionPlugin.getMessageAPI();
     }
 
     Database getDatabase() {
@@ -36,6 +45,14 @@ public class UtilsPlugin extends JavaPlugin {
 
     PlayerDataCache getPlayerDataCache() {
         return this.playerDataCache;
+    }
+
+    ConnectionAPI getConnectionAPI() {
+        return this.connectionApi;
+    }
+
+    PlayerMessageAPI getPlayerMsgApi() {
+        return this.playerMsgApi;
     }
 
     public PlayerData getPlayerData(OfflinePlayer player) {

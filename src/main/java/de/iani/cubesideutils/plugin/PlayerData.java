@@ -23,7 +23,7 @@ public class PlayerData {
         return this.playerId;
     }
 
-    public boolean isOnline() {
+    public boolean isOnlineHere() {
         if (Bukkit.isPrimaryThread()) {
             return Bukkit.getPlayer(playerId) != null;
         }
@@ -41,27 +41,21 @@ public class PlayerData {
         }
 
         // TODO: possible that player is online of this is no OnlinePlayerData?
-        if (!isOnline()) {
+        if (!isOnlineHere()) {
             throw new IllegalStateException("The player isn't online.");
         }
 
-        // TODO: create OnlinePlayerData, replace in caches, return (synchronized!)
-        // TODO: OR OnlinePlayerData must already have been created on login, get from cache.
-        return null;
+        // TODO: should this happen?!
+        return UtilsPlugin.getInstance().getPlayerDataCache().getOnline(this.playerId);
     }
 
-    public synchronized boolean isAfk() {
-        return this.afk;
+    public synchronized boolean isGloballyAfk() {
+        return this.afk; // More complex in OnlinePlayerData
     }
 
-    protected synchronized boolean setAfkInternal(boolean afk) {
-        if (this.afk == afk) {
-            return false;
-        }
-
+    protected synchronized void setGloballyAfkInternal(boolean afk) {
         this.afk = afk;
         saveChanges();
-        return true;
     }
 
     public synchronized String getRank() {
@@ -78,12 +72,7 @@ public class PlayerData {
     }
 
     protected synchronized void saveChanges() {
-        saveChanges(false);
-    }
-
-    protected synchronized void saveChanges(boolean soft) {
         // TODO: save in database
-        // TODO: send message to other servers if not soft
     }
 
 }

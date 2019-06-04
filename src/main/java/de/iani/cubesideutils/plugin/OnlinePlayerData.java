@@ -1,23 +1,28 @@
 package de.iani.cubesideutils.plugin;
 
+import de.cubeside.connection.ConnectionAPI;
+import de.cubeside.connection.GlobalServer;
+import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 
 public class OnlinePlayerData extends PlayerData {
 
-    private static final long SAVE_LAST_ACTION_THRESNHOLD = (long) (0.75 * UtilsPlugin.AFK_THRESHOLD);
-
     private long lastAction;
-    private long lastSaved;
+    private boolean locallyAfk;
 
     public OnlinePlayerData(UUID playerId, boolean afk, long lastAction, String rank) {
         super(playerId, afk, rank);
 
         this.lastAction = lastAction;
-        this.lastSaved = System.currentTimeMillis();
+    }
+
+    synchronized void quit() {
+        setLocallyAfkInternal(true);
     }
 
     public synchronized void checkAfk() {
-        if (this.isAfk()) {
+        if (this.isLocallyAfk()) {
             return;
         }
 
@@ -25,38 +30,72 @@ public class OnlinePlayerData extends PlayerData {
             return;
         }
 
-        // reaload from database
-
-        if (System.currentTimeMillis() - this.lastAction < UtilsPlugin.AFK_THRESHOLD) {
-            return;
-        }
-
-        setAfk(true);
+        setLocallyAfk(true);
     }
 
-    public synchronized void setAfk(boolean afk) {
-        if (!super.setAfkInternal(afk)) {
+    public synchronized boolean isLocallyAfk() {
+        return this.locallyAfk;
+    }
+
+    public synchronized void setLocallyAfk(boolean afk) {
+        if (!setLocallyAfkInternal(afk)) {
             return;
         }
 
-        // tell player
+        // TODO: tell player
+    }
+
+    private synchronized boolean setLocallyAfkInternal(boolean afk) {
+        if (this.locallyAfk == afk) {
+            return false;
+        }
+
+        this.locallyAfk = afk;
+        UtilsPlugin.getInstance().getDatabase().addLocallyAfk(this.getPlayerId());
+        checkGloballyAfk();
+        return true;
+    }
+
+    private void checkGloballyAfk() {
+        if (this.locallyAfk && isGloballyAfk()) {
+            return;
+        }
+
+        if (!this.locallyAfk && !isGloballyAfk()) {
+            return;
+        }
+
+        if (!this.locallyAfk /* && isGloballyAfk() */) {
+            setGloballyAfkInternal(false);
+            return;
+        }
+
+        ConnectionAPI connectionApi = UtilsPlugin.getInstance().getConnectionAPI();
+        Collection<GlobalServer> servers = connectionApi.getPlayer(getPlayerId()).getCurrentServers();
+        assert servers.contains(connectionApi.getThisServer());
+
+        if (servers.size() == 1) {
+            setGloballyAfkInternal(true);
+            return;
+        }
+
+        Set<String> afkServers = UtilsPlugin.getInstance().getDatabase().getAfkServers(getPlayerId());
+        for (GlobalServer server : servers) {
+            if (!afkServers.contains(server.getName())) {
+                return;
+            }
+        }
+
+        setGloballyAfkInternal(true);
+        return;
     }
 
     public synchronized void madeAction() {
         this.lastAction = System.currentTimeMillis();
 
-        if (isAfk()) {
-            setAfk(false);
-        } else if (System.currentTimeMillis() - this.lastSaved >= SAVE_LAST_ACTION_THRESNHOLD) {
-            // TODO: instead check whether online on any other server first?
-            saveChanges(true);
+        if (isLocallyAfk()) {
+            setLocallyAfk(false);
         }
-    }
-
-    @Override
-    protected synchronized void saveChanges(boolean soft) {
-        super.saveChanges(soft);
-        this.lastSaved = System.currentTimeMillis();
     }
 
 }
