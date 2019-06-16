@@ -3,8 +3,10 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.PlayerMessageAPI;
-import de.iani.cubesideutils.plugin.database.Database;
+import de.iani.cubesideutils.sql.SQLConfig;
 import java.util.UUID;
+import java.util.logging.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,13 +32,25 @@ public class UtilsPlugin extends JavaPlugin {
             }
             instance = this;
         }
+    }
 
-        this.database = new Database();
-        this.playerDataCache = new PlayerDataCache();
+    @Override
+    public void onEnable() {
+        try {
+            this.database = new Database();
+            this.playerDataCache = new PlayerDataCache();
 
-        GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
-        this.connectionApi = connectionPlugin.getConnectionAPI();
-        this.playerMsgApi = connectionPlugin.getMessageAPI();
+            GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
+            this.connectionApi = connectionPlugin.getConnectionAPI();
+            this.playerMsgApi = connectionPlugin.getMessageAPI();
+        } catch (Throwable e) {
+            getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
+            Bukkit.getServer().shutdown();
+        }
+    }
+
+    SQLConfig getSQLConfig() {
+        return new SQLConfig(getConfig().getConfigurationSection("database"));
     }
 
     Database getDatabase() {

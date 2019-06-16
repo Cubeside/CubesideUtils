@@ -1,8 +1,10 @@
 package de.iani.cubesideutils.plugin;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 
 public class PlayerData {
@@ -40,7 +42,7 @@ public class PlayerData {
             return (OnlinePlayerData) this;
         }
 
-        // TODO: possible that player is online of this is no OnlinePlayerData?
+        // TODO: possible that player is online and this is no OnlinePlayerData?
         if (!isOnlineHere()) {
             throw new IllegalStateException("The player isn't online.");
         }
@@ -50,7 +52,7 @@ public class PlayerData {
     }
 
     public synchronized boolean isGloballyAfk() {
-        return this.afk; // More complex in OnlinePlayerData
+        return this.afk;
     }
 
     protected synchronized void setGloballyAfkInternal(boolean afk) {
@@ -72,7 +74,11 @@ public class PlayerData {
     }
 
     protected synchronized void saveChanges() {
-        // TODO: save in database
+        try {
+            UtilsPlugin.getInstance().getDatabase().savePlayerData(this);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save PlayerData to database.", e);
+        }
     }
 
 }

@@ -2,9 +2,13 @@ package de.iani.cubesideutils.plugin;
 
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalServer;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 public class OnlinePlayerData extends PlayerData {
 
@@ -15,6 +19,10 @@ public class OnlinePlayerData extends PlayerData {
         super(playerId, afk, rank);
 
         this.lastAction = lastAction;
+    }
+
+    public OnlinePlayerData(UUID playerId, boolean afk, String rank) {
+        this(playerId, afk, System.currentTimeMillis(), rank);
     }
 
     synchronized void quit() {
@@ -38,11 +46,9 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     public synchronized void setLocallyAfk(boolean afk) {
-        if (!setLocallyAfkInternal(afk)) {
-            return;
-        }
+        setLocallyAfkInternal(afk);
 
-        // TODO: tell player
+        Bukkit.getPlayer(getPlayerId()).sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
     }
 
     private synchronized boolean setLocallyAfkInternal(boolean afk) {
@@ -51,7 +57,11 @@ public class OnlinePlayerData extends PlayerData {
         }
 
         this.locallyAfk = afk;
-        UtilsPlugin.getInstance().getDatabase().addLocallyAfk(this.getPlayerId());
+        try {
+            UtilsPlugin.getInstance().getDatabase().setLocallyAfk(this.getPlayerId(), afk);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save AFK-status in database.", e);
+        }
         checkGloballyAfk();
         return true;
     }
@@ -79,7 +89,13 @@ public class OnlinePlayerData extends PlayerData {
             return;
         }
 
-        Set<String> afkServers = UtilsPlugin.getInstance().getDatabase().getAfkServers(getPlayerId());
+        Set<String> afkServers;
+        try {
+            afkServers = UtilsPlugin.getInstance().getDatabase().getAfkServers(getPlayerId());
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not load AFK-status from database.", e);
+            return;
+        }
         for (GlobalServer server : servers) {
             if (!afkServers.contains(server.getName())) {
                 return;
