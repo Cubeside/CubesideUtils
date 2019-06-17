@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.plugin.ConnectionUtil.MessageType;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,12 +12,19 @@ public class PlayerData {
 
     private UUID playerId;
 
+    private long firstJoin;
+    private long lastJoin;
+    private long lastSeen;
+
     private boolean afk;
 
     private String rank;
 
-    public PlayerData(UUID playerId, boolean afk, String rank) {
+    public PlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
         this.playerId = Objects.requireNonNull(playerId);
+        this.firstJoin = firstJoin;
+        this.lastJoin = lastJoin;
+        this.lastSeen = lastSeen;
         this.afk = afk;
         this.rank = Objects.requireNonNull(rank);
     }
@@ -51,13 +59,80 @@ public class PlayerData {
         return UtilsPlugin.getInstance().getPlayerDataCache().getOnline(this.playerId);
     }
 
+    public synchronized long getFirstJoin() {
+        return this.firstJoin;
+    }
+
+    public synchronized void setFirstJoinAndLastJoinAndSeen(long value) {
+        if (this.firstJoin != 0) {
+            throw new IllegalStateException("player already had a first join");
+        }
+
+        this.firstJoin = value;
+        this.lastJoin = value;
+        this.lastSeen = value;
+
+        try {
+            UtilsPlugin.getInstance().getDatabase().setPlayerFirstJoinAndLastJoinAndSeen(getPlayerId(), value);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save firstJoin, lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
+            return;
+        }
+        notifyChanges();
+    }
+
+    public synchronized long getLastJoin() {
+        return this.lastJoin;
+    }
+
+    public synchronized void setLastJoinAndSeen(long value) {
+        if (this.firstJoin == 0) {
+            throw new IllegalStateException("player had no first join yet");
+        }
+
+        this.lastJoin = value;
+        this.lastSeen = value;
+        try {
+            UtilsPlugin.getInstance().getDatabase().setPlayerLastJoinAndSeen(getPlayerId(), value);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
+            return;
+        }
+        notifyChanges();
+    }
+
+    public synchronized long getLastSeen() {
+        return this.lastSeen;
+    }
+
+    public synchronized void setLastSeen(long lastSeen) {
+        if (this.firstJoin == 0) {
+            throw new IllegalStateException("player had no first join yet");
+        }
+
+        this.lastSeen = lastSeen;
+        try {
+            UtilsPlugin.getInstance().getDatabase().setPlayerLastSeen(getPlayerId(), lastSeen);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save lastSeen value for player " + this.playerId + " in database.", e);
+            return;
+        }
+        notifyChanges();
+    }
+
     public synchronized boolean isGloballyAfk() {
         return this.afk;
     }
 
     protected synchronized void setGloballyAfkInternal(boolean afk) {
         this.afk = afk;
-        saveChanges();
+        try {
+            UtilsPlugin.getInstance().getDatabase().setGloballyAfk(playerId, afk);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save afk value for player " + this.playerId + " in database.", e);
+            return;
+        }
+        notifyChanges();
     }
 
     public synchronized String getRank() {
@@ -70,15 +145,11 @@ public class PlayerData {
         }
 
         this.rank = rank;
-        saveChanges();
+        notifyChanges();
     }
 
-    protected synchronized void saveChanges() {
-        try {
-            UtilsPlugin.getInstance().getDatabase().savePlayerData(this);
-        } catch (SQLException e) {
-            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save PlayerData to database.", e);
-        }
+    protected synchronized void notifyChanges() {
+        ConnectionUtil.sendData(MessageType.PLAYER_DATA_CHANGED, playerId);
     }
 
 }

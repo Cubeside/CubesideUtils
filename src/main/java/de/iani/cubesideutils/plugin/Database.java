@@ -18,9 +18,12 @@ public class Database {
     private String playerDataTableName;
     private String afkPlayersTableName;
 
-    private String getPlayerDataQuery = "SELECT afk, rank FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
+    private String getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, rank FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
     private String addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, rank) VALUES (?, 0, NULL)";
-    private String savePlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, rank) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE afk = ?, rank = ?";
+    private String setPlayerFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
+    private String setPlayerLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastJoin = ?, lastSeen = ? WHERE playerId = ?";
+    private String setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
+    private String setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` afk = ? WHERE playerId = ?";
 
     private String getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
     private String addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
@@ -43,7 +46,8 @@ public class Database {
         this.connection.runCommands((connection, sqlConnection) -> {
             if (!sqlConnection.hasTable(this.playerDataTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "`playerId` CHAR(36), " + "`afk` BIT NOT NULL, " + "`rank` VARCHAR(64), " + "PRIMARY KEY (`playerId`)) " + "ENGINE = innodb");
+                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "`playerId` CHAR(36), " + ", firstJoin BIGINT NOT NULL DEFAULT 0" + ", lastJoin BIGINT NOT NULL DEFAULT 0" + ", lastSeen BIGINT NOT NULL DEFAULT 0" + "`afk` BIT NOT NULL, " + "`rank` VARCHAR(64), "
+                        + "PRIMARY KEY (`playerId`)) " + "ENGINE = innodb");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.afkPlayersTableName)) {
@@ -83,23 +87,56 @@ public class Database {
                 return getPlayerData(playerId, isOnline, insertIfMissing);
             }
 
-            boolean afk = rs.getBoolean(1);
-            String rank = rs.getString(2);
-            PlayerData result = isOnline ? new OnlinePlayerData(playerId, afk, rank) : new PlayerData(playerId, afk, rank);
+            long firstJoin = rs.getLong(1);
+            long lastJoin = rs.getLong(2);
+            long lastSeen = rs.getLong(3);
+            boolean afk = rs.getBoolean(4);
+            String rank = rs.getString(5);
+            PlayerData result = isOnline ? new OnlinePlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, rank) : new PlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
             rs.close();
             return result;
         });
     }
 
-    public void savePlayerData(PlayerData data) throws SQLException {
+    public void setPlayerFirstJoinAndLastJoinAndSeen(UUID playerId, long value) throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
-            PreparedStatement smt = sqlConnection.getOrCreateStatement(savePlayerDataQuery);
-            smt.setString(1, data.getPlayerId().toString());
-            smt.setBoolean(2, data.isGloballyAfk());
-            smt.setString(3, data.getRank());
-            smt.setBoolean(4, data.isGloballyAfk());
-            smt.setString(5, data.getRank());
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerFirstJoinAndLastJoinAndSeenQuery);
+            smt.setLong(1, value);
+            smt.setLong(2, value);
+            smt.setLong(3, value);
+            smt.setString(4, playerId.toString());
+            smt.executeUpdate();
+            return null;
+        });
+    }
+
+    public void setPlayerLastJoinAndSeen(UUID playerId, long value) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerLastJoinAndSeenQuery);
+            smt.setLong(1, value);
+            smt.setLong(2, value);
+            smt.setString(3, playerId.toString());
+            smt.executeUpdate();
+            return null;
+        });
+    }
+
+    public void setPlayerLastSeen(UUID playerId, long lastSeen) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerLastSeenQuery);
+            smt.setLong(1, lastSeen);
+            smt.setString(2, playerId.toString());
+            smt.executeUpdate();
+            return null;
+        });
+    }
+
+    public void setGloballyAfk(UUID playerId, boolean afk) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerAfkQuery);
+            smt.setString(1, playerId.toString());
+            smt.setBoolean(2, afk);
             smt.executeUpdate();
             return null;
         });

@@ -14,6 +14,8 @@ public class UtilsPlugin extends JavaPlugin {
 
     public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
 
+    static final String GLOBAL_DATA_CHANNEL = "UtilsPlugin";
+
     private static UtilsPlugin instance = null;
 
     public static synchronized UtilsPlugin getInstance() {
