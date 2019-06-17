@@ -145,6 +145,7 @@ public class PlayerData {
         }
 
         this.rank = rank;
+        // TODO: database
         notifyChanges();
     }
 

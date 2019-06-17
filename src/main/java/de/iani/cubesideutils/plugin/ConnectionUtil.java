@@ -127,26 +127,13 @@ class ConnectionUtil {
             case PLAYER_DATA_CHANGED:
                 handlePlayerDataChanged(readUUID(data));
                 break;
-            // case SEND_MESSAGE:
-            // String permission = data.readUTF();
-            // String message = data.readUTF();
-            // if (permission.isEmpty() || Bukkit.getConsoleSender().hasPermission(permission)) {
-            // Bukkit.getConsoleSender().sendMessage(message);
-            // }
-            // for (Player player : Bukkit.getOnlinePlayers()) {
-            // if (permission.isEmpty() || player.hasPermission(permission)) {
-            // player.sendMessage(message);
-            // }
-            // }
-            // break;
             default:
                 break;
         }
     }
 
     private static void handlePlayerDataChanged(UUID readUUID) {
-        // TODO Auto-generated method stub
-
+        UtilsPlugin.getInstance().getPlayerDataCache().invalidate(readUUID);
     }
 
 }
