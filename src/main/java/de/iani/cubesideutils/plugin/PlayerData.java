@@ -1,6 +1,5 @@
 package de.iani.cubesideutils.plugin;
 
-import de.iani.cubesideutils.plugin.ConnectionUtil.MessageType;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
@@ -150,7 +149,7 @@ public class PlayerData {
     }
 
     protected synchronized void notifyChanges() {
-        ConnectionUtil.sendData(MessageType.PLAYER_DATA_CHANGED, playerId);
+        UtilsPlugin.getInstance().getGlobalDataHelper().sendData(MessageType.PLAYER_DATA_CHANGED, playerId);
     }
 
 }

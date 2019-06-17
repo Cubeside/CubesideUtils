@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class Database {
+class Database {
 
     private SQLConnection connection;
     private String tablePrefix;

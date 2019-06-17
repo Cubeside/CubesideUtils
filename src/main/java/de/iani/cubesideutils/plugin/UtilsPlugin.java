@@ -14,8 +14,6 @@ public class UtilsPlugin extends JavaPlugin {
 
     public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
 
-    static final String GLOBAL_DATA_CHANNEL = "UtilsPlugin";
-
     private static UtilsPlugin instance = null;
 
     public static synchronized UtilsPlugin getInstance() {
@@ -26,6 +24,7 @@ public class UtilsPlugin extends JavaPlugin {
     private PlayerDataCache playerDataCache;
     private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
+    private UtilsGlobalDataHelper globalDataHelper;
 
     public UtilsPlugin() {
         synchronized (UtilsPlugin.class) {
@@ -45,6 +44,7 @@ public class UtilsPlugin extends JavaPlugin {
             GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
             this.connectionApi = connectionPlugin.getConnectionAPI();
             this.playerMsgApi = connectionPlugin.getMessageAPI();
+            this.globalDataHelper = new UtilsGlobalDataHelper(this);
         } catch (Throwable e) {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
             Bukkit.getServer().shutdown();
@@ -69,6 +69,10 @@ public class UtilsPlugin extends JavaPlugin {
 
     PlayerMessageAPI getPlayerMsgApi() {
         return this.playerMsgApi;
+    }
+
+    UtilsGlobalDataHelper getGlobalDataHelper() {
+        return this.globalDataHelper;
     }
 
     public PlayerData getPlayerData(OfflinePlayer player) {
