@@ -3,8 +3,16 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.PlayerMessageAPI;
+import de.iani.cubesideutils.Pair;
 import de.iani.cubesideutils.sql.SQLConfig;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class UtilsPlugin extends JavaPlugin {
 
     public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
+
+    public static final String MODIFY_RANKS_PERMISSION = "cubesideutils.modify_ranks";
 
     private static UtilsPlugin instance = null;
 
@@ -26,6 +36,10 @@ public class UtilsPlugin extends JavaPlugin {
     private PlayerMessageAPI playerMsgApi;
     private UtilsGlobalDataHelper globalDataHelper;
 
+    private ReadWriteLock rankLock;
+    private List<String> ranks;
+    private Map<String, Pair<String, String>> rankPermissionsAndPrefixes;
+
     public UtilsPlugin() {
         synchronized (UtilsPlugin.class) {
             if (instance != null) {
@@ -33,6 +47,10 @@ public class UtilsPlugin extends JavaPlugin {
             }
             instance = this;
         }
+
+        this.rankLock = new ReentrantReadWriteLock();
+        this.ranks = Collections.emptyList();
+        this.rankPermissionsAndPrefixes = Collections.emptyMap();
     }
 
     @Override
@@ -49,6 +67,8 @@ public class UtilsPlugin extends JavaPlugin {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
             Bukkit.getServer().shutdown();
         }
+
+        updateRankInformation();
     }
 
     SQLConfig getSQLConfig() {
@@ -83,8 +103,65 @@ public class UtilsPlugin extends JavaPlugin {
         return this.playerDataCache.get(playerId);
     }
 
-    public String getDefaultRank() {
-        return getConfig().getString("defaultRank");
+    public List<String> getRanks() {
+        this.rankLock.readLock().lock();
+
+        try {
+            return this.ranks;
+        } finally {
+            this.rankLock.readLock().unlock();
+        }
+    }
+
+    String getDefaultRank() {
+        this.rankLock.readLock().lock();
+
+        try {
+            if (this.ranks.isEmpty()) {
+                return null;
+            }
+
+            return this.ranks.get(this.ranks.size() - 1);
+        } finally {
+            this.rankLock.readLock().unlock();
+        }
+    }
+
+    public String getPermission(String rank) {
+        this.rankLock.readLock().lock();
+
+        try {
+            return this.rankPermissionsAndPrefixes.get(rank).first;
+        } finally {
+            this.rankLock.readLock().unlock();
+        }
+    }
+
+    public String getPrefix(String rank) {
+        this.rankLock.readLock().lock();
+
+        try {
+            return this.rankPermissionsAndPrefixes.get(rank).second;
+        } finally {
+            this.rankLock.readLock().unlock();
+        }
+    }
+
+    void updateRankInformation() {
+        this.rankLock.writeLock().lock();
+
+        try {
+            this.rankPermissionsAndPrefixes = Collections.unmodifiableMap(this.database.getRankInformation());
+            this.ranks = Collections.unmodifiableList(new ArrayList<>(rankPermissionsAndPrefixes.keySet()));
+        } catch (SQLException e) {
+            getLogger().log(Level.SEVERE, "Could not get rank information from database.", e);
+        } finally {
+            this.rankLock.writeLock().unlock();
+        }
+
+        for (PlayerData data : this.playerDataCache.loadedData()) {
+            data.checkRank();
+        }
     }
 
 }

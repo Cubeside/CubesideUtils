@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 public class OnlinePlayerData extends PlayerData {
 
@@ -27,6 +28,10 @@ public class OnlinePlayerData extends PlayerData {
 
     synchronized void quit() {
         setLocallyAfkInternal(true);
+    }
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(getPlayerId());
     }
 
     public synchronized void checkAfk() {
@@ -51,9 +56,9 @@ public class OnlinePlayerData extends PlayerData {
         Bukkit.getPlayer(getPlayerId()).sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
     }
 
-    private synchronized boolean setLocallyAfkInternal(boolean afk) {
+    private synchronized void setLocallyAfkInternal(boolean afk) {
         if (this.locallyAfk == afk) {
-            return false;
+            return;
         }
 
         this.locallyAfk = afk;
@@ -63,7 +68,7 @@ public class OnlinePlayerData extends PlayerData {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save AFK-status in database.", e);
         }
         checkGloballyAfk();
-        return true;
+        return;
     }
 
     private void checkGloballyAfk() {
@@ -106,12 +111,26 @@ public class OnlinePlayerData extends PlayerData {
         return;
     }
 
-    public synchronized void madeAction() {
+    synchronized void madeAction() {
         this.lastAction = System.currentTimeMillis();
 
         if (isLocallyAfk()) {
             setLocallyAfk(false);
         }
+    }
+
+    @Override
+    void checkRank() {
+        String rank = null;
+        for (String possible : UtilsPlugin.getInstance().getRanks()) {
+            String permission = UtilsPlugin.getInstance().getPermission(possible);
+            if (permission == null || getPlayer().hasPermission(permission)) {
+                rank = possible;
+                break;
+            }
+        }
+
+        setRank(rank);
     }
 
 }

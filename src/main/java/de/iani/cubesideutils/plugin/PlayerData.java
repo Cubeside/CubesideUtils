@@ -19,13 +19,15 @@ public class PlayerData {
 
     private String rank;
 
-    public PlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
+    PlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
         this.playerId = Objects.requireNonNull(playerId);
         this.firstJoin = firstJoin;
         this.lastJoin = lastJoin;
         this.lastSeen = lastSeen;
         this.afk = afk;
         this.rank = Objects.requireNonNull(rank);
+
+        checkRank();
     }
 
     public UUID getPlayerId() {
@@ -123,7 +125,11 @@ public class PlayerData {
         return this.afk;
     }
 
-    protected synchronized void setGloballyAfkInternal(boolean afk) {
+    synchronized void setGloballyAfkInternal(boolean afk) {
+        if (this.afk == afk) {
+            return;
+        }
+
         this.afk = afk;
         try {
             UtilsPlugin.getInstance().getDatabase().setGloballyAfk(playerId, afk);
@@ -135,20 +141,35 @@ public class PlayerData {
     }
 
     public synchronized String getRank() {
-        return rank;
+        return this.rank;
     }
 
-    public synchronized void setRank(String rank) {
-        if (this.rank.equals(Objects.requireNonNull(rank))) {
+    synchronized void setRank(String rank) {
+        if (Objects.equals(this.rank, rank)) {
             return;
         }
 
         this.rank = rank;
-        // TODO: database
+        try {
+            UtilsPlugin.getInstance().getDatabase().setRank(playerId, rank);
+        } catch (SQLException e) {
+            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save rank for player " + this.playerId + " in database.", e);
+            return;
+        }
         notifyChanges();
     }
 
-    protected synchronized void notifyChanges() {
+    void checkRank() {
+        // Overwritten in OnlinePlayer
+
+        if (UtilsPlugin.getInstance().getPermission(this.rank) != null) {
+            return;
+        }
+
+        setRank(UtilsPlugin.getInstance().getDefaultRank());
+    }
+
+    synchronized void notifyChanges() {
         UtilsPlugin.getInstance().getGlobalDataHelper().sendData(MessageType.PLAYER_DATA_CHANGED, playerId);
     }
 

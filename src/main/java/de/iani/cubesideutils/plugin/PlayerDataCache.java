@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.collections.IteratorUtil;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -201,6 +202,10 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
     @Override
     protected boolean removeEldestEntry(java.util.Map.Entry<UUID, PlayerData> eldest) {
         return size() >= MAX_SIZE;
+    }
+
+    Iterable<PlayerData> loadedData() {
+        return IteratorUtil.concatUnmodifiable(this.onlinePlayers.values(), values());
     }
 
 }
