@@ -144,6 +144,10 @@ public class PlayerData {
         return this.rank;
     }
 
+    public synchronized String getRankPrefix() {
+        return this.rank == null ? null : UtilsPlugin.getInstance().getPrefix(this.rank);
+    }
+
     synchronized void setRank(String rank) {
         if (Objects.equals(this.rank, rank)) {
             return;
