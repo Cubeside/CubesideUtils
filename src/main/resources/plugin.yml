@@ -10,4 +10,4 @@ permissions:
     default: op
     description: Erlaubt das Anlegen und Löschen von Rängen.
     
-depend: [PlayerUUIDCache, GlobalClient]
+depend: [GlobalClient]
