@@ -2,6 +2,7 @@ package de.iani.cubesideutils.plugin;
 
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalServer;
+import de.iani.cubesideutils.plugin.events.LocalAfkStateChangeEvent;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
@@ -34,6 +35,10 @@ public class OnlinePlayerData extends PlayerData {
         return Bukkit.getPlayer(getPlayerId());
     }
 
+    public synchronized long getLastAction() {
+        return this.lastAction;
+    }
+
     public synchronized void checkAfk() {
         if (this.isLocallyAfk()) {
             return;
@@ -43,7 +48,11 @@ public class OnlinePlayerData extends PlayerData {
             return;
         }
 
-        setLocallyAfk(true);
+        if (Bukkit.isPrimaryThread()) {
+            setLocallyAfk(true);
+        } else {
+            Bukkit.getScheduler().runTask(UtilsPlugin.getInstance(), () -> setLocallyAfk(true));
+        }
     }
 
     public synchronized boolean isLocallyAfk() {
@@ -51,14 +60,26 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     public synchronized void setLocallyAfk(boolean afk) {
-        setLocallyAfkInternal(afk);
+        if (!setLocallyAfkInternal(afk)) {
+            return;
+        }
 
         Bukkit.getPlayer(getPlayerId()).sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
     }
 
-    private synchronized void setLocallyAfkInternal(boolean afk) {
+    private synchronized boolean setLocallyAfkInternal(boolean afk) {
+        if (!Bukkit.isPrimaryThread()) {
+            throw new IllegalStateException("May only be invoked on the bukkit primary thread.");
+        }
+
         if (this.locallyAfk == afk) {
-            return;
+            return false;
+        }
+
+        LocalAfkStateChangeEvent event = new LocalAfkStateChangeEvent(this, afk);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
         }
 
         this.locallyAfk = afk;
@@ -68,7 +89,7 @@ public class OnlinePlayerData extends PlayerData {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save AFK-status in database.", e);
         }
         checkGloballyAfk();
-        return;
+        return true;
     }
 
     private void checkGloballyAfk() {
@@ -115,7 +136,11 @@ public class OnlinePlayerData extends PlayerData {
         this.lastAction = System.currentTimeMillis();
 
         if (isLocallyAfk()) {
-            setLocallyAfk(false);
+            if (Bukkit.isPrimaryThread()) {
+                setLocallyAfk(false);
+            } else {
+                Bukkit.getScheduler().runTask(UtilsPlugin.getInstance(), () -> setLocallyAfk(false));
+            }
         }
     }
 
