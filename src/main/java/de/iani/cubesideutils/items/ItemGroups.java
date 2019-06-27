@@ -124,6 +124,9 @@ public class ItemGroups {
     private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_SHULKER_BOX = new EnumMap<>(DyeColor.class);
     private static final EnumMap<Material, DyeColor> MATERIAL_TO_DYE_COLOR = new EnumMap<>(Material.class);
 
+    private static final EnumSet<Material> DYES_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> DYES = Collections.unmodifiableSet(DYES_INTERNAL);
+
     private static final EnumSet<Material> SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> SIGNS = Collections.unmodifiableSet(SIGNS_INTERNAL);
     private static final EnumSet<Material> WALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
@@ -320,7 +323,7 @@ public class ItemGroups {
         FISH_BUCKETS_INTERNAL.add(Material.PUFFERFISH_BUCKET);
         FISH_BUCKETS_INTERNAL.add(Material.TROPICAL_FISH_BUCKET);
 
-        DYE_COLOR_TO_DYE.put(DyeColor.WHITE, Material.BONE_MEAL);
+        DYE_COLOR_TO_DYE.put(DyeColor.WHITE, Material.WHITE_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.ORANGE, Material.ORANGE_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.MAGENTA, Material.MAGENTA_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_DYE);
@@ -331,12 +334,13 @@ public class ItemGroups {
         DYE_COLOR_TO_DYE.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.CYAN, Material.CYAN_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.PURPLE, Material.PURPLE_DYE);
-        DYE_COLOR_TO_DYE.put(DyeColor.BLUE, Material.LAPIS_LAZULI);
-        DYE_COLOR_TO_DYE.put(DyeColor.BROWN, Material.COCOA_BEANS);
+        DYE_COLOR_TO_DYE.put(DyeColor.BLUE, Material.BLUE_DYE);
+        DYE_COLOR_TO_DYE.put(DyeColor.BROWN, Material.BROWN_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.GREEN, Material.GREEN_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.RED, Material.RED_DYE);
-        DYE_COLOR_TO_DYE.put(DyeColor.BLACK, Material.INK_SAC);
+        DYE_COLOR_TO_DYE.put(DyeColor.BLACK, Material.BLACK_DYE);
         DYE_COLOR_TO_DYE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+        DYE_COLOR_TO_DYE.forEach((key, value) -> DYES_INTERNAL.add(value));
 
         DYE_COLOR_TO_WOOL.put(DyeColor.WHITE, Material.WHITE_WOOL);
         DYE_COLOR_TO_WOOL.put(DyeColor.ORANGE, Material.ORANGE_WOOL);
@@ -662,6 +666,22 @@ public class ItemGroups {
 
     public static boolean isMusicDisc(Material type) {
         return MUSIC_DISCS_INTERNAL.contains(type);
+    }
+
+    public static boolean isSign(Material m) {
+        return ALL_SIGNS_INTERNAL.contains(m);
+    }
+
+    public static boolean isSignPost(Material m) {
+        return SIGNS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWallSign(Material m) {
+        return WALL_SIGNS_INTERNAL.contains(m);
+    }
+
+    public static boolean isDye(Material m) {
+        return DYES_INTERNAL.contains(m);
     }
 
     public static Material getDyeForDyeColor(DyeColor color) {
