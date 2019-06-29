@@ -79,7 +79,7 @@ public class UtilsPlugin extends JavaPlugin {
     }
 
     Database getDatabase() {
-        return database;
+        return this.database;
     }
 
     PlayerDataCache getPlayerDataCache() {
@@ -108,6 +108,11 @@ public class UtilsPlugin extends JavaPlugin {
 
     public PlayerData getPlayerData(UUID playerId) {
         return this.playerDataCache.get(playerId);
+    }
+
+    @Deprecated
+    public PlayerData getPlayerDataTemp(UUID playerId, boolean insertIfMissing) {
+        return this.playerDataCache.get(playerId, true);
     }
 
     public List<String> getRanks() {
