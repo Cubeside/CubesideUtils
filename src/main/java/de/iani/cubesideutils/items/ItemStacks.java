@@ -10,6 +10,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -180,4 +181,63 @@ public class ItemStacks {
         }
         return true;
     }
+
+    /**
+     * Removes the given items from the given player's inventory, if he has them. Returns all missing items.
+     *
+     * If a non-empty array is returned, the player's inventory has been left unchanged.
+     *
+     * @param player
+     *            the player to remove the items from
+     * @param items
+     *            the items to remove
+     * @return missing items (empty if they could be removed)
+     */
+    public static ItemStack[] removeIfHas(Player player, ItemStack[] items) {
+        items = deepCopy(items);
+
+        ItemStack[] oldHis = player.getInventory().getStorageContents();
+        ItemStack[] his = deepCopy(oldHis);
+
+        boolean has = true;
+        outer: for (ItemStack toStack : items) {
+            for (int i = 0; i < his.length; i++) {
+                ItemStack hisStack = his[i];
+                if (hisStack == null || hisStack.getAmount() <= 0) {
+                    continue;
+                }
+                if (!hisStack.isSimilar(toStack)) {
+                    continue;
+                }
+                if (toStack.getAmount() > hisStack.getAmount()) {
+                    toStack.setAmount(toStack.getAmount() - hisStack.getAmount());
+                    his[i] = null;
+                    continue;
+                } else if (toStack.getAmount() < hisStack.getAmount()) {
+                    hisStack.setAmount(hisStack.getAmount() - toStack.getAmount());
+                    toStack.setAmount(0);
+                    continue outer;
+                } else {
+                    his[i] = null;
+                    toStack.setAmount(0);
+                    continue outer;
+                }
+            }
+            has = false;
+        }
+
+        if (!has) {
+            ItemStack[] missing = shrink(items);
+            if (missing.length > 0) {
+                throw new AssertionError();
+            }
+
+            return missing;
+        }
+
+        player.getInventory().setStorageContents(his);
+        player.updateInventory();
+        return new ItemStack[0];
+    }
+
 }
