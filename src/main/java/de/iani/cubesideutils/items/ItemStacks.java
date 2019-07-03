@@ -165,7 +165,7 @@ public class ItemStacks {
         return -1;
     }
 
-    public static ItemStack[] shrinkItemStack(ItemStack[] items) {
+    public static ItemStack[] shrink(ItemStack[] items) {
         List<ItemStack> stackList = new ArrayList<>(Arrays.asList(items));
         stackList.removeIf(item -> item == null || item.getAmount() == 0 || item.getType() == Material.AIR);
         items = stackList.toArray(new ItemStack[stackList.size()]);
