@@ -1,7 +1,9 @@
 package de.iani.cubesideutils.items;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
-
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -161,5 +163,21 @@ public class ItemStacks {
             }
         }
         return -1;
+    }
+
+    public static ItemStack[] shrinkItemStack(ItemStack[] items) {
+        List<ItemStack> stackList = new ArrayList<>(Arrays.asList(items));
+        stackList.removeIf(item -> item == null || item.getAmount() == 0 || item.getType() == Material.AIR);
+        items = stackList.toArray(new ItemStack[stackList.size()]);
+        return items;
+    }
+
+    public static boolean isEmpty(ItemStack[] items) {
+        for (ItemStack item : items) {
+            if (item != null && item.getAmount() > 0 && item.getType() != Material.AIR) {
+                return false;
+            }
+        }
+        return true;
     }
 }
