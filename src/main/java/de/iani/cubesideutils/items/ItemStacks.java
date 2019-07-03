@@ -1,8 +1,10 @@
 package de.iani.cubesideutils.items;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -10,6 +12,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -166,10 +169,30 @@ public class ItemStacks {
     }
 
     public static ItemStack[] shrink(ItemStack[] items) {
-        List<ItemStack> stackList = new ArrayList<>(Arrays.asList(items));
-        stackList.removeIf(item -> item == null || item.getAmount() == 0 || item.getType() == Material.AIR);
-        items = stackList.toArray(new ItemStack[stackList.size()]);
-        return items;
+        Map<ItemStack, Integer> counts = new LinkedHashMap<>();
+        for (ItemStack item : items) {
+            if (item == null || item.getAmount() == 0 || item.getType() == Material.AIR) {
+                continue;
+            }
+            ItemStack key = item.clone();
+            key.setAmount(1);
+            counts.merge(key, item.getAmount(), (old, add) -> old + add);
+        }
+
+        List<ItemStack> resultList = new ArrayList<>();
+        for (Entry<ItemStack, Integer> entry : counts.entrySet()) {
+            ItemStack item = entry.getKey();
+            int count = entry.getValue();
+
+            while (count > 0) {
+                item = item.clone();
+                item.setAmount(Math.min(count, Math.max(1, item.getMaxStackSize())));
+                resultList.add(item);
+                count -= Math.min(count, Math.max(1, item.getMaxStackSize()));
+            }
+        }
+
+        return resultList.toArray(new ItemStack[resultList.size()]);
     }
 
     public static boolean isEmpty(ItemStack[] items) {
@@ -180,4 +203,66 @@ public class ItemStacks {
         }
         return true;
     }
+
+    /**
+     * Checks whether the given player's inventory contains the given items.
+     *
+     * Returns all missing items. If removeIfYes is true and all items are present, they are removed.
+     * If a non-empty array is returned, or if removeIfYes is false, the player's inventory has been left unchanged.
+     *
+     * @param player
+     *            the player to check
+     * @param items
+     *            the items to check for
+     * @return missing items (empty if all items are present)
+     */
+    public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes) {
+        items = deepCopy(items);
+
+        ItemStack[] oldHis = player.getInventory().getStorageContents();
+        ItemStack[] his = deepCopy(oldHis);
+
+        boolean has = true;
+        outer: for (ItemStack toStack : items) {
+            for (int i = 0; i < his.length; i++) {
+                ItemStack hisStack = his[i];
+                if (hisStack == null || hisStack.getAmount() <= 0) {
+                    continue;
+                }
+                if (!hisStack.isSimilar(toStack)) {
+                    continue;
+                }
+                if (toStack.getAmount() > hisStack.getAmount()) {
+                    toStack.setAmount(toStack.getAmount() - hisStack.getAmount());
+                    his[i] = null;
+                    continue;
+                } else if (toStack.getAmount() < hisStack.getAmount()) {
+                    hisStack.setAmount(hisStack.getAmount() - toStack.getAmount());
+                    toStack.setAmount(0);
+                    continue outer;
+                } else {
+                    his[i] = null;
+                    toStack.setAmount(0);
+                    continue outer;
+                }
+            }
+            has = false;
+        }
+
+        if (!has) {
+            ItemStack[] missing = shrink(items);
+            if (missing.length > 0) {
+                throw new AssertionError();
+            }
+
+            return missing;
+        }
+
+        if (removeIfYes) {
+            player.getInventory().setStorageContents(his);
+            player.updateInventory();
+        }
+        return new ItemStack[0];
+    }
+
 }
