@@ -183,17 +183,18 @@ public class ItemStacks {
     }
 
     /**
-     * Removes the given items from the given player's inventory, if he has them. Returns all missing items.
+     * Checks whether the given player's inventory contains the given items.
      *
-     * If a non-empty array is returned, the player's inventory has been left unchanged.
+     * Returns all missing items. If removeIfYes is true and all items are present, they are removed.
+     * If a non-empty array is returned, or if removeIfYes is false, the player's inventory has been left unchanged.
      *
      * @param player
-     *            the player to remove the items from
+     *            the player to check
      * @param items
-     *            the items to remove
-     * @return missing items (empty if they could be removed)
+     *            the items to check for
+     * @return missing items (empty if all items are present)
      */
-    public static ItemStack[] removeIfHas(Player player, ItemStack[] items) {
+    public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes) {
         items = deepCopy(items);
 
         ItemStack[] oldHis = player.getInventory().getStorageContents();
@@ -235,8 +236,10 @@ public class ItemStacks {
             return missing;
         }
 
-        player.getInventory().setStorageContents(his);
-        player.updateInventory();
+        if (removeIfYes) {
+            player.getInventory().setStorageContents(his);
+            player.updateInventory();
+        }
         return new ItemStack[0];
     }
 
