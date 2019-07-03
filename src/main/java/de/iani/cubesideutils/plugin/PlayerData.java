@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.plugin.events.GlobalAfkStateChangeEvent;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
@@ -128,6 +129,17 @@ public class PlayerData {
     synchronized void setGloballyAfkInternal(boolean afk) {
         if (this.afk == afk) {
             return;
+        }
+
+        GlobalAfkStateChangeEvent event = new GlobalAfkStateChangeEvent(this, afk);
+        if (Bukkit.isPrimaryThread()) {
+            Bukkit.getPluginManager().callEvent(event);
+        } else {
+            try {
+                Bukkit.getScheduler().callSyncMethod(UtilsPlugin.getInstance(), () -> event.callEvent()).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         this.afk = afk;

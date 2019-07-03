@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class UtilsPlugin extends JavaPlugin {
@@ -32,6 +33,7 @@ public class UtilsPlugin extends JavaPlugin {
 
     private Database database;
     private PlayerDataCache playerDataCache;
+    private AfkManager afkManager;
     private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
     private UtilsGlobalDataHelper globalDataHelper;
@@ -58,6 +60,7 @@ public class UtilsPlugin extends JavaPlugin {
         try {
             this.database = new Database();
             this.playerDataCache = new PlayerDataCache();
+            this.afkManager = new AfkManager();
 
             GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
             this.connectionApi = connectionPlugin.getConnectionAPI();
@@ -76,7 +79,7 @@ public class UtilsPlugin extends JavaPlugin {
     }
 
     Database getDatabase() {
-        return database;
+        return this.database;
     }
 
     PlayerDataCache getPlayerDataCache() {
@@ -95,12 +98,21 @@ public class UtilsPlugin extends JavaPlugin {
         return this.globalDataHelper;
     }
 
+    public OnlinePlayerData getPlayerData(Player player) {
+        return getPlayerData(player).getOnlineData();
+    }
+
     public PlayerData getPlayerData(OfflinePlayer player) {
         return getPlayerData(player.getUniqueId());
     }
 
     public PlayerData getPlayerData(UUID playerId) {
         return this.playerDataCache.get(playerId);
+    }
+
+    @Deprecated
+    public PlayerData getPlayerDataTemp(UUID playerId, boolean insertIfMissing) {
+        return this.playerDataCache.get(playerId, true);
     }
 
     public List<String> getRanks() {

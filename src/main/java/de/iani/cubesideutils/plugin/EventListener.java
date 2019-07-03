@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
-public class EventListener implements Listener {
+class EventListener implements Listener {
 
     private UtilsPlugin plugin;
 

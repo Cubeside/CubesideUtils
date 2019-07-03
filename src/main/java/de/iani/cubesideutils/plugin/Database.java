@@ -84,7 +84,6 @@ class Database {
         return (OnlinePlayerData) getPlayerData(playerId, true, insertIfMissing);
     }
 
-    // TODO: isOnline = insertIfMissing?
     private PlayerData getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing) throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerDataQuery);
