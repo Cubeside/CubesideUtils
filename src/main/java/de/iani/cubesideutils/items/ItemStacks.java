@@ -1,8 +1,10 @@
 package de.iani.cubesideutils.items;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -167,10 +169,30 @@ public class ItemStacks {
     }
 
     public static ItemStack[] shrink(ItemStack[] items) {
-        List<ItemStack> stackList = new ArrayList<>(Arrays.asList(items));
-        stackList.removeIf(item -> item == null || item.getAmount() == 0 || item.getType() == Material.AIR);
-        items = stackList.toArray(new ItemStack[stackList.size()]);
-        return items;
+        Map<ItemStack, Integer> counts = new LinkedHashMap<>();
+        for (ItemStack item : items) {
+            if (item == null || item.getAmount() == 0 || item.getType() == Material.AIR) {
+                continue;
+            }
+            ItemStack key = item.clone();
+            key.setAmount(1);
+            counts.merge(key, item.getAmount(), (old, add) -> old + add);
+        }
+
+        List<ItemStack> resultList = new ArrayList<>();
+        for (Entry<ItemStack, Integer> entry : counts.entrySet()) {
+            ItemStack item = entry.getKey();
+            int count = entry.getValue();
+
+            while (count > 0) {
+                item = item.clone();
+                item.setAmount(Math.min(count, Math.max(1, item.getMaxStackSize())));
+                resultList.add(item);
+                count -= Math.min(count, Math.max(1, item.getMaxStackSize()));
+            }
+        }
+
+        return resultList.toArray(new ItemStack[resultList.size()]);
     }
 
     public static boolean isEmpty(ItemStack[] items) {
