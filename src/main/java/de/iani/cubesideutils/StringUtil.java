@@ -293,7 +293,17 @@ public class StringUtil {
 
         for (; index < chars.length;) {
             char current = chars[index];
-            if (current == ' ') {
+            if (current == '\n') {
+                index++;
+                lastBreak = index;
+                result.add(currentBuilder.toString());
+
+                currentBuilder = new StringBuilder();
+                if (preserveColorCodes) {
+                    currentPrefixLength = addColorCodes(currentBuilder, magic, bold, strikethrough, underline, italic, color);
+                }
+                continue;
+            } else if (current == ' ') {
                 lastBlank = index;
             } else if (preserveColorCodes && current == ChatColor.COLOR_CHAR && index + 1 < chars.length) {
                 char next = chars[index + 1];

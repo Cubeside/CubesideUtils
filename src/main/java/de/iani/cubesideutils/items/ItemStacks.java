@@ -168,7 +168,7 @@ public class ItemStacks {
         return -1;
     }
 
-    public static ItemStack[] shrink(ItemStack[] items) {
+    public static Map<ItemStack, Integer> countItems(ItemStack[] items) {
         Map<ItemStack, Integer> counts = new LinkedHashMap<>();
         for (ItemStack item : items) {
             if (item == null || item.getAmount() == 0 || item.getType() == Material.AIR) {
@@ -178,7 +178,11 @@ public class ItemStacks {
             key.setAmount(1);
             counts.merge(key, item.getAmount(), (old, add) -> old + add);
         }
+        return counts;
+    }
 
+    public static ItemStack[] shrink(ItemStack[] items) {
+        Map<ItemStack, Integer> counts = countItems(items);
         List<ItemStack> resultList = new ArrayList<>();
         for (Entry<ItemStack, Integer> entry : counts.entrySet()) {
             ItemStack item = entry.getKey();
@@ -251,7 +255,7 @@ public class ItemStacks {
 
         if (!has) {
             ItemStack[] missing = shrink(items);
-            if (missing.length > 0) {
+            if (missing.length == 0) {
                 throw new AssertionError();
             }
 
@@ -263,6 +267,10 @@ public class ItemStacks {
             player.updateInventory();
         }
         return new ItemStack[0];
+    }
+
+    public static boolean equals(ItemStack[] i1, ItemStack[] i2) {
+        return countItems(i1).equals(countItems(i2));
     }
 
 }
