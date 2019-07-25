@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.plugin;
 
 import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.sql.MySQLConnection;
 import de.iani.cubesideutils.sql.SQLConfig;
 import de.iani.cubesideutils.sql.SQLConnection;
 import java.sql.PreparedStatement;
@@ -43,7 +44,7 @@ class Database {
         SQLConfig sqlconf = plugin.getSQLConfig();
 
         this.tablePrefix = sqlconf.getTablePrefix();
-        this.connection = new SQLConnection(sqlconf.getHost(), sqlconf.getDatabase(), sqlconf.getUser(), sqlconf.getPassword());
+        this.connection = new MySQLConnection(sqlconf.getHost(), sqlconf.getDatabase(), sqlconf.getUser(), sqlconf.getPassword());
 
         this.playerDataTableName = this.tablePrefix + "_playerData";
         this.afkPlayersTableName = this.tablePrefix + "_afkPlayers";
