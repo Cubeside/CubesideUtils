@@ -57,19 +57,19 @@ class Database {
         this.connection.runCommands((connection, sqlConnection) -> {
             if (!sqlConnection.hasTable(this.playerDataTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "playerId CHAR(36), " + ", firstJoin BIGINT NOT NULL DEFAULT 0" + ", lastJoin BIGINT NOT NULL DEFAULT 0" + ", lastSeen BIGINT NOT NULL DEFAULT 0" + "afk BIT NOT NULL, " + "rank VARCHAR(64), "
+                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "playerId CHAR(36), " + "firstJoin BIGINT NOT NULL DEFAULT 0, " + "lastJoin BIGINT NOT NULL DEFAULT 0, " + "lastSeen BIGINT NOT NULL DEFAULT 0, " + "afk BIT NOT NULL, " + "rank VARCHAR(64), "
                         + "PRIMARY KEY (`playerId`)) " + "ENGINE = innodb");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.afkPlayersTableName)) {
                 Statement smt = connection.createStatement();
                 smt.executeUpdate(
-                        "CREATE TABLE `" + this.afkPlayersTableName + "` (" + "player CHAR(36), " + "server VARCHAR(64), " + "PRIMARY KEY (player, server) " + "FOREIGN KEY (player) REFERENCES `" + this.playerDataTableName + "` (playerId) ON UPDATE CASCADE ON DELETE CASCADE) " + "ENGINE = innodb");
+                        "CREATE TABLE `" + this.afkPlayersTableName + "` (" + "player CHAR(36), " + "server VARCHAR(64), " + "PRIMARY KEY (player, server), " + "FOREIGN KEY (player) REFERENCES `" + this.playerDataTableName + "` (playerId) ON UPDATE CASCADE ON DELETE CASCADE) " + "ENGINE = innodb");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.ranksTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "rank VARCHAR(64), " + "priority INT," + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (rank) " + "FOREIGN KEY (player) REFERENCES `" + this.playerDataTableName
+                smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "rank VARCHAR(64), " + "priority INT, " + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (rank), " + "FOREIGN KEY (player) REFERENCES `" + this.playerDataTableName
                         + "` (playerId) ON UPDATE CASCADE ON DELETE CASCADE) " + "ENGINE = innodb");
                 smt.close();
             }
