@@ -32,7 +32,14 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     public Player getPlayer() {
-        return Bukkit.getPlayer(getPlayerId());
+        Player result = Bukkit.getPlayer(getPlayerId());
+        if (result == null) {
+            result = UtilsPlugin.getInstance().getPlayerDataCache().getCurrentlyLoggingInPlayer();
+            if (result == null || !result.getUniqueId().equals(getPlayerId())) {
+                return null;
+            }
+        }
+        return result;
     }
 
     public synchronized long getLastAction() {

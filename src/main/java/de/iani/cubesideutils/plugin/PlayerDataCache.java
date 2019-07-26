@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,12 +25,18 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
     private ReadWriteLock lock;
 
+    private Player currentlyLoggingInPlayer;
+
     public PlayerDataCache() {
         // Accesses may be asynchronous
         this.lock = new ReentrantReadWriteLock();
         this.onlinePlayers = new HashMap<>();
 
         Bukkit.getPluginManager().registerEvents(this, UtilsPlugin.getInstance());
+    }
+
+    Player getCurrentlyLoggingInPlayer() {
+        return this.currentlyLoggingInPlayer;
     }
 
     public void invalidate(UUID playerId) {
@@ -71,6 +78,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void earlyOnPlayerLoginEvent(PlayerLoginEvent event) {
+        this.currentlyLoggingInPlayer = event.getPlayer();
         UUID playerId = event.getPlayer().getUniqueId();
         this.lock.writeLock().lock();
         try {
@@ -91,6 +99,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void lateOnPlayerLoginEvent(PlayerLoginEvent event) {
+        this.currentlyLoggingInPlayer = null;
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             left(event.getPlayer().getUniqueId());
             return;
