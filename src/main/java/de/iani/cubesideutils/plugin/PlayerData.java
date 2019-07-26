@@ -26,7 +26,7 @@ public class PlayerData {
         this.lastJoin = lastJoin;
         this.lastSeen = lastSeen;
         this.afk = afk;
-        this.rank = Objects.requireNonNull(rank);
+        this.rank = rank;
 
         checkRank();
     }
@@ -178,7 +178,7 @@ public class PlayerData {
     void checkRank() {
         // Overwritten in OnlinePlayer
 
-        if (UtilsPlugin.getInstance().getPermission(this.rank) != null) {
+        if (this.rank != null && UtilsPlugin.getInstance().getPermission(this.rank) != null) {
             return;
         }
 

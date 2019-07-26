@@ -17,13 +17,13 @@ public class OnlinePlayerData extends PlayerData {
     private long lastAction;
     private boolean locallyAfk;
 
-    public OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, String rank) {
+    OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, String rank) {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
         this.lastAction = lastAction;
     }
 
-    public OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
+    OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
         this(playerId, firstJoin, lastJoin, lastSeen, afk, System.currentTimeMillis(), rank);
     }
 
