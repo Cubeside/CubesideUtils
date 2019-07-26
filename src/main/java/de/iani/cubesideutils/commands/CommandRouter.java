@@ -79,6 +79,18 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
         current.executor = command;
     }
 
+    public void addAliases(String aliases[], String... route) {
+        for (String alias : aliases) {
+            addAlias(alias, route);
+        }
+    }
+
+    public void addAliases(Iterable<String> aliases, String... route) {
+        for (String alias : aliases) {
+            addAlias(alias, route);
+        }
+    }
+
     public void addAlias(String alias, String... route) {
         if (route.length == 0) {
             throw new IllegalArgumentException("Route may not be empty!");
