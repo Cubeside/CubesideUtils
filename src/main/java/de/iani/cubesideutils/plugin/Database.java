@@ -55,8 +55,8 @@ class Database {
         setPlayerFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
         setPlayerLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastJoin = ?, lastSeen = ? WHERE playerId = ?";
         setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
-        setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` afk = ? WHERE playerId = ?";
-        setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` rank = ? WHERE playerId = ?";
+        setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` SET afk = ? WHERE playerId = ?";
+        setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` SET rank = ? WHERE playerId = ?";
 
         getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
         addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
