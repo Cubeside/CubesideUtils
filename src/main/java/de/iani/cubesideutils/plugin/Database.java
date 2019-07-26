@@ -23,21 +23,21 @@ class Database {
     private String afkPlayersTableName;
     private String ranksTableName;
 
-    private String getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, rank FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
-    private String addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, rank) VALUES (?, 0, NULL)";
-    private String setPlayerFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
-    private String setPlayerLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastJoin = ?, lastSeen = ? WHERE playerId = ?";
-    private String setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
-    private String setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` afk = ? WHERE playerId = ?";
-    private String setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` rank = ? WHERE playerId = ?";
+    private String getPlayerDataQuery;
+    private String addPlayerDataQuery;
+    private String setPlayerFirstJoinAndLastJoinAndSeenQuery;
+    private String setPlayerLastJoinAndSeenQuery;
+    private String setPlayerLastSeenQuery;
+    private String setPlayerAfkQuery;
+    private String setPlayerRankQuery;
 
-    private String getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
-    private String addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
-    private String removeAfkServerQuery = "DELETE FROM `" + this.afkPlayersTableName + "` WHERE player = ? AND server = ?";
+    private String getAfkServersQuery;
+    private String addAfkServerQuery;
+    private String removeAfkServerQuery;
 
-    private String getRankInformationQuery = "SELECT rank, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
-    private String setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` rank, priority, permission, prefix VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
-    private String removeRankInformationQuery = "DELETE FROM `" + this.ranksTableName + "` WHERE rank = ?";
+    private String getRankInformationQuery;
+    private String setRankInformationQuery;
+    private String removeRankInformationQuery;
 
     Database() throws SQLException {
         UtilsPlugin plugin = UtilsPlugin.getInstance();
@@ -49,6 +49,22 @@ class Database {
         this.playerDataTableName = this.tablePrefix + "_playerData";
         this.afkPlayersTableName = this.tablePrefix + "_afkPlayers";
         this.ranksTableName = this.tablePrefix + "_ranks";
+
+        getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, rank FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
+        addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, rank) VALUES (?, 0, NULL)";
+        setPlayerFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
+        setPlayerLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastJoin = ?, lastSeen = ? WHERE playerId = ?";
+        setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
+        setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` afk = ? WHERE playerId = ?";
+        setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` rank = ? WHERE playerId = ?";
+
+        getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
+        addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
+        removeAfkServerQuery = "DELETE FROM `" + this.afkPlayersTableName + "` WHERE player = ? AND server = ?";
+
+        getRankInformationQuery = "SELECT rank, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
+        setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` rank, priority, permission, prefix VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
+        removeRankInformationQuery = "DELETE FROM `" + this.ranksTableName + "` WHERE rank = ?";
 
         createMissingTables();
     }
