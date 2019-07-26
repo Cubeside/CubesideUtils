@@ -58,6 +58,8 @@ public class UtilsPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
+            saveDefaultConfig();
+
             this.database = new Database();
             this.playerDataCache = new PlayerDataCache();
             this.afkManager = new AfkManager();
