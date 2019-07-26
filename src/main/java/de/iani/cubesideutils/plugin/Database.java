@@ -63,7 +63,7 @@ class Database {
         removeAfkServerQuery = "DELETE FROM `" + this.afkPlayersTableName + "` WHERE player = ? AND server = ?";
 
         getRankInformationQuery = "SELECT rank, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
-        setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` rank, priority, permission, prefix VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
+        setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` (rank, priority, permission, prefix) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
         removeRankInformationQuery = "DELETE FROM `" + this.ranksTableName + "` WHERE rank = ?";
 
         createMissingTables();
