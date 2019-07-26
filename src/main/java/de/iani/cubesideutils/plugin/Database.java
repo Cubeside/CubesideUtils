@@ -69,7 +69,7 @@ class Database {
             }
             if (!sqlConnection.hasTable(this.ranksTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "rank VARCHAR(64), " + "priority INT, " + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (rank) " + "ENGINE = innodb");
+                smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "rank VARCHAR(64), " + "priority INT, " + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (rank) " + ") ENGINE = innodb");
                 smt.close();
             }
             return null;
