@@ -113,7 +113,7 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
             }
             current = part;
         }
-        CommandMap createAliasFor = current.subCommands.get(route[route.length - 1]);
+        CommandMap createAliasFor = current.subCommands.get(route[route.length - 1].toLowerCase());
         if (createAliasFor == null) {
             throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
         }
