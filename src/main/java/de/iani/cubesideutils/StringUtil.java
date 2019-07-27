@@ -651,6 +651,20 @@ public class StringUtil {
         return (second == 0 ? dateAndTimeFormat.format(date) : dateAndTimeSecondsFormat.format(date)) + " Uhr";
     }
 
+    public static synchronized String formatDate(long date, boolean displayTime, boolean displaySeconds) {
+        return formatDate(new Date(date), displayTime, displaySeconds);
+    }
+
+    public static synchronized String formatDate(Date date, boolean displayTime, boolean displaySeconds) {
+        if (!displayTime) {
+            return dateFormat.format(date);
+        }
+        if (!displaySeconds) {
+            return dateAndTimeFormat.format(date) + " Uhr";
+        }
+        return dateAndTimeSecondsFormat.format(date) + " Uhr";
+    }
+
     public static synchronized Date parseDate(String arg) {
         if (arg.isEmpty()) {
             throw new IllegalArgumentException("empty String");
