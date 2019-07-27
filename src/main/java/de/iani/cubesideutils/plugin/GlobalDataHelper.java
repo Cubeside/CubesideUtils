@@ -43,7 +43,11 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements Listener {
     }
 
     public Collection<GlobalServer> getServers(OfflinePlayer player) {
-        GlobalPlayer gPlayer = this.connectionApi.getPlayer(player.getUniqueId());
+        return getServers(player.getUniqueId());
+    }
+
+    public Collection<GlobalServer> getServers(UUID playerId) {
+        GlobalPlayer gPlayer = this.connectionApi.getPlayer(playerId);
         return gPlayer == null ? Collections.emptySet() : gPlayer.getCurrentServers();
     }
 
@@ -56,7 +60,11 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements Listener {
     }
 
     public boolean isOnAnyServer(OfflinePlayer player) {
-        GlobalPlayer gPlayer = this.connectionApi.getPlayer(player.getUniqueId());
+        return isOnAnyServer(player.getUniqueId());
+    }
+
+    public boolean isOnAnyServer(UUID playerId) {
+        GlobalPlayer gPlayer = this.connectionApi.getPlayer(playerId);
         return gPlayer != null && gPlayer.isOnAnyServer();
     }
 
@@ -69,7 +77,11 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements Listener {
     }
 
     public void sendMessage(OfflinePlayer player, String message) {
-        this.playerMsgApi.sendMessage(this.connectionApi.getPlayer(player.getUniqueId()), message);
+        sendMessage(player.getUniqueId(), message);
+    }
+
+    public void sendMessage(UUID playerId, String message) {
+        this.playerMsgApi.sendMessage(this.connectionApi.getPlayer(playerId), message);
     }
 
     public void sendData(T messageType, Object... data) {

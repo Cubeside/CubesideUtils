@@ -37,11 +37,11 @@ public class PlayerData {
 
     public boolean isOnlineHere() {
         if (Bukkit.isPrimaryThread()) {
-            return Bukkit.getPlayer(playerId) != null;
+            return Bukkit.getPlayer(this.playerId) != null;
         }
 
         try {
-            return Bukkit.getScheduler().callSyncMethod(UtilsPlugin.getInstance(), () -> (Bukkit.getPlayer(playerId) != null)).get();
+            return Bukkit.getScheduler().callSyncMethod(UtilsPlugin.getInstance(), () -> (Bukkit.getPlayer(this.playerId) != null)).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +75,7 @@ public class PlayerData {
         this.lastSeen = value;
 
         try {
-            UtilsPlugin.getInstance().getDatabase().setPlayerFirstJoinAndLastJoinAndSeen(getPlayerId(), value);
+            UtilsPlugin.getInstance().getDatabase().setPlayerFirstJoinAndLastJoinAndSeen(this.playerId, value);
         } catch (SQLException e) {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save firstJoin, lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
             return;
@@ -95,7 +95,7 @@ public class PlayerData {
         this.lastJoin = value;
         this.lastSeen = value;
         try {
-            UtilsPlugin.getInstance().getDatabase().setPlayerLastJoinAndSeen(getPlayerId(), value);
+            UtilsPlugin.getInstance().getDatabase().setPlayerLastJoinAndSeen(this.playerId, value);
         } catch (SQLException e) {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
             return;
@@ -114,7 +114,7 @@ public class PlayerData {
 
         this.lastSeen = lastSeen;
         try {
-            UtilsPlugin.getInstance().getDatabase().setPlayerLastSeen(getPlayerId(), lastSeen);
+            UtilsPlugin.getInstance().getDatabase().setPlayerLastSeen(this.playerId, lastSeen);
         } catch (SQLException e) {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save lastSeen value for player " + this.playerId + " in database.", e);
             return;
@@ -144,7 +144,7 @@ public class PlayerData {
 
         this.afk = afk;
         try {
-            UtilsPlugin.getInstance().getDatabase().setGloballyAfk(playerId, afk);
+            UtilsPlugin.getInstance().getDatabase().setGloballyAfk(this.playerId, afk);
         } catch (SQLException e) {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save afk value for player " + this.playerId + " in database.", e);
             return;
@@ -167,7 +167,7 @@ public class PlayerData {
 
         this.rank = rank;
         try {
-            UtilsPlugin.getInstance().getDatabase().setRank(playerId, rank);
+            UtilsPlugin.getInstance().getDatabase().setRank(this.playerId, rank);
         } catch (SQLException e) {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save rank for player " + this.playerId + " in database.", e);
             return;
@@ -186,7 +186,7 @@ public class PlayerData {
     }
 
     synchronized void notifyChanges() {
-        UtilsPlugin.getInstance().getGlobalDataHelper().sendData(MessageType.PLAYER_DATA_CHANGED, playerId);
+        UtilsPlugin.getInstance().getGlobalDataHelper().sendData(MessageType.PLAYER_DATA_CHANGED, this.playerId);
     }
 
 }

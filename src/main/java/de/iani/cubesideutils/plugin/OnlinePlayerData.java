@@ -72,7 +72,7 @@ public class OnlinePlayerData extends PlayerData {
             return;
         }
 
-        Bukkit.getPlayer(getPlayerId()).sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
+        getPlayer().sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
     }
 
     private synchronized boolean setLocallyAfkInternal(boolean afk) {
@@ -115,7 +115,8 @@ public class OnlinePlayerData extends PlayerData {
         }
 
         ConnectionAPI connectionApi = UtilsPlugin.getInstance().getConnectionAPI();
-        Collection<GlobalServer> servers = connectionApi.getPlayer(getPlayerId()).getCurrentServers();
+        UtilsGlobalDataHelper globalHelper = UtilsPlugin.getInstance().getGlobalDataHelper();
+        Collection<GlobalServer> servers = globalHelper.getServers(getPlayerId());
         assert servers.contains(connectionApi.getThisServer());
 
         if (servers.size() == 1) {
