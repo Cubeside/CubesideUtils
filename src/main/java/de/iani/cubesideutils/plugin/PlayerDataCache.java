@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -55,7 +56,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
                 try {
                     data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, false);
                 } catch (SQLException e) {
-                    // TODO: handle
+                    UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                     return;
                 }
                 if (data == null) {
@@ -87,7 +88,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
             try {
                 data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true);
             } catch (SQLException e) {
-                // TODO: handle
+                UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                 // TODO: disallow?
                 return;
             }
