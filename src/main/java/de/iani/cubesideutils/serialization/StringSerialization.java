@@ -31,7 +31,7 @@ public class StringSerialization {
         if (deserializer == null) {
             throw new IllegalArgumentException("Unknown serializationType " + serializationType + ".");
         }
-        return (T) deserializer.apply(serializationType);
+        return (T) deserializer.apply(serialized);
     }
 
     private StringSerialization() {
