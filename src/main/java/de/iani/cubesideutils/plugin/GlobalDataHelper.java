@@ -43,7 +43,8 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements Listener {
     }
 
     public Collection<GlobalServer> getServers(OfflinePlayer player) {
-        return this.connectionApi.getPlayer(player.getUniqueId()).getCurrentServers();
+        GlobalPlayer gPlayer = this.connectionApi.getPlayer(player.getUniqueId());
+        return gPlayer == null ? Collections.emptySet() : gPlayer.getCurrentServers();
     }
 
     public GlobalServer getServer(String serverName) {
