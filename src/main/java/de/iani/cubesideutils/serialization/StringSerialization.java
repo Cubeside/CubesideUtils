@@ -12,6 +12,7 @@ public class StringSerialization {
 
     static {
         serializationTypes = new GeneralHashMap<>(StringUtil.CASE_IGNORING_HASHER, StringUtil.CASE_IGNORING_EQUALITY);
+        register(GlobalLocationWrapper.SERIALIZATION_TYPE, GlobalLocationWrapper::deserialize);
     }
 
     public static void register(String serializationType, Function<String, StringSerializable> deserializer) {

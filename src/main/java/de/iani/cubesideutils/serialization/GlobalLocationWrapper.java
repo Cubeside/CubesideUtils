@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 public class GlobalLocationWrapper implements StringSerializable {
 
+    // registered in StringSerialization
     public static final String SERIALIZATION_TYPE = "GlobalLocation";
 
     public static GlobalLocationWrapper deserialize(String serialized) {
@@ -25,10 +26,6 @@ public class GlobalLocationWrapper implements StringSerializable {
         }
 
         return new GlobalLocationWrapper(new GlobalLocation(server, world, x, y, z, yaw, pitch));
-    }
-
-    static {
-        StringSerialization.register(SERIALIZATION_TYPE, GlobalLocationWrapper::deserialize);
     }
 
     public final GlobalLocation original;
