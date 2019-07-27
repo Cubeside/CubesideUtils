@@ -13,22 +13,19 @@ import org.bukkit.entity.Player;
 
 public class OnlinePlayerData extends PlayerData {
 
-    private long lastAction;
+    private long lastLocalAction;
     private boolean locallyAfk;
 
     OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, String rank) {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
-        this.lastAction = lastAction;
+        this.lastLocalAction = lastAction;
         this.locallyAfk = afk;
     }
 
-    OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
-        this(playerId, firstJoin, lastJoin, lastSeen, afk, System.currentTimeMillis(), rank);
-    }
-
     synchronized void quit() {
-        setLocallyAfk(true, false);
+        this.setLocallyAfk(false, false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(UtilsPlugin.getInstance(), this::notifyChanges);
     }
 
     public Player getPlayer() {
@@ -43,22 +40,24 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     public synchronized long getLastAction() {
-        return this.lastAction;
+        return this.lastLocalAction;
     }
 
-    public synchronized void checkAfk() {
-        if (this.isLocallyAfk()) {
-            return;
-        }
+    synchronized void madeAction() {
+        this.lastLocalAction = System.currentTimeMillis();
+        checkAfk(true);
+    }
 
-        if (System.currentTimeMillis() - this.lastAction < UtilsPlugin.AFK_THRESHOLD) {
+    public synchronized void checkAfk(boolean messagePlayer) {
+        boolean afk = System.currentTimeMillis() >= this.lastLocalAction + UtilsPlugin.AFK_THRESHOLD;
+        if (afk == isLocallyAfk()) {
             return;
         }
 
         if (Bukkit.isPrimaryThread()) {
-            setLocallyAfk(true);
+            setLocallyAfk(afk, messagePlayer);
         } else {
-            Bukkit.getScheduler().runTask(UtilsPlugin.getInstance(), () -> setLocallyAfk(true));
+            Bukkit.getScheduler().runTask(UtilsPlugin.getInstance(), () -> setLocallyAfk(afk, messagePlayer));
         }
     }
 
@@ -136,18 +135,6 @@ public class OnlinePlayerData extends PlayerData {
 
         setGloballyAfkInternal(true);
         return;
-    }
-
-    synchronized void madeAction() {
-        this.lastAction = System.currentTimeMillis();
-
-        if (isLocallyAfk()) {
-            if (Bukkit.isPrimaryThread()) {
-                setLocallyAfk(false);
-            } else {
-                Bukkit.getScheduler().runTask(UtilsPlugin.getInstance(), () -> setLocallyAfk(false));
-            }
-        }
     }
 
     @Override

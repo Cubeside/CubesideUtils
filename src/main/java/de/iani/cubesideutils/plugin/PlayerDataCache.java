@@ -45,25 +45,24 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
         this.lock.writeLock().lock();
         try {
             boolean isOnline = false;
+            long lastAction = 0;
             PlayerData data = this.onlinePlayers.remove(playerId);
             if (data != null) {
                 isOnline = true;
+                lastAction = data.getOnlineData().getLastAction();
             } else {
                 data = super.remove(playerId);
             }
 
             if (isOnline) {
                 try {
-                    data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, false);
+                    data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, lastAction);
                 } catch (SQLException e) {
                     UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                     return;
                 }
-                if (data == null) {
-                    // TODO: handle
-                } else {
-                    this.onlinePlayers.put(playerId, (OnlinePlayerData) data);
-                }
+                this.onlinePlayers.put(playerId, (OnlinePlayerData) data);
+                data.getOnlineData().checkAfk(false);
             }
         } finally {
             this.lock.writeLock().unlock();
@@ -86,7 +85,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
             invalidate(playerId);
             OnlinePlayerData data;
             try {
-                data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true);
+                data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, System.currentTimeMillis());
             } catch (SQLException e) {
                 UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                 // TODO: disallow?
