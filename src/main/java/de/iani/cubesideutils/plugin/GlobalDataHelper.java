@@ -1,9 +1,11 @@
 package de.iani.cubesideutils.plugin;
 
 import de.cubeside.connection.ConnectionAPI;
+import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
 import de.cubeside.connection.PlayerMessageAPI;
+import de.cubeside.connection.PlayerPropertiesAPI;
 import de.cubeside.connection.event.GlobalDataEvent;
 import de.cubeside.connection.util.GlobalLocation;
 import de.iani.cubesideutils.FunctionUtil;
@@ -32,32 +34,39 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionAPI, PlayerMessageAPI, Listener {
+public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionAPI, PlayerMessageAPI, PlayerPropertiesAPI, Listener {
 
     private final String channel;
     private final T[] messageTypes;
 
     private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
+    private PlayerPropertiesAPI playerPropertiesApi;
 
     public GlobalDataHelper(Class<T> messageTypeClass, String channel, JavaPlugin plugin) {
         this.channel = channel;
         this.messageTypes = messageTypeClass.getEnumConstants();
 
-        this.connectionApi = UtilsPlugin.getInstance().getConnectionAPI();
-        this.playerMsgApi = UtilsPlugin.getInstance().getPlayerMsgApi();
+        GlobalClientPlugin globalClientPlugin = UtilsPlugin.getInstance().getGlobalClientPlugin();
+        this.connectionApi = globalClientPlugin.getConnectionAPI();
+        this.playerMsgApi = globalClientPlugin.getMessageAPI();
+        this.playerPropertiesApi = globalClientPlugin.getPlayerPropertiesAPI();
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @Override
-    public GlobalPlayer getPlayer(String name) {
-        return this.connectionApi.getPlayer(name);
+    public GlobalPlayer getPlayer(OfflinePlayer player) {
+        return this.connectionApi.getPlayer(player.getUniqueId());
     }
 
     @Override
     public GlobalPlayer getPlayer(UUID playerId) {
         return this.connectionApi.getPlayer(playerId);
+    }
+
+    @Override
+    public GlobalPlayer getPlayer(String name) {
+        return this.connectionApi.getPlayer(name);
     }
 
     @Override
@@ -85,11 +94,15 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public void sendMessage(OfflinePlayer player, String message) {
-        sendMessage(player.getUniqueId(), message);
+        sendMessage(getPlayer(player), message);
     }
 
     public void sendMessage(UUID playerId, String message) {
-        sendMessage(this.connectionApi.getPlayer(playerId), message);
+        sendMessage(getPlayer(playerId), message);
+    }
+
+    public void sendMessage(String playerName, String message) {
+        sendMessage(getPlayer(playerName), message);
     }
 
     @Override
@@ -98,11 +111,15 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public void sendMessage(OfflinePlayer player, BaseComponent... message) {
-        sendMessage(player.getUniqueId(), message);
+        sendMessage(getPlayer(player), message);
     }
 
     public void sendMessage(UUID playerId, BaseComponent... message) {
         sendMessage(getPlayer(playerId), message);
+    }
+
+    public void sendMessage(String playerName, BaseComponent... message) {
+        sendMessage(getPlayer(playerName), message);
     }
 
     @Override
@@ -111,11 +128,15 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public void sendActionBarMessage(OfflinePlayer player, String message) {
-        sendActionBarMessage(player.getUniqueId(), message);
+        sendActionBarMessage(getPlayer(player), message);
     }
 
     public void sendActionBarMessage(UUID playerId, String message) {
         sendActionBarMessage(getPlayer(playerId), message);
+    }
+
+    public void sendActionBarMessage(String playerName, String message) {
+        sendActionBarMessage(getPlayer(playerName), message);
     }
 
     @Override
@@ -124,16 +145,88 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public void sendTitleBarMessage(OfflinePlayer player, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(player.getUniqueId(), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+        sendTitleBarMessage(getPlayer(player), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
     }
 
     public void sendTitleBarMessage(UUID playerId, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
         sendTitleBarMessage(getPlayer(playerId), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
     }
 
+    public void sendTitleBarMessage(String playerName, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
+        sendTitleBarMessage(getPlayer(playerName), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+    }
+
     @Override
     public void sendTitleBarMessage(GlobalPlayer player, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
         this.playerMsgApi.sendTitleBarMessage(player, title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+    }
+
+    public boolean hasProperty(OfflinePlayer player, String property) {
+        return hasProperty(getPlayer(player), property);
+    }
+
+    public boolean hasProperty(UUID playerId, String property) {
+        return hasProperty(getPlayer(playerId), property);
+    }
+
+    public boolean hasProperty(String playerName, String property) {
+        return hasProperty(getPlayer(playerName), property);
+    }
+
+    @Override
+    public boolean hasProperty(GlobalPlayer player, String property) {
+        return playerPropertiesApi.hasProperty(player, property);
+    }
+
+    public String getPropertyValue(OfflinePlayer player, String property) {
+        return getPropertyValue(getPlayer(player), property);
+    }
+
+    public String getPropertyValue(UUID playerId, String property) {
+        return getPropertyValue(getPlayer(playerId), property);
+    }
+
+    public String getPropertyValue(String playerName, String property) {
+        return getPropertyValue(getPlayer(playerName), property);
+    }
+
+    @Override
+    public String getPropertyValue(GlobalPlayer player, String property) {
+        return playerPropertiesApi.getPropertyValue(player, property);
+    }
+
+    public Map<String, String> getAllProperties(OfflinePlayer player) {
+        return getAllProperties(getPlayer(player));
+    }
+
+    public Map<String, String> getAllProperties(UUID playerId) {
+        return getAllProperties(getPlayer(playerId));
+    }
+
+    public Map<String, String> getAllProperties(String playerName) {
+        return getAllProperties(getPlayer(playerName));
+    }
+
+    @Override
+    public Map<String, String> getAllProperties(GlobalPlayer player) {
+        return playerPropertiesApi.getAllProperties(player);
+    }
+
+    public void setPropertyValue(OfflinePlayer player, String property, String value) {
+        setPropertyValue(getPlayer(player), property, value);
+    }
+
+    public void setPropertyValue(UUID playerId, String property, String value) {
+        setPropertyValue(getPlayer(playerId), property, value);
+    }
+
+    public void setPropertyValue(String playerName, String property, String value) {
+        setPropertyValue(getPlayer(playerName), property, value);
+    }
+
+    @Override
+    public void setPropertyValue(GlobalPlayer player, String property, String value) {
+        playerPropertiesApi.setPropertyValue(player, property, value);
     }
 
     public boolean isReal(GlobalServer server) {
@@ -166,7 +259,7 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public List<GlobalServer> getServers(OfflinePlayer player, boolean includeNonReals) {
-        return getServers(player.getUniqueId(), includeNonReals);
+        return getServers(getPlayer(player), includeNonReals);
     }
 
     public List<GlobalServer> getServers(UUID playerId) {
@@ -174,7 +267,15 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public List<GlobalServer> getServers(UUID playerId, boolean includeNonReals) {
-        return getServers(this.connectionApi.getPlayer(playerId), includeNonReals);
+        return getServers(getPlayer(playerId), includeNonReals);
+    }
+
+    public List<GlobalServer> getServers(String playerName) {
+        return getServers(playerName, false);
+    }
+
+    public List<GlobalServer> getServers(String playerName, boolean includeNonReals) {
+        return getServers(getPlayer(playerName), includeNonReals);
     }
 
     public List<GlobalServer> getServers(GlobalPlayer gPlayer) {
@@ -205,7 +306,7 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public boolean isOnAnyServer(OfflinePlayer player, boolean includeNonReals) {
-        return isOnAnyServer(player.getUniqueId(), includeNonReals);
+        return isOnAnyServer(getPlayer(player), includeNonReals);
     }
 
     public boolean isOnAnyServer(UUID playerId) {
@@ -213,7 +314,15 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements ConnectionA
     }
 
     public boolean isOnAnyServer(UUID playerId, boolean includeNonReals) {
-        return isOnAnyServer(this.connectionApi.getPlayer(playerId), includeNonReals);
+        return isOnAnyServer(getPlayer(playerId), includeNonReals);
+    }
+
+    public boolean isOnAnyServer(String playerName) {
+        return isOnAnyServer(playerName, false);
+    }
+
+    public boolean isOnAnyServer(String playerName, boolean includeNonReals) {
+        return isOnAnyServer(getPlayer(playerName), includeNonReals);
     }
 
     public boolean isOnAnyServer(GlobalPlayer gPlayer) {

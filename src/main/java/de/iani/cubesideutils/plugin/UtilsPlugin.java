@@ -1,8 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
-import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
-import de.cubeside.connection.PlayerMessageAPI;
 import de.iani.cubesideutils.Pair;
 import de.iani.cubesideutils.sql.SQLConfig;
 import java.sql.SQLException;
@@ -36,8 +34,7 @@ public class UtilsPlugin extends JavaPlugin {
     private PlayerDataCache playerDataCache;
     private EventListener eventListener;
     private AfkManager afkManager;
-    private ConnectionAPI connectionApi;
-    private PlayerMessageAPI playerMsgApi;
+    private GlobalClientPlugin globalClientPlugin;
     private UtilsGlobalDataHelper globalDataHelper;
 
     private ReadWriteLock rankLock;
@@ -71,9 +68,7 @@ public class UtilsPlugin extends JavaPlugin {
             this.eventListener = new EventListener();
             this.afkManager = new AfkManager();
 
-            GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
-            this.connectionApi = connectionPlugin.getConnectionAPI();
-            this.playerMsgApi = connectionPlugin.getMessageAPI();
+            this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
             this.globalDataHelper = new UtilsGlobalDataHelper(this);
 
             this.database.registerRealServer();
@@ -97,12 +92,8 @@ public class UtilsPlugin extends JavaPlugin {
         return this.playerDataCache;
     }
 
-    ConnectionAPI getConnectionAPI() {
-        return this.connectionApi;
-    }
-
-    PlayerMessageAPI getPlayerMsgApi() {
-        return this.playerMsgApi;
+    GlobalClientPlugin getGlobalClientPlugin() {
+        return this.globalClientPlugin;
     }
 
     UtilsGlobalDataHelper getGlobalDataHelper() {
