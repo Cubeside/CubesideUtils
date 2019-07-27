@@ -28,7 +28,7 @@ public class StringSerialization {
     public static <T extends StringSerializable> T deserialize(String serializationType, String serialized) {
         Function<String, StringSerializable> deserializer = serializationTypes.get(serializationType);
         if (deserializer == null) {
-            throw new IllegalArgumentException("Unknown serializationType.");
+            throw new IllegalArgumentException("Unknown serializationType " + serializationType + ".");
         }
         return (T) deserializer.apply(serializationType);
     }

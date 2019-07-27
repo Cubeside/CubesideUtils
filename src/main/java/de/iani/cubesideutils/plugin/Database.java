@@ -166,8 +166,8 @@ class Database {
     public void setGloballyAfk(UUID playerId, boolean afk) throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerAfkQuery);
-            smt.setString(1, playerId.toString());
-            smt.setBoolean(2, afk);
+            smt.setBoolean(1, afk);
+            smt.setString(2, playerId.toString());
             smt.executeUpdate();
             return null;
         });
