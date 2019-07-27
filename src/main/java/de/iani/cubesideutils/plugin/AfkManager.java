@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -20,6 +21,7 @@ class AfkManager implements Listener {
     @SuppressWarnings("unchecked")
     public AfkManager() {
         this.plugin = UtilsPlugin.getInstance();
+        Bukkit.getPluginManager().registerEvents(this, plugin);
 
         this.onlinePlayers = new Set[AFK_CHECK_BINS];
         for (int i = 0; i < AFK_CHECK_BINS; i++) {
@@ -29,10 +31,12 @@ class AfkManager implements Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 10, 1);
     }
 
+    @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         onlinePlayers[Math.floorMod(event.getPlayer().getUniqueId().hashCode(), AFK_CHECK_BINS)].add(event.getPlayer());
     }
 
+    @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         onlinePlayers[Math.floorMod(event.getPlayer().getUniqueId().hashCode(), AFK_CHECK_BINS)].remove(event.getPlayer());
     }
