@@ -39,7 +39,7 @@ class EventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onAsynchPlayerChatEvent(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         madeAction(event.getPlayer());
     }
 
