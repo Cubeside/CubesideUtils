@@ -1,6 +1,5 @@
 package de.iani.cubesideutils.plugin;
 
-import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.plugin.events.LocalAfkStateChangeEvent;
 import java.sql.SQLException;
@@ -113,10 +112,9 @@ public class OnlinePlayerData extends PlayerData {
             return;
         }
 
-        ConnectionAPI connectionApi = UtilsPlugin.getInstance().getConnectionAPI();
         UtilsGlobalDataHelper globalHelper = UtilsPlugin.getInstance().getGlobalDataHelper();
         Collection<GlobalServer> servers = globalHelper.getServers(getPlayerId());
-        assert servers.contains(connectionApi.getThisServer());
+        assert servers.contains(globalHelper.getThisServer());
 
         if (servers.size() == 1) {
             setGloballyAfkInternal(true);

@@ -8,6 +8,7 @@ import de.iani.cubesideutils.sql.SQLConfig;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +44,8 @@ public class UtilsPlugin extends JavaPlugin {
     private List<String> ranks;
     private Map<String, Pair<String, String>> rankPermissionsAndPrefixes;
 
+    private Map<String, Boolean> cachedRealServers;
+
     public UtilsPlugin() {
         synchronized (UtilsPlugin.class) {
             if (instance != null) {
@@ -54,6 +57,8 @@ public class UtilsPlugin extends JavaPlugin {
         this.rankLock = new ReentrantReadWriteLock();
         this.ranks = Collections.emptyList();
         this.rankPermissionsAndPrefixes = Collections.emptyMap();
+
+        this.cachedRealServers = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override
@@ -70,6 +75,8 @@ public class UtilsPlugin extends JavaPlugin {
             this.connectionApi = connectionPlugin.getConnectionAPI();
             this.playerMsgApi = connectionPlugin.getMessageAPI();
             this.globalDataHelper = new UtilsGlobalDataHelper(this);
+
+            this.database.registerRealServer();
         } catch (Throwable e) {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
             Bukkit.getServer().shutdown();
@@ -178,6 +185,10 @@ public class UtilsPlugin extends JavaPlugin {
         for (PlayerData data : this.playerDataCache.loadedData()) {
             data.checkRank();
         }
+    }
+
+    Map<String, Boolean> getCachedRealServers() {
+        return this.cachedRealServers;
     }
 
 }
