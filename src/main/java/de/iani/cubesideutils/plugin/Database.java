@@ -220,8 +220,8 @@ class Database {
     public void setRank(UUID playerId, String rank) throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerRankQuery);
-            smt.setString(1, playerId.toString());
-            smt.setString(2, rank);
+            smt.setString(1, rank);
+            smt.setString(2, playerId.toString());
             smt.executeUpdate();
             return null;
         });
