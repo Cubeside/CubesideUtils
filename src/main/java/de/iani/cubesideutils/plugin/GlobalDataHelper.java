@@ -55,7 +55,8 @@ public abstract class GlobalDataHelper<T extends Enum<T>> implements Listener {
     }
 
     public boolean isOnAnyServer(OfflinePlayer player) {
-        return this.connectionApi.getPlayer(player.getUniqueId()).isOnAnyServer();
+        GlobalPlayer gPlayer = this.connectionApi.getPlayer(player.getUniqueId());
+        return gPlayer != null && gPlayer.isOnAnyServer();
     }
 
     public Collection<GlobalPlayer> getOnlinePlayers() {
