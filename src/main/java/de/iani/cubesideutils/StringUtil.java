@@ -88,6 +88,8 @@ public class StringUtil {
         FALSE_STRINGS = Collections.unmodifiableSet(falseStrings);
     }
 
+    public static final String MC_INDENT = ChatColor.RESET + " ";
+
     public static final Pattern SPACES_AND_UNDERSCORES_PATTERN = Pattern.compile("[\\ \\_]");
 
     /**
