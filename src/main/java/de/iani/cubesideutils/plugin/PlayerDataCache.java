@@ -93,6 +93,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
                 return;
             }
             this.onlinePlayers.put(playerId, data);
+            data.setLocallyAfk(false, false);
         } finally {
             this.lock.writeLock().unlock();
         }

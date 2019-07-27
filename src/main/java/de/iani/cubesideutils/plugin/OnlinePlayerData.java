@@ -29,7 +29,7 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     synchronized void quit() {
-        setLocallyAfkInternal(true);
+        setLocallyAfk(true, false);
     }
 
     public Player getPlayer() {
@@ -68,26 +68,22 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     public synchronized void setLocallyAfk(boolean afk) {
-        if (!setLocallyAfkInternal(afk)) {
-            return;
-        }
-
-        getPlayer().sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
+        setLocallyAfk(afk, true);
     }
 
-    private synchronized boolean setLocallyAfkInternal(boolean afk) {
+    public synchronized void setLocallyAfk(boolean afk, boolean messagePlayer) {
         if (!Bukkit.isPrimaryThread()) {
             throw new IllegalStateException("May only be invoked on the bukkit primary thread.");
         }
 
         if (this.locallyAfk == afk) {
-            return false;
+            return;
         }
 
         LocalAfkStateChangeEvent event = new LocalAfkStateChangeEvent(this, afk);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            return false;
+            return;
         }
 
         this.locallyAfk = afk;
@@ -97,7 +93,10 @@ public class OnlinePlayerData extends PlayerData {
             UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save AFK-status in database.", e);
         }
         checkGloballyAfk();
-        return true;
+
+        if (messagePlayer) {
+            getPlayer().sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
+        }
     }
 
     private void checkGloballyAfk() {
