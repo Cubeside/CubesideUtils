@@ -21,6 +21,7 @@ public class OnlinePlayerData extends PlayerData {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
         this.lastAction = lastAction;
+        this.locallyAfk = afk;
     }
 
     OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
