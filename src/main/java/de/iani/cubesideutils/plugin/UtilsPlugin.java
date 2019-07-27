@@ -101,7 +101,7 @@ public class UtilsPlugin extends JavaPlugin {
     }
 
     public OnlinePlayerData getPlayerData(Player player) {
-        return getPlayerData(player).getOnlineData();
+        return getPlayerData(player.getUniqueId()).getOnlineData();
     }
 
     public PlayerData getPlayerData(OfflinePlayer player) {
