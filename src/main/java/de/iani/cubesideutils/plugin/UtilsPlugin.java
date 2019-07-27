@@ -33,6 +33,7 @@ public class UtilsPlugin extends JavaPlugin {
 
     private Database database;
     private PlayerDataCache playerDataCache;
+    private EventListener eventListener;
     private AfkManager afkManager;
     private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
@@ -62,6 +63,7 @@ public class UtilsPlugin extends JavaPlugin {
 
             this.database = new Database();
             this.playerDataCache = new PlayerDataCache();
+            this.eventListener = new EventListener();
             this.afkManager = new AfkManager();
 
             GlobalClientPlugin connectionPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
