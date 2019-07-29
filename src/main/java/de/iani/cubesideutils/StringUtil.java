@@ -22,7 +22,7 @@ import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -33,8 +33,8 @@ public class StringUtil {
         // prevents instances
     }
 
-    private static class BukkitStatic {
-        private BukkitStatic() {
+    private static class BukkitStatics {
+        private BukkitStatics() {
             throw new UnsupportedOperationException("No instance for you, Sir!");
             // prevents instances
         }
@@ -76,6 +76,14 @@ public class StringUtil {
             colorToName.put(color, name);
             nameToColor.put(name, color);
         }
+
+    }
+
+    public static class BungeeStatics {
+
+        public static final String MC_INDENTION = ChatColor.RESET + " ";
+        public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
+        public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "[" + Arrays.stream(ChatColor.values()).map(Object::toString).map(s -> s.substring(1)).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
 
     }
 
@@ -133,8 +141,6 @@ public class StringUtil {
         falseStrings.addAll(Arrays.asList("0", "false", "f", "nein", "n", "falsch"));
         FALSE_STRINGS = Collections.unmodifiableSet(falseStrings);
     }
-
-    public static final String MC_INDENTION = net.md_5.bungee.api.ChatColor.RESET + " ";
 
     public static final Pattern SPACES_AND_UNDERSCORES_PATTERN = Pattern.compile("[\\ \\_]");
 
@@ -195,7 +201,7 @@ public class StringUtil {
     }
 
     public static String mcIndent(int indention) {
-        return repeat(MC_INDENTION, indention);
+        return repeat(BungeeStatics.MC_INDENTION, indention);
     }
 
     public static String exceptionToString(Throwable e) {
@@ -259,14 +265,12 @@ public class StringUtil {
     }
 
     public static final Pattern AND_PATTERN = Pattern.compile("\\&");
-    public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + net.md_5.bungee.api.ChatColor.COLOR_CHAR);
-    public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "[" + Arrays.stream(net.md_5.bungee.api.ChatColor.values()).map(Object::toString).map(s -> s.substring(1)).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
 
     public static String revertColors(String converted) {
         if (converted == null) {
             return null;
         }
-        return COLOR_CHAR_PATTERN.matcher(AND_PATTERN.matcher(converted).replaceAll("&&")).replaceAll("&");
+        return BungeeStatics.COLOR_CHAR_PATTERN.matcher(AND_PATTERN.matcher(converted).replaceAll("&&")).replaceAll("&");
     }
 
     private static final Pattern ESCAPE_CHARACTER_PATTERN = Pattern.compile("\\\\.");
@@ -307,15 +311,15 @@ public class StringUtil {
     // Line breaking
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength) {
-        return breakLines(text, lineLength, COLOR_CODES_PATTERN);
+        return breakLines(text, lineLength, BungeeStatics.COLOR_CODES_PATTERN);
     }
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength, boolean forceLineBreak) {
-        return breakLines(text, lineLength, COLOR_CODES_PATTERN, forceLineBreak);
+        return breakLines(text, lineLength, BungeeStatics.COLOR_CODES_PATTERN, forceLineBreak);
     }
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength, boolean forceLineBreak, boolean preserveColorCodes) {
-        return breakLines(text, lineLength, COLOR_CODES_PATTERN, forceLineBreak, preserveColorCodes);
+        return breakLines(text, lineLength, BungeeStatics.COLOR_CODES_PATTERN, forceLineBreak, preserveColorCodes);
     }
 
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength) {
@@ -323,7 +327,7 @@ public class StringUtil {
     }
 
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength, boolean forceLineBreak) {
-        return breakLines(text, lineLength, ignoreForLength, forceLineBreak, ignoreForLength == COLOR_CODES_PATTERN);
+        return breakLines(text, lineLength, ignoreForLength, forceLineBreak, ignoreForLength == BungeeStatics.COLOR_CODES_PATTERN);
     }
 
     // preserveColorCodes without ignoreForLength set to MATCH_COLOR_CODES may lead to strange results
@@ -759,30 +763,30 @@ public class StringUtil {
     // Colors
 
     public static Set<Color> getConstantColors() {
-        return BukkitStatic.CONSTANT_COLOR_NAMES.keySet();
+        return BukkitStatics.CONSTANT_COLOR_NAMES.keySet();
     }
 
     public static Color getConstantColor(String name) {
-        return BukkitStatic.CONSTANT_COLORS_BY_NAMES.get(name.toLowerCase());
+        return BukkitStatics.CONSTANT_COLORS_BY_NAMES.get(name.toLowerCase());
     }
 
     public static String getConstantColorName(Color color) {
-        return BukkitStatic.CONSTANT_COLOR_NAMES.get(color);
+        return BukkitStatics.CONSTANT_COLOR_NAMES.get(color);
     }
 
     public static String toNiceString(Color color) {
-        if (BukkitStatic.CONSTANT_COLOR_NAMES.containsKey(color)) {
-            return BukkitStatic.CONSTANT_COLOR_NAMES.get(color);
+        if (BukkitStatics.CONSTANT_COLOR_NAMES.containsKey(color)) {
+            return BukkitStatics.CONSTANT_COLOR_NAMES.get(color);
         }
 
         double lowestDiff = Double.MAX_VALUE;
         String bestMatch = null;
 
-        for (Color other : BukkitStatic.CONSTANT_COLOR_NAMES.keySet()) {
+        for (Color other : BukkitStatics.CONSTANT_COLOR_NAMES.keySet()) {
             double diff = diff(color, other);
             if (diff < lowestDiff) {
                 lowestDiff = diff;
-                bestMatch = BukkitStatic.CONSTANT_COLOR_NAMES.get(other);
+                bestMatch = BukkitStatics.CONSTANT_COLOR_NAMES.get(other);
             }
         }
 
