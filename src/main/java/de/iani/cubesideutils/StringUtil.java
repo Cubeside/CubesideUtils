@@ -33,6 +33,52 @@ public class StringUtil {
         // prevents instances
     }
 
+    private static class BukkitStatic {
+        private BukkitStatic() {
+            throw new UnsupportedOperationException("No instance for you, Sir!");
+            // prevents instances
+        }
+
+        private static final Map<Color, String> CONSTANT_COLOR_NAMES;
+        private static final Map<String, Color> CONSTANT_COLORS_BY_NAMES;
+
+        static {
+            Map<Color, String> constantColorNames = new LinkedHashMap<>();
+            Map<String, Color> constantColorsByNames = new LinkedHashMap<>();
+
+            registerColor(constantColorNames, constantColorsByNames, Color.AQUA, "aqua");
+            registerColor(constantColorNames, constantColorsByNames, Color.BLACK, "black");
+            registerColor(constantColorNames, constantColorsByNames, Color.BLUE, "blue");
+            registerColor(constantColorNames, constantColorsByNames, Color.FUCHSIA, "fuchsia");
+            registerColor(constantColorNames, constantColorsByNames, Color.GRAY, "gray");
+            registerColor(constantColorNames, constantColorsByNames, Color.GREEN, "greeen");
+            registerColor(constantColorNames, constantColorsByNames, Color.LIME, "lime");
+            registerColor(constantColorNames, constantColorsByNames, Color.MAROON, "maroon");
+            registerColor(constantColorNames, constantColorsByNames, Color.NAVY, "navy");
+            registerColor(constantColorNames, constantColorsByNames, Color.OLIVE, "olive");
+            registerColor(constantColorNames, constantColorsByNames, Color.ORANGE, "orange");
+            registerColor(constantColorNames, constantColorsByNames, Color.PURPLE, "purple");
+            registerColor(constantColorNames, constantColorsByNames, Color.RED, "red");
+            registerColor(constantColorNames, constantColorsByNames, Color.SILVER, "silver");
+            registerColor(constantColorNames, constantColorsByNames, Color.TEAL, "teal");
+            registerColor(constantColorNames, constantColorsByNames, Color.WHITE, "white");
+            registerColor(constantColorNames, constantColorsByNames, Color.YELLOW, "yellow");
+
+            for (DyeColor dc : DyeColor.values()) {
+                registerColor(constantColorNames, constantColorsByNames, dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
+            }
+
+            CONSTANT_COLOR_NAMES = Collections.unmodifiableMap(constantColorNames);
+            CONSTANT_COLORS_BY_NAMES = Collections.unmodifiableMap(constantColorsByNames);
+        }
+
+        private static void registerColor(Map<Color, String> colorToName, Map<String, Color> nameToColor, Color color, String name) {
+            colorToName.put(color, name);
+            nameToColor.put(name, color);
+        }
+
+    }
+
     public static final ToIntFunction<String> CASE_IGNORING_HASHER = s -> {
         if (s == null) {
             return 0;
@@ -88,6 +134,8 @@ public class StringUtil {
         FALSE_STRINGS = Collections.unmodifiableSet(falseStrings);
     }
 
+    public static final String MC_INDENTION = net.md_5.bungee.api.ChatColor.RESET + " ";
+
     public static final Pattern SPACES_AND_UNDERSCORES_PATTERN = Pattern.compile("[\\ \\_]");
 
     /**
@@ -133,11 +181,21 @@ public class StringUtil {
     }
 
     public static String repeat(String arg, int times) {
+        if (times <= 1) {
+            if (times == 1) {
+                return arg;
+            }
+            return "";
+        }
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < times; i++) {
             builder.append(arg);
         }
         return builder.toString();
+    }
+
+    public static String mcIndent(int indention) {
+        return repeat(MC_INDENTION, indention);
     }
 
     public static String exceptionToString(Throwable e) {
@@ -200,8 +258,9 @@ public class StringUtil {
         return new Pair<>(first, second);
     }
 
-    private static final Pattern AND_PATTERN = Pattern.compile("\\&");
-    private static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
+    public static final Pattern AND_PATTERN = Pattern.compile("\\&");
+    public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + net.md_5.bungee.api.ChatColor.COLOR_CHAR);
+    public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + net.md_5.bungee.api.ChatColor.COLOR_CHAR + "[" + Arrays.stream(net.md_5.bungee.api.ChatColor.values()).map(Object::toString).map(s -> s.substring(1)).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
 
     public static String revertColors(String converted) {
         if (converted == null) {
@@ -247,18 +306,16 @@ public class StringUtil {
 
     // Line breaking
 
-    public static final Pattern MATCH_COLOR_CODES = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "[" + Arrays.stream(ChatColor.values()).map(ChatColor::getChar).map(String::valueOf).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
-
     public static List<String> breakLinesForMinecraft(String text, int lineLength) {
-        return breakLines(text, lineLength, MATCH_COLOR_CODES);
+        return breakLines(text, lineLength, COLOR_CODES_PATTERN);
     }
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength, boolean forceLineBreak) {
-        return breakLines(text, lineLength, MATCH_COLOR_CODES, forceLineBreak);
+        return breakLines(text, lineLength, COLOR_CODES_PATTERN, forceLineBreak);
     }
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength, boolean forceLineBreak, boolean preserveColorCodes) {
-        return breakLines(text, lineLength, MATCH_COLOR_CODES, forceLineBreak, preserveColorCodes);
+        return breakLines(text, lineLength, COLOR_CODES_PATTERN, forceLineBreak, preserveColorCodes);
     }
 
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength) {
@@ -266,7 +323,7 @@ public class StringUtil {
     }
 
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength, boolean forceLineBreak) {
-        return breakLines(text, lineLength, ignoreForLength, forceLineBreak, ignoreForLength == MATCH_COLOR_CODES);
+        return breakLines(text, lineLength, ignoreForLength, forceLineBreak, ignoreForLength == COLOR_CODES_PATTERN);
     }
 
     // preserveColorCodes without ignoreForLength set to MATCH_COLOR_CODES may lead to strange results
@@ -701,69 +758,31 @@ public class StringUtil {
 
     // Colors
 
-    private static final Map<Color, String> CONSTANT_COLOR_NAMES;
-    private static final Map<String, Color> CONSTANT_COLORS_BY_NAMES;
-
-    static {
-        Map<Color, String> constantColorNames = new LinkedHashMap<>();
-        Map<String, Color> constantColorsByNames = new LinkedHashMap<>();
-
-        registerColor(constantColorNames, constantColorsByNames, Color.AQUA, "aqua");
-        registerColor(constantColorNames, constantColorsByNames, Color.BLACK, "black");
-        registerColor(constantColorNames, constantColorsByNames, Color.BLUE, "blue");
-        registerColor(constantColorNames, constantColorsByNames, Color.FUCHSIA, "fuchsia");
-        registerColor(constantColorNames, constantColorsByNames, Color.GRAY, "gray");
-        registerColor(constantColorNames, constantColorsByNames, Color.GREEN, "greeen");
-        registerColor(constantColorNames, constantColorsByNames, Color.LIME, "lime");
-        registerColor(constantColorNames, constantColorsByNames, Color.MAROON, "maroon");
-        registerColor(constantColorNames, constantColorsByNames, Color.NAVY, "navy");
-        registerColor(constantColorNames, constantColorsByNames, Color.OLIVE, "olive");
-        registerColor(constantColorNames, constantColorsByNames, Color.ORANGE, "orange");
-        registerColor(constantColorNames, constantColorsByNames, Color.PURPLE, "purple");
-        registerColor(constantColorNames, constantColorsByNames, Color.RED, "red");
-        registerColor(constantColorNames, constantColorsByNames, Color.SILVER, "silver");
-        registerColor(constantColorNames, constantColorsByNames, Color.TEAL, "teal");
-        registerColor(constantColorNames, constantColorsByNames, Color.WHITE, "white");
-        registerColor(constantColorNames, constantColorsByNames, Color.YELLOW, "yellow");
-
-        for (DyeColor dc : DyeColor.values()) {
-            registerColor(constantColorNames, constantColorsByNames, dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
-        }
-
-        CONSTANT_COLOR_NAMES = Collections.unmodifiableMap(constantColorNames);
-        CONSTANT_COLORS_BY_NAMES = Collections.unmodifiableMap(constantColorsByNames);
-    }
-
-    private static void registerColor(Map<Color, String> colorToName, Map<String, Color> nameToColor, Color color, String name) {
-        colorToName.put(color, name);
-        nameToColor.put(name, color);
-    }
-
     public static Set<Color> getConstantColors() {
-        return CONSTANT_COLOR_NAMES.keySet();
+        return BukkitStatic.CONSTANT_COLOR_NAMES.keySet();
     }
 
     public static Color getConstantColor(String name) {
-        return CONSTANT_COLORS_BY_NAMES.get(name.toLowerCase());
+        return BukkitStatic.CONSTANT_COLORS_BY_NAMES.get(name.toLowerCase());
     }
 
     public static String getConstantColorName(Color color) {
-        return CONSTANT_COLOR_NAMES.get(color);
+        return BukkitStatic.CONSTANT_COLOR_NAMES.get(color);
     }
 
     public static String toNiceString(Color color) {
-        if (CONSTANT_COLOR_NAMES.containsKey(color)) {
-            return CONSTANT_COLOR_NAMES.get(color);
+        if (BukkitStatic.CONSTANT_COLOR_NAMES.containsKey(color)) {
+            return BukkitStatic.CONSTANT_COLOR_NAMES.get(color);
         }
 
         double lowestDiff = Double.MAX_VALUE;
         String bestMatch = null;
 
-        for (Color other : CONSTANT_COLOR_NAMES.keySet()) {
+        for (Color other : BukkitStatic.CONSTANT_COLOR_NAMES.keySet()) {
             double diff = diff(color, other);
             if (diff < lowestDiff) {
                 lowestDiff = diff;
-                bestMatch = CONSTANT_COLOR_NAMES.get(other);
+                bestMatch = BukkitStatic.CONSTANT_COLOR_NAMES.get(other);
             }
         }
 
