@@ -36,6 +36,7 @@ public class UtilsPlugin extends JavaPlugin {
     private AfkManager afkManager;
     private GlobalClientPlugin globalClientPlugin;
     private UtilsGlobalDataHelper globalDataHelper;
+    private GlobalDataBundle globalDataBundle;
 
     private ReadWriteLock rankLock;
     private List<String> ranks;
@@ -70,6 +71,7 @@ public class UtilsPlugin extends JavaPlugin {
 
             this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
             this.globalDataHelper = new UtilsGlobalDataHelper(this);
+            this.globalDataBundle = new GlobalDataBundle();
 
             this.database.registerRealServer();
         } catch (Throwable e) {
@@ -98,6 +100,10 @@ public class UtilsPlugin extends JavaPlugin {
 
     UtilsGlobalDataHelper getGlobalDataHelper() {
         return this.globalDataHelper;
+    }
+
+    public GlobalDataBundle getGlobalDataBundle() {
+        return this.globalDataBundle;
     }
 
     public OnlinePlayerData getPlayerData(Player player) {
