@@ -81,7 +81,7 @@ public class StringUtil {
 
     public static class BungeeStatics {
 
-        public static final String MC_INDENTION = ChatColor.RESET + " ";
+        public static final String MC_INDENTION = ChatColor.RESET + " " + ChatColor.RESET;
         public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
         public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "[" + Arrays.stream(ChatColor.values()).map(Object::toString).map(s -> s.substring(1)).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
 
