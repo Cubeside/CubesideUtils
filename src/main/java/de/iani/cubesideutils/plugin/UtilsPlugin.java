@@ -1,20 +1,28 @@
 package de.iani.cubesideutils.plugin;
 
 import de.cubeside.connection.GlobalClientPlugin;
+import de.cubeside.connection.GlobalPlayer;
+import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.Pair;
 import de.iani.cubesideutils.sql.SQLConfig;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +31,8 @@ public class UtilsPlugin extends JavaPlugin {
     public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
 
     public static final String MODIFY_RANKS_PERMISSION = "cubesideutils.modify_ranks";
+
+    static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
 
     private static UtilsPlugin instance = null;
 
@@ -41,6 +51,9 @@ public class UtilsPlugin extends JavaPlugin {
     private ReadWriteLock rankLock;
     private List<String> ranks;
     private Map<String, Pair<String, String>> rankPermissionsAndPrefixes;
+
+    private String defaultDisplayName;
+    private Map<String, String> worldDisplayNames;
 
     private Map<String, Boolean> cachedRealServers;
 
@@ -63,6 +76,13 @@ public class UtilsPlugin extends JavaPlugin {
     public void onEnable() {
         try {
             saveDefaultConfig();
+
+            this.defaultDisplayName = getConfig().getString("defaultDisplayName");
+            this.worldDisplayNames = new LinkedHashMap<>();
+            ConfigurationSection displayNamesSection = getConfig().getConfigurationSection("worldDisplayNames");
+            for (String worldName : displayNamesSection.getKeys(false)) {
+                this.worldDisplayNames.put(worldName, displayNamesSection.getString(worldName));
+            }
 
             this.database = new Database();
             this.playerDataCache = new PlayerDataCache();
@@ -182,6 +202,34 @@ public class UtilsPlugin extends JavaPlugin {
         for (PlayerData data : this.playerDataCache.loadedData()) {
             data.checkRank();
         }
+    }
+
+    public String getWorldDisplayName(LivingEntity entity) {
+        return getWorldDisplayName(entity == null ? null : entity.getWorld());
+    }
+
+    public String getWorldDisplayName(World world) {
+        return getWorldDisplayName(world == null ? null : world.getName());
+    }
+
+    public String getWorldDisplayName(String worldName) {
+        return this.worldDisplayNames.getOrDefault(worldName, defaultDisplayName);
+    }
+
+    public Set<String> getWorldDisplayNames(OfflinePlayer player) {
+        return getWorldDisplayNames(player.getUniqueId());
+    }
+
+    public Set<String> getWorldDisplayNames(UUID playerId) {
+        Set<String> result = new HashSet<>();
+        GlobalPlayer gPlayer = this.globalDataHelper.getPlayer(playerId);
+        for (GlobalServer server : this.globalDataHelper.getServers(gPlayer)) {
+            String displayName = this.globalDataHelper.getPropertyValue(gPlayer, DISPLAY_NAME_PROPERTY_PREFIX + server.getName());
+            if (displayName != null) {
+                result.add(displayName);
+            }
+        }
+        return result;
     }
 
     Map<String, Boolean> getCachedRealServers() {
