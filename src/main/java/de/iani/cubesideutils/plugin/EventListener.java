@@ -50,7 +50,8 @@ class EventListener implements Listener {
         globalData.setPropertyValue(event.getPlayer(), UtilsPlugin.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), plugin.getWorldDisplayName(event.getPlayer()));
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    // On monitor, GlobalPlayer may no longer be available.
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         UtilsGlobalDataHelper globalData = plugin.getGlobalDataHelper();
         globalData.setPropertyValue(event.getPlayer(), UtilsPlugin.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), null);
