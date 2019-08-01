@@ -4,10 +4,4 @@ version: ${project.version}
 api-version: 1.13
 authors: [${project.author}]
 
-commands:
-permissions:
-  cubesideutils.modify_ranks:
-    default: op
-    description: Erlaubt das Anlegen und Löschen von Rängen.
-    
 depend: [GlobalClient]

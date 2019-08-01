@@ -30,8 +30,6 @@ public class UtilsPlugin extends JavaPlugin {
 
     public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
 
-    public static final String MODIFY_RANKS_PERMISSION = "cubesideutils.modify_ranks";
-
     static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
 
     private static UtilsPlugin instance = null;
