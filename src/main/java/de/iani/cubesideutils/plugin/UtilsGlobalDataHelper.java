@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.ChatUtil;
 import java.io.DataInputStream;
 import java.io.IOException;
 
@@ -16,6 +17,11 @@ class UtilsGlobalDataHelper extends GlobalDataHelper<MessageType> {
         switch (messageType) {
             case PLAYER_DATA_CHANGED:
                 UtilsPlugin.getInstance().getPlayerDataCache().invalidate(readUUID(data));
+                break;
+            case SEND_MESSAGE:
+                String permission = data.readUTF();
+                String message = data.readUTF();
+                ChatUtil.sendMessageToPlayers(permission, message);
                 break;
             default:
                 break;

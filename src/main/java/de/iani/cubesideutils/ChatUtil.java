@@ -1,5 +1,6 @@
 package de.iani.cubesideutils;
 
+import de.iani.cubesideutils.plugin.UtilsPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,7 +9,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class ChatUtil {
     private ChatUtil() {
@@ -67,20 +70,15 @@ public class ChatUtil {
 
     public static final int PAGE_LENGTH = 10;
 
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages,
-            int page, String name, String openPageCommandPrefix) {
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages, int page, String name, String openPageCommandPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
     }
 
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages,
-            int page, String name, String openPageCommandPrefix, String pluginPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN,
-                ChatColor.GOLD);
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages,
-            int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor,
-            ChatColor warningColor) {
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
 
         int numPages = (int) Math.ceil(messages.size() / (double) PAGE_LENGTH);
         if (page >= numPages) {
@@ -89,7 +87,7 @@ public class ChatUtil {
         }
 
         if (numPages > 1) {
-            sendMessage(recipient, pluginPrefix, normalColor.toString(), name, " (Seite ", (page + 1), "/",  numPages, "):");
+            sendMessage(recipient, pluginPrefix, normalColor.toString(), name, " (Seite ", (page + 1), "/", numPages, "):");
         } else {
             sendMessage(recipient, pluginPrefix, normalColor.toString(), name, ":");
         }
@@ -108,17 +106,14 @@ public class ChatUtil {
             if (page > 0) {
                 builder.color(ChatColor.BLUE);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new ComponentBuilder("Seite " + page + " anzeigen").create());
-                ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                        openPageCommandPrefix + " " + page);
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Seite " + page + " anzeigen").create());
+                ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + page);
 
                 builder.event(he).event(ce);
             } else {
                 builder.color(ChatColor.GRAY);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new ComponentBuilder("Bereits auf Seite 1").create());
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Bereits auf Seite 1").create());
 
                 builder.event(he);
             }
@@ -128,17 +123,14 @@ public class ChatUtil {
             if (page + 1 < numPages) {
                 builder.color(ChatColor.BLUE);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create());
-                ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                        openPageCommandPrefix + " " + (page + 2));
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create());
+                ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + (page + 2));
 
                 builder.event(he).event(ce);
             } else {
                 builder.color(ChatColor.GRAY);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new ComponentBuilder("Bereits auf Seite " + numPages).create());
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Bereits auf Seite " + numPages).create());
 
                 builder.event(he);
             }
@@ -147,12 +139,11 @@ public class ChatUtil {
         }
     }
 
-    public static void sendMessage(CommandSender sender, String pluginPrefix, String colors, Object message,
-            Object... messageParts) {
+    public static void sendMessage(CommandSender sender, String pluginPrefix, String colors, Object message, Object... messageParts) {
         if (messageParts.length == 0) {
-            sender.sendMessage(pluginPrefix + " " + (colors == null? "" : colors) + message);
+            sender.sendMessage(pluginPrefix + " " + (colors == null ? "" : colors) + message);
         } else {
-            StringBuilder builder = new StringBuilder(pluginPrefix).append(" ").append(colors == null? "" : colors).append(message);
+            StringBuilder builder = new StringBuilder(pluginPrefix).append(" ").append(colors == null ? "" : colors).append(message);
             for (Object s : messageParts) {
                 if (colors != null) {
                     builder.append(ChatColor.RESET).append(colors);
@@ -160,6 +151,22 @@ public class ChatUtil {
                 builder.append(Objects.toString(s));
             }
             sender.sendMessage(builder.toString());
+        }
+    }
+
+    public static void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
+        sendMessageToPlayers(seeMsgPermission, message);
+        UtilsPlugin.getInstance().sendMessageToPlayersAllServers(seeMsgPermission, message);
+    }
+
+    public static void sendMessageToPlayers(String seeMsgPermission, String message) {
+        if (seeMsgPermission.isEmpty() || Bukkit.getConsoleSender().hasPermission(seeMsgPermission)) {
+            Bukkit.getConsoleSender().sendMessage(message);
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (seeMsgPermission.isEmpty() || player.hasPermission(seeMsgPermission)) {
+                player.sendMessage(message);
+            }
         }
     }
 

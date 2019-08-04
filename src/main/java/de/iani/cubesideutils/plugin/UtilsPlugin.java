@@ -234,4 +234,8 @@ public class UtilsPlugin extends JavaPlugin {
         return this.cachedRealServers;
     }
 
+    public void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgPermission, message);
+    }
+
 }
