@@ -1,13 +1,12 @@
 package de.iani.cubesideutils.items;
 
+import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.StringUtil.BungeeStatics;
 import java.util.HashMap;
 import java.util.Map.Entry;
-
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-
-import de.iani.cubesideutils.StringUtil;
 
 public class EnchantmentNames {
     private EnchantmentNames() {
@@ -17,7 +16,7 @@ public class EnchantmentNames {
 
     private static final HashMap<Enchantment, String> enchantmentToName;
     static {
-        enchantmentToName = new HashMap<Enchantment, String>();
+        enchantmentToName = new HashMap<>();
 
         addEnchantment(Enchantment.ARROW_DAMAGE, "Power");
         addEnchantment(Enchantment.ARROW_FIRE, "Flame");
@@ -76,7 +75,7 @@ public class EnchantmentNames {
 
         name = StringUtil.SPACES_AND_UNDERSCORES_PATTERN.matcher(name).replaceAll("");
         for (Entry<Enchantment, String> pair : enchantmentToName.entrySet()) {
-            String simpleName = StringUtil.MATCH_COLOR_CODES.matcher(pair.getValue()).replaceAll("");
+            String simpleName = BungeeStatics.COLOR_CODES_PATTERN.matcher(pair.getValue()).replaceAll("");
             simpleName = StringUtil.SPACES_AND_UNDERSCORES_PATTERN.matcher(simpleName).replaceAll("");
             if (simpleName.equalsIgnoreCase(name)) {
                 return pair.getKey();
