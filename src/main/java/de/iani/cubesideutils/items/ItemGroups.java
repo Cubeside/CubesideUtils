@@ -84,6 +84,9 @@ public class ItemGroups {
     public static final Set<Material> BUTTONS = Collections.unmodifiableSet(BUTTONS_INTERNAL);
     public static final Set<Material> PRESSURE_PLATES = Collections.unmodifiableSet(PRESSURE_PLATES_INTERNAL);
 
+    private static final EnumSet<Material> MULTI_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> MULTI_BLOCK_PLANTS = Collections.unmodifiableSet(MULTI_BLOCK_PLANTS_INTERNAL);
+
     private static final EnumSet<Material> DOUBLE_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> DOUBLE_BLOCK_PLANTS = Collections.unmodifiableSet(DOUBLE_BLOCK_PLANTS_INTERNAL);
 
@@ -279,12 +282,20 @@ public class ItemGroups {
             }
         }
 
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.VINE);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.SUGAR_CANE);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BAMBOO);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BAMBOO_SAPLING);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.KELP_PLANT);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.KELP);
+
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.LARGE_FERN);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_GRASS);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.ROSE_BUSH);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.LILAC);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SUNFLOWER);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.PEONY);
+        DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_SEAGRASS);
 
         CROPS_INTERNAL.add(Material.NETHER_WART);
         CROPS_INTERNAL.add(Material.WHEAT);
@@ -308,10 +319,15 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.FERN);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DEAD_BUSH);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SWEET_BERRY_BUSH);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.LILY_OF_THE_VALLEY);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CORNFLOWER);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.WITHER_ROSE);
+        DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SEAGRASS);
         SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
         PLANTS_INTERNAL.addAll(DOUBLE_BLOCK_PLANTS_INTERNAL);
+        PLANTS_INTERNAL.addAll(MULTI_BLOCK_PLANTS_INTERNAL);
 
         FISHES_INTERNAL.add(Material.COD);
         FISHES_INTERNAL.add(Material.SALMON);
