@@ -26,6 +26,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 
 public class StringUtil {
     private StringUtil() {
@@ -805,6 +806,29 @@ public class StringUtil {
 
     private static double diff(Color c1, Color c2) {
         return Math.sqrt(Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2));
+    }
+
+    private static final Pattern UNDERSCORE_AND_MINUS_PATTERN = Pattern.compile("[\\_\\-]");
+
+    public static EntityType matchEntityType(String arg) {
+        arg = arg.toUpperCase();
+        try {
+            return EntityType.valueOf(arg);
+        } catch (IllegalArgumentException e) {
+            // ignore
+        }
+
+        arg = UNDERSCORE_AND_MINUS_PATTERN.matcher(arg).replaceAll("");
+        for (EntityType type : EntityType.values()) {
+            if (UNDERSCORE_AND_MINUS_PATTERN.matcher(type.name().toUpperCase()).replaceAll("").equals(arg)) {
+                return type;
+            }
+            if (UNDERSCORE_AND_MINUS_PATTERN.matcher(type.toString().toUpperCase()).replaceAll("").equals(arg)) {
+                return type;
+            }
+        }
+
+        return null;
     }
 
     public static String flip(String s) {
