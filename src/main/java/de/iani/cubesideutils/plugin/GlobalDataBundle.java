@@ -346,4 +346,9 @@ public class GlobalDataBundle implements ConnectionAPI, PlayerMessageAPI, Player
         this.connectionApi.sendData(channel, data);
     }
 
+    @Override
+    public void sendData(String channel, byte[] data, boolean sendToRestriced) {
+        this.connectionApi.sendData(channel, data, sendToRestriced);
+    }
+
 }
