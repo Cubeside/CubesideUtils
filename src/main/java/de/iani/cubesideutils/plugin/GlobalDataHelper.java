@@ -31,6 +31,11 @@ public abstract class GlobalDataHelper<T extends Enum<T>> extends GlobalDataBund
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    public void broadcastData(boolean sendToRestricted, T messageType, Object... data) {
+        sendData(sendToRestricted ? getServers() : null, messageType, data);
+    }
+
+    // Equivalent to broadcastData(false, messageType, data);
     public void sendData(T messageType, Object... data) {
         sendData((GlobalServer) null, messageType, data);
     }
@@ -51,7 +56,7 @@ public abstract class GlobalDataHelper<T extends Enum<T>> extends GlobalDataBund
 
             byte[] msgarry = msgbytes.toByteArray();
             if (servers == null) {
-                sendData(channel, msgarry);
+                sendData(channel, msgarry, false);
             } else {
                 for (GlobalServer server : servers) {
                     server.sendData(channel, msgarry);
