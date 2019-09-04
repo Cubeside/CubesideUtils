@@ -1,7 +1,9 @@
 package de.iani.cubesideutils.commands;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -13,6 +15,7 @@ import java.util.NoSuchElementException;
 public class ArgsParser implements Iterable<String>, Iterator<String> {
 
     @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
     static @interface ArgMatcher {
 
     }
