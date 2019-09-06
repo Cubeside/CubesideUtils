@@ -79,6 +79,9 @@ public class ChatUtil {
     }
 
     public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
+        if (!openPageCommandPrefix.startsWith("/")) {
+            openPageCommandPrefix = "/" + openPageCommandPrefix;
+        }
 
         int numPages = (int) Math.ceil(messages.size() / (double) PAGE_LENGTH);
         if (page >= numPages && page > 0) {

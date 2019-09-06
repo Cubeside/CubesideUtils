@@ -1,11 +1,13 @@
 package de.iani.cubesideutils.sql;
 
+import java.util.regex.Matcher;
+
 public class SQLUtil {
 
     public static final String escapeLike(String arg) {
-        arg = arg.replaceAll("\\\\", "\\\\");
-        arg = arg.replaceAll("\\_", "\\_");
-        arg = arg.replaceAll("\\%", "\\%");
+        arg = arg.replaceAll("\\\\", Matcher.quoteReplacement("\\\\"));
+        arg = arg.replaceAll("\\_", Matcher.quoteReplacement("\\_"));
+        arg = arg.replaceAll("\\%", Matcher.quoteReplacement("\\%"));
         return arg;
     }
 
