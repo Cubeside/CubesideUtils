@@ -81,7 +81,7 @@ public class ChatUtil {
     public static void sendMessagesPaged(CommandSender recipient, List<? extends Sendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
 
         int numPages = (int) Math.ceil(messages.size() / (double) PAGE_LENGTH);
-        if (page >= numPages) {
+        if (page >= numPages && page > 0) {
             sendMessage(recipient, pluginPrefix, warningColor.toString(), name, " hat keine Seite ", (page + 1));
             return;
         }
@@ -90,6 +90,10 @@ public class ChatUtil {
             sendMessage(recipient, pluginPrefix, normalColor.toString(), name, " (Seite ", (page + 1), "/", numPages, "):");
         } else {
             sendMessage(recipient, pluginPrefix, normalColor.toString(), name, ":");
+        }
+
+        if (messages.isEmpty()) {
+            recipient.sendMessage(ChatColor.GRAY + " -- keine --");
         }
 
         int index = page * PAGE_LENGTH;
