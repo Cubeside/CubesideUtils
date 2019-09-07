@@ -84,6 +84,23 @@ public class ItemGroups {
     public static final Set<Material> BUTTONS = Collections.unmodifiableSet(BUTTONS_INTERNAL);
     public static final Set<Material> PRESSURE_PLATES = Collections.unmodifiableSet(PRESSURE_PLATES_INTERNAL);
 
+    // weapons and tools
+    private static final EnumSet<Material> PICKAXES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> AXES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> SHOVELS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> HOES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> SWORDS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> TOOLS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> WEAPONS_INTERNAL = EnumSet.noneOf(Material.class);
+
+    public static final Set<Material> PICKAXES = Collections.unmodifiableSet(PICKAXES_INTERNAL);
+    public static final Set<Material> AXES = Collections.unmodifiableSet(AXES_INTERNAL);
+    public static final Set<Material> SHOVELS = Collections.unmodifiableSet(SHOVELS_INTERNAL);
+    public static final Set<Material> HOES = Collections.unmodifiableSet(HOES_INTERNAL);
+    public static final Set<Material> SWORDS = Collections.unmodifiableSet(SWORDS_INTERNAL);
+    public static final Set<Material> TOOLS = Collections.unmodifiableSet(TOOLS_INTERNAL);
+    public static final Set<Material> WEAPONS = Collections.unmodifiableSet(WEAPONS_INTERNAL);
+
     private static final EnumSet<Material> MULTI_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> MULTI_BLOCK_PLANTS = Collections.unmodifiableSet(MULTI_BLOCK_PLANTS_INTERNAL);
 
@@ -264,6 +281,16 @@ public class ItemGroups {
                         WOODEN_PRESSURE_PLATES_INTERNAL.add(m);
                     }
                     PRESSURE_PLATES_INTERNAL.add(m);
+                } else if (name.endsWith("_PICKAXE")) {
+                    PICKAXES_INTERNAL.add(m);
+                } else if (name.endsWith("_AXE")) {
+                    AXES_INTERNAL.add(m);
+                } else if (name.endsWith("_SHOVEL")) {
+                    SHOVELS_INTERNAL.add(m);
+                } else if (name.endsWith("_HOE")) {
+                    HOES_INTERNAL.add(m);
+                } else if (name.endsWith("_SWORD")) {
+                    SWORDS_INTERNAL.add(m);
                 } else if (name.endsWith("_WALL_SIGN")) {
                     WALL_SIGNS_INTERNAL.add(m);
                 } else if (name.endsWith("_SIGN")) {
@@ -281,6 +308,22 @@ public class ItemGroups {
                 }
             }
         }
+
+        TOOLS_INTERNAL.addAll(PICKAXES_INTERNAL);
+        TOOLS_INTERNAL.addAll(AXES_INTERNAL);
+        TOOLS_INTERNAL.addAll(SHOVELS_INTERNAL);
+        TOOLS_INTERNAL.addAll(HOES_INTERNAL);
+        TOOLS_INTERNAL.addAll(SWORDS_INTERNAL);
+        TOOLS_INTERNAL.add(Material.FISHING_ROD);
+        TOOLS_INTERNAL.add(Material.SHEARS);
+        TOOLS_INTERNAL.add(Material.FLINT_AND_STEEL);
+
+        WEAPONS_INTERNAL.addAll(SWORDS_INTERNAL);
+        WEAPONS_INTERNAL.addAll(AXES_INTERNAL);
+        WEAPONS_INTERNAL.add(Material.TRIDENT);
+        WEAPONS_INTERNAL.add(Material.BOW);
+        WEAPONS_INTERNAL.add(Material.CROSSBOW);
+        WEAPONS_INTERNAL.add(Material.SHIELD);
 
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.VINE);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.SUGAR_CANE);
@@ -618,6 +661,34 @@ public class ItemGroups {
 
     public static boolean isWoodenPressurePlate(Material m) {
         return WOODEN_PRESSURE_PLATES_INTERNAL.contains(m);
+    }
+
+    public static boolean isPickaxe(Material m) {
+        return PICKAXES_INTERNAL.contains(m);
+    }
+
+    public static boolean isAxe(Material m) {
+        return AXES_INTERNAL.contains(m);
+    }
+
+    public static boolean isShovel(Material m) {
+        return SHOVELS_INTERNAL.contains(m);
+    }
+
+    public static boolean isHoe(Material m) {
+        return HOES_INTERNAL.contains(m);
+    }
+
+    public static boolean isSword(Material m) {
+        return SWORDS_INTERNAL.contains(m);
+    }
+
+    public static boolean isTool(Material m) {
+        return TOOLS_INTERNAL.contains(m);
+    }
+
+    public static boolean isWeapon(Material m) {
+        return WEAPONS_INTERNAL.contains(m);
     }
 
     public static boolean isBoat(Material m) {
