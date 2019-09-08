@@ -707,6 +707,14 @@ public class StringUtil {
         return (second == 0 ? dateAndTimeFormat.format(date) : dateAndTimeSecondsFormat.format(date)) + " Uhr";
     }
 
+    public static synchronized String formatDate(long date, boolean displayTime) {
+        return formatDate(new Date(date), displayTime);
+    }
+
+    public static synchronized String formatDate(Date date, boolean displayTime) {
+        return formatDate(date, displayTime, displayTime);
+    }
+
     public static synchronized String formatDate(long date, boolean displayTime, boolean displaySeconds) {
         return formatDate(new Date(date), displayTime, displaySeconds);
     }
