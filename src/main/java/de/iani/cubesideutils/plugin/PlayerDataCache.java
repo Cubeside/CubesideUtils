@@ -105,13 +105,6 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
             left(event.getPlayer().getUniqueId());
             return;
         }
-
-        PlayerData data = get(event.getPlayer().getUniqueId());
-        if (data.getFirstJoin() == 0) {
-            data.setFirstJoinAndLastJoinAndSeen(System.currentTimeMillis());
-        } else {
-            data.setLastJoinAndSeen(System.currentTimeMillis());
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
+import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,22 @@ class EventListener implements Listener {
     private void madeAction(Player player) {
         PlayerData data = plugin.getPlayerDataCache().get(player.getUniqueId());
         data.getOnlineData().madeAction();
+    }
+
+    // First/last join
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onGlobalPlayerJoinedEvent(GlobalPlayerJoinedEvent event) {
+        if (!event.hasJustJoinedTheNetwork()) {
+            return;
+        }
+
+        PlayerData data = plugin.getPlayerDataCache().get(event.getPlayer().getUniqueId(), true);
+        if (data.getFirstJoin() == 0) {
+            data.setFirstJoinAndLastJoinAndSeen(System.currentTimeMillis());
+        } else {
+            data.setLastJoinAndSeen(System.currentTimeMillis());
+        }
     }
 
     // WorldDisplayName
