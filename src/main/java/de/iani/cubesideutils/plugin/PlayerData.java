@@ -52,12 +52,10 @@ public class PlayerData {
             return (OnlinePlayerData) this;
         }
 
-        // TODO: possible that player is online and this is no OnlinePlayerData?
         if (!isOnlineHere()) {
             throw new IllegalStateException("The player isn't online.");
         }
 
-        // TODO: should this happen?!
         return UtilsPlugin.getInstance().getPlayerDataCache().getOnline(this.playerId);
     }
 
