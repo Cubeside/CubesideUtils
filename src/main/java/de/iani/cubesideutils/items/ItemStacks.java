@@ -98,11 +98,13 @@ public class ItemStacks {
         }
         if (!Double.isNaN(addDamage)) {
             boolean attackModifierExists = false;
-            Collection<AttributeModifier> attackSpeedModifiers = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_SPEED);
-            if (attackSpeedModifiers != null) {
-                for (AttributeModifier m : attackSpeedModifiers) {
-                    if (m.getUniqueId().equals(attackSpeedUUID)) {
-                        attackModifierExists = true;
+            if (meta.hasAttributeModifiers()) {
+                Collection<AttributeModifier> attackSpeedModifiers = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_SPEED);
+                if (attackSpeedModifiers != null) {
+                    for (AttributeModifier m : attackSpeedModifiers) {
+                        if (m.getUniqueId().equals(attackSpeedUUID)) {
+                            attackModifierExists = true;
+                        }
                     }
                 }
             }
@@ -110,11 +112,13 @@ public class ItemStacks {
                 meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(attackSpeedUUID, "1.8-attackspeed", 1.5, Operation.ADD_NUMBER, EquipmentSlot.HAND));
             }
             boolean attackDamageExists = false;
-            Collection<AttributeModifier> attackDamageModifiers = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
-            if (attackDamageModifiers != null) {
-                for (AttributeModifier m : attackDamageModifiers) {
-                    if (m.getUniqueId().equals(attackDamageUUID)) {
-                        attackDamageExists = true;
+            if (meta.hasAttributeModifiers()) {
+                Collection<AttributeModifier> attackDamageModifiers = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
+                if (attackDamageModifiers != null) {
+                    for (AttributeModifier m : attackDamageModifiers) {
+                        if (m.getUniqueId().equals(attackDamageUUID)) {
+                            attackDamageExists = true;
+                        }
                     }
                 }
             }
