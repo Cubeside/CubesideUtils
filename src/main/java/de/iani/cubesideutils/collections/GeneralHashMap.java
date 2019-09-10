@@ -426,14 +426,14 @@ public class GeneralHashMap<K, V> extends AbstractMap<K, V> implements Cloneable
         }
 
         initialCapacity = calculateCapacity(initialCapacity);
+        this.elementData = newElementArray(initialCapacity);
+
         this.loadFactor = loadFactor;
         this.elementCount = 0;
         computeThreshold();
 
         this.hasher = Objects.requireNonNull(hasher);
         this.equality = Objects.requireNonNull(equality);
-
-        this.elementData = newElementArray(initialCapacity);
     }
 
     /**
