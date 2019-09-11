@@ -77,6 +77,7 @@ public class GeneralHashMapTest {
 
         for (int i = 0; i < values.length; i++) {
             assertThat(map.put(i, values[i]), is(nullValue()));
+            assertThat(map.size(), is(i + 1));
         }
 
         Object[] newValues = new Object[values.length];
@@ -86,10 +87,12 @@ public class GeneralHashMapTest {
 
         for (int i = 0; i < values.length; i++) {
             assertThat(map.put(i, newValues[i]), is(equalTo(values[i])));
+            assertThat(map.size(), is(values.length));
         }
 
         for (int i = 0; i < values.length; i++) {
             assertThat(map.remove(i), is(equalTo(newValues[i])));
+            assertThat(map.size(), is(values.length - i - 1));
         }
     }
 
@@ -107,6 +110,7 @@ public class GeneralHashMapTest {
 
         for (int i = 0; i < oldValues.length; i++) {
             assertThat(map.put(i, oldValues[i]), is(nullValue()));
+            assertThat(map.size(), is(i + 1));
         }
 
         Object[] newValues = new Object[8 * oldValues.length];
@@ -116,13 +120,16 @@ public class GeneralHashMapTest {
 
         for (int i = 0; i < oldValues.length; i++) {
             assertThat(map.put(i, newValues[i]), is(equalTo(oldValues[i])));
+            assertThat(map.size(), is(oldValues.length));
         }
         for (int i = oldValues.length; i < newValues.length; i++) {
             assertThat(map.put(i, newValues[i]), is(nullValue()));
+            assertThat(map.size(), is(i + 1));
         }
 
         for (int i = 0; i < newValues.length; i++) {
             assertThat(map.remove(i), is(equalTo(newValues[i])));
+            assertThat(map.size(), is(newValues.length - i - 1));
         }
     }
 
