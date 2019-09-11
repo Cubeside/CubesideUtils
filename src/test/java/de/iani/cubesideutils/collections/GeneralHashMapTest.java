@@ -63,46 +63,54 @@ public class GeneralHashMapTest {
     }
 
     @Test
-    public void testFewPutsAndRemovesOnMaps() {
-        testSomePutsAndRemoves(this.defaultHashMap);
-        testSomePutsAndRemoves(this.nonStandardHasherMap);
-        testSomePutsAndRemoves(this.modulo100HasherMap);
+    public void testFewPutsGetsAndRemovesOnMaps() {
+        testSomePutsGetsAndRemoves(this.defaultHashMap);
+        testSomePutsGetsAndRemoves(this.nonStandardHasherMap);
+        testSomePutsGetsAndRemoves(this.modulo100HasherMap);
     }
 
-    protected void testSomePutsAndRemoves(GeneralHashMap<Integer, Object> map) {
-        Object[] values = new Object[5];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = "old" + i;
+    protected void testSomePutsGetsAndRemoves(GeneralHashMap<Integer, Object> map) {
+        Object[] oldValues = new Object[5];
+        for (int i = 0; i < oldValues.length; i++) {
+            oldValues[i] = "old" + i;
         }
 
-        for (int i = 0; i < values.length; i++) {
-            assertThat(map.put(i, values[i]), is(nullValue()));
+        for (int i = 0; i < oldValues.length; i++) {
+            assertThat(map.put(i, oldValues[i]), is(nullValue()));
             assertThat(map.size(), is(i + 1));
         }
 
-        Object[] newValues = new Object[values.length];
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 0; i < oldValues.length; i++) {
+            assertThat(map.get(i), is(equalTo(oldValues[i])));
+        }
+
+        Object[] newValues = new Object[oldValues.length];
+        for (int i = 0; i < oldValues.length; i++) {
             newValues[i] = "new" + i;
         }
 
-        for (int i = 0; i < values.length; i++) {
-            assertThat(map.put(i, newValues[i]), is(equalTo(values[i])));
-            assertThat(map.size(), is(values.length));
+        for (int i = 0; i < oldValues.length; i++) {
+            assertThat(map.put(i, newValues[i]), is(equalTo(oldValues[i])));
+            assertThat(map.size(), is(oldValues.length));
         }
 
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 0; i < newValues.length; i++) {
+            assertThat(map.get(i), is(equalTo(newValues[i])));
+        }
+
+        for (int i = 0; i < newValues.length; i++) {
             assertThat(map.remove(i), is(equalTo(newValues[i])));
-            assertThat(map.size(), is(values.length - i - 1));
+            assertThat(map.size(), is(newValues.length - i - 1));
         }
     }
 
     @Test
-    public void testManyPutsAndRemovesOnMaps() {
-        testSomePutsAndRemoves(this.defaultHashMap);
-        testSomePutsAndRemoves(this.nonStandardHasherMap);
+    public void testManyPutsGetsAndRemovesOnMaps() {
+        testSomePutsGetsAndRemoves(this.defaultHashMap);
+        testSomePutsGetsAndRemoves(this.nonStandardHasherMap);
     }
 
-    protected void testManyPutsAndRemoves(GeneralHashMap<Integer, Object> map) {
+    protected void testManyPutsGetsAndRemoves(GeneralHashMap<Integer, Object> map) {
         Object[] oldValues = new Object[1000];
         for (int i = 0; i < oldValues.length; i++) {
             oldValues[i] = "old" + i;
@@ -111,6 +119,10 @@ public class GeneralHashMapTest {
         for (int i = 0; i < oldValues.length; i++) {
             assertThat(map.put(i, oldValues[i]), is(nullValue()));
             assertThat(map.size(), is(i + 1));
+        }
+
+        for (int i = 0; i < oldValues.length; i++) {
+            assertThat(map.get(i), is(equalTo(oldValues[i])));
         }
 
         Object[] newValues = new Object[8 * oldValues.length];
@@ -125,6 +137,10 @@ public class GeneralHashMapTest {
         for (int i = oldValues.length; i < newValues.length; i++) {
             assertThat(map.put(i, newValues[i]), is(nullValue()));
             assertThat(map.size(), is(i + 1));
+        }
+
+        for (int i = 0; i < newValues.length; i++) {
+            assertThat(map.get(i), is(equalTo(newValues[i])));
         }
 
         for (int i = 0; i < newValues.length; i++) {
