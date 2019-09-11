@@ -206,6 +206,27 @@ public class GeneralHashMapTest {
         assertThat(valueIt.hasNext(), is(false));
 
         assertThat(iterated, is(arrayContaining(values)));
+
+        testRemoveIterator(map, map.entrySet().iterator());
+        for (int i = 0; i < values.length; i++) {
+            map.put(i, values[i]);
+        }
+
+        testRemoveIterator(map, keyIt = map.keySet().iterator());
+        for (int i = 0; i < values.length; i++) {
+            map.put(i, values[i]);
+        }
+
+        testRemoveIterator(map, valueIt = map.values().iterator());
+    }
+
+    public void testRemoveIterator(Map<Integer, Object> map, Iterator<?> iterator) {
+        for (int i = map.size(); i > 0; i--) {
+            assertThat(iterator.hasNext(), is(true));
+            iterator.next();
+            iterator.remove();
+            assertThat(map.size(), is(i - 1));
+        }
     }
 
 }
