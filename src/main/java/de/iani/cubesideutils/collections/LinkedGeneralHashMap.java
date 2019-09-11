@@ -39,7 +39,8 @@ public class LinkedGeneralHashMap<K, V> extends GeneralHashMap<K, V> {
         LinkedEntry currentEntry;
 
         AbstractMapIterator() {
-
+            expectedModCount = LinkedGeneralHashMap.this.modCount;
+            futureEntry = LinkedGeneralHashMap.this.head;
         }
 
         public boolean hasNext() {
