@@ -815,8 +815,11 @@ public class StringUtil {
 
     public static String tryPlural(String of) {
         String lower = of.toLowerCase();
-        if (lower.endsWith("sheep") || lower.endsWith("glass")) {
+        if (lower.endsWith("sheep")) {
             return of;
+        }
+        if (lower.endsWith("us")) {
+            return of.substring(0, of.length() - 2) + "i";
         }
         if (lower.endsWith("s")) {
             return of;
@@ -826,9 +829,6 @@ public class StringUtil {
         }
         if (lower.endsWith("on")) {
             return of + "a";
-        }
-        if (lower.endsWith("us")) {
-            return of.substring(0, of.length() - 2) + "i";
         }
         if (lower.endsWith("f") || lower.endsWith("fe")) {
             return of.substring(0, of.lastIndexOf('f')) + "ves";
