@@ -813,4 +813,33 @@ public class StringUtil {
         return String.valueOf(data);
     }
 
+    public static String tryPlural(String of) {
+        String lower = of.toLowerCase();
+        if (lower.endsWith("sheep") || lower.endsWith("glass")) {
+            return of;
+        }
+        if (lower.endsWith("s")) {
+            return of;
+        }
+        if (lower.endsWith("sh") || lower.endsWith("ch") || lower.endsWith("is") || lower.endsWith("x") || lower.endsWith("z") || lower.endsWith("o")) {
+            return of + "es";
+        }
+        if (lower.endsWith("on")) {
+            return of + "a";
+        }
+        if (lower.endsWith("us")) {
+            return of.substring(0, of.length() - 2) + "i";
+        }
+        if (lower.endsWith("f") || lower.endsWith("fe")) {
+            return of.substring(0, of.lastIndexOf('f')) + "ves";
+        }
+        if (lower.endsWith("y") && CharacterUtil.isConsonant(lower.charAt(lower.length() - 2))) {
+            return of.substring(0, of.length() - 1) + "ies";
+        }
+        if (lower.endsWith("man")) {
+            return of.substring(0, of.length() - 2) + "en";
+        }
+        return of + "s";
+    }
+
 }
