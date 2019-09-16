@@ -1,6 +1,6 @@
 package de.iani.cubesideutils;
 
-import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class FunctionUtil {
@@ -9,21 +9,11 @@ public class FunctionUtil {
         // prevents instances
     }
 
-    private static class NegatedPredicate<T> implements Predicate<T> {
-        private final Predicate<T> original;
-
-        public NegatedPredicate(Predicate<T> original) {
-            this.original = Objects.requireNonNull(original);
-        }
-
-        @Override
-        public boolean test(T t) {
-            return !this.original.test(t);
-        }
-
+    public static <T> Predicate<T> negate(Predicate<T> predicate) {
+        return predicate.negate();
     }
 
-    public static <T> Predicate<T> negate(Predicate<T> predicate) {
-        return (predicate instanceof NegatedPredicate<?>) ? ((NegatedPredicate<T>) predicate).original : new NegatedPredicate<>(predicate);
+    public static <S, T> Predicate<S> functionPredicate(Predicate<T> predicate, Function<S, T> function) {
+        return s -> predicate.test(function.apply(s));
     }
 }
