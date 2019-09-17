@@ -53,9 +53,15 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
     }
 
     public void addCommandMapping(SubCommand command, String... route) {
-        if (route.length == 1 && route[0].contains(" ")) {
-            addCommandMapping(command, route[0].split(" "));
-            return;
+        if (route.length == 1) {
+            if (route[0].isEmpty()) {
+                addCommandMapping(command);
+                return;
+            }
+            if (route[0].contains(" ")) {
+                addCommandMapping(command, route[0].split(" "));
+                return;
+            }
         }
 
         CommandMap current = commands;
