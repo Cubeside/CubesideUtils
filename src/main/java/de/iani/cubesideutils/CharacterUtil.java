@@ -20,6 +20,9 @@ public class CharacterUtil {
     }
 
     public static boolean isConsonant(char c) {
+        if (!isAngloGermanLetter(c)) {
+            return false;
+        }
         return !isVowl(c);
     }
 
