@@ -830,7 +830,7 @@ public class StringUtil {
         if (lower.endsWith("f") || lower.endsWith("fe")) {
             return of.substring(0, of.lastIndexOf('f')) + "ves";
         }
-        if (lower.endsWith("y") && CharacterUtil.isConsonant(lower.charAt(lower.length() - 2))) {
+        if (lower.endsWith("y") && (lower.length() >= 2 && CharacterUtil.isConsonant(lower.charAt(lower.length() - 2)))) {
             return of.substring(0, of.length() - 1) + "ies";
         }
         if (lower.endsWith("man")) {
