@@ -859,9 +859,6 @@ public class StringUtil {
         if (lower.endsWith("sh") || lower.endsWith("ch") || lower.endsWith("is") || lower.endsWith("x") || lower.endsWith("z") || lower.endsWith("o")) {
             return of + "es";
         }
-        if (lower.endsWith("on")) {
-            return of + "a";
-        }
         if (lower.endsWith("f") || lower.endsWith("fe")) {
             return of.substring(0, of.lastIndexOf('f')) + "ves";
         }
