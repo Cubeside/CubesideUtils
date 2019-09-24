@@ -39,6 +39,7 @@ public class UtilsPlugin extends JavaPlugin {
     }
 
     private Database database;
+    private GeneralDataCache generalDataCache;
     private PlayerDataCache playerDataCache;
     private EventListener eventListener;
     private AfkManager afkManager;
@@ -83,6 +84,7 @@ public class UtilsPlugin extends JavaPlugin {
             }
 
             this.database = new Database();
+            this.generalDataCache = new GeneralDataCache();
             this.playerDataCache = new PlayerDataCache();
             this.eventListener = new EventListener();
             this.afkManager = new AfkManager();
@@ -108,6 +110,10 @@ public class UtilsPlugin extends JavaPlugin {
         return this.database;
     }
 
+    GeneralDataCache getGeneralDataCache() {
+        return this.generalDataCache;
+    }
+
     PlayerDataCache getPlayerDataCache() {
         return this.playerDataCache;
     }
@@ -125,11 +131,11 @@ public class UtilsPlugin extends JavaPlugin {
     }
 
     public String getGeneralData(String key) throws SQLException {
-        return this.database.getGeneralData(key);
+        return this.generalDataCache.get(key);
     }
 
     public void setGeneralData(String key, String value) throws SQLException {
-        this.database.setGeneralData(key, value);
+        this.generalDataCache.set(key, value);
     }
 
     public OnlinePlayerData getPlayerData(Player player) {
