@@ -124,6 +124,14 @@ public class UtilsPlugin extends JavaPlugin {
         return this.globalDataBundle;
     }
 
+    public String getGeneralData(String key) throws SQLException {
+        return this.database.getGeneralData(key);
+    }
+
+    public void setGeneralData(String key, String value) throws SQLException {
+        this.database.setGeneralData(key, value);
+    }
+
     public OnlinePlayerData getPlayerData(Player player) {
         return getPlayerData(player.getUniqueId()).getOnlineData();
     }

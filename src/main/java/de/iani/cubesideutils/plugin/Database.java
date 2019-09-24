@@ -19,10 +19,14 @@ class Database {
     private SQLConnection connection;
     private String tablePrefix;
 
+    private String generalDataTableName;
     private String realServersTableName;
     private String playerDataTableName;
     private String afkPlayersTableName;
     private String ranksTableName;
+
+    private String getGeneralDataQuery;
+    private String setGeneralDataQuery;
 
     private String addRealServerQuery;
     private String removeRealServerQuery;
@@ -51,10 +55,14 @@ class Database {
         this.tablePrefix = sqlconf.getTablePrefix();
         this.connection = new MySQLConnection(sqlconf.getHost(), sqlconf.getDatabase(), sqlconf.getUser(), sqlconf.getPassword());
 
+        this.generalDataTableName = this.tablePrefix + "_generalData";
         this.realServersTableName = this.tablePrefix + "_realServers";
         this.playerDataTableName = this.tablePrefix + "_playerData";
         this.afkPlayersTableName = this.tablePrefix + "_afkPlayers";
         this.ranksTableName = this.tablePrefix + "_ranks";
+
+        this.getGeneralDataQuery = "SELECT value FROM `" + this.generalDataTableName + "` WHERE `key` = ?";
+        this.setGeneralDataQuery = "INSERT INTO `" + this.generalDataTableName + "` (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = ?";
 
         this.addRealServerQuery = "INSERT IGNORE INTO `" + this.realServersTableName + "` (server) VALUES (?)";
         this.removeRealServerQuery = "DELETE FROM `" + this.realServersTableName + "` WHERE server = ?";
@@ -81,6 +89,11 @@ class Database {
 
     private void createMissingTables() throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
+            if (!sqlConnection.hasTable(this.generalDataTableName)) {
+                Statement smt = connection.createStatement();
+                smt.executeUpdate("CREATE TABLE `" + this.generalDataTableName + "` (" + "`key` VARCHAR(128), " + "value MEDIUMTEXT, " + "PRIMARY KEY (`key`)) " + "ENGINE = innodb");
+                smt.close();
+            }
             if (!sqlConnection.hasTable(this.realServersTableName)) {
                 Statement smt = connection.createStatement();
                 smt.executeUpdate("CREATE TABLE `" + this.realServersTableName + "` (" + "server VARCHAR(64), " + "PRIMARY KEY (server)) " + "ENGINE = innodb");
@@ -103,6 +116,29 @@ class Database {
                 smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "rank VARCHAR(64), " + "priority INT, " + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (rank) " + ") ENGINE = innodb");
                 smt.close();
             }
+            return null;
+        });
+    }
+
+    public String getGeneralData(String key) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getGeneralDataQuery);
+            smt.setString(1, key);
+
+            ResultSet rs = smt.executeQuery();
+            String result = rs.next() ? rs.getString(1) : null;
+            rs.close();
+            return result;
+        });
+    }
+
+    public void setGeneralData(String key, String value) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setGeneralDataQuery);
+            smt.setString(1, key);
+            smt.setString(2, value);
+            smt.setString(3, value);
+            smt.executeUpdate();
             return null;
         });
     }
