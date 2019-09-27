@@ -1,12 +1,12 @@
 package de.iani.cubesideutils.commands;
 
+import de.iani.cubesideutils.Pair;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -18,31 +18,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.util.StringUtil;
 
-public class CommandRouter implements CommandExecutor, TabCompleter {
+public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSender> implements CommandExecutor, TabCompleter {
 
     public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
 
-    private class CommandMap {
-        private String name;
-
-        private CommandMap parent;
-
-        private HashMap<String, CommandMap> subCommands;
-
-        private ArrayList<CommandMap> subcommandsOrdered;
-
-        private SubCommand executor;
-
-        public CommandMap(CommandMap parent, String name) {
-            this.parent = parent;
-            this.name = name;
-        }
+    public CommandRouter(PluginCommand command) {
+        this(command, true);
     }
 
-    private CommandMap commands;
-
-    public CommandRouter(PluginCommand command) {
-        commands = new CommandMap(null, null);
+    public CommandRouter(PluginCommand command, boolean caseInsensitive) {
+        super(caseInsensitive);
         command.setExecutor(this);
         command.setTabCompleter(this);
     }
@@ -52,154 +37,44 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
         command.setTabCompleter(this);
     }
 
-    public void addCommandMapping(SubCommand command, String... route) {
-        if (route.length == 1) {
-            if (route[0].isEmpty()) {
-                addCommandMapping(command);
-                return;
-            }
-            if (route[0].contains(" ")) {
-                addCommandMapping(command, route[0].split(" "));
-                return;
-            }
-        }
-
-        CommandMap current = commands;
-        for (int i = 0; i < route.length; i++) {
-            if (current.subCommands == null) {
-                current.subCommands = new HashMap<>();
-                current.subcommandsOrdered = new ArrayList<>();
-            }
-            String routePart = route[i].toLowerCase();
-            CommandMap part = current.subCommands.get(routePart);
-            if (part == null) {
-                part = new CommandMap(current, routePart);
-                current.subCommands.put(routePart, part);
-                current.subcommandsOrdered.add(part);
-            }
-            current = part;
-        }
-        if (current.executor != null) {
-            throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is already mapped!");
-        }
-        current.executor = command;
-    }
-
-    public void addAliases(String aliases[], String... route) {
-        for (String alias : aliases) {
-            addAlias(alias, route);
-        }
-    }
-
-    public void addAliases(Iterable<String> aliases, String... route) {
-        for (String alias : aliases) {
-            addAlias(alias, route);
-        }
-    }
-
-    public void addAlias(String alias, String... route) {
-        if (route.length == 0) {
-            throw new IllegalArgumentException("Route may not be empty!");
-        }
-        if (route.length == 1 && route[0].contains(" ")) {
-            addAlias(alias, route[0].split(" "));
-            return;
-        }
-
-        alias = alias.toLowerCase().trim();
-        CommandMap current = commands;
-        for (int i = 0; i < route.length - 1; i++) {
-            if (current.subCommands == null) {
-                throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
-            }
-            String routePart = route[i].toLowerCase();
-            CommandMap part = current.subCommands.get(routePart);
-            if (part == null) {
-                throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
-            }
-            current = part;
-        }
-        CommandMap createAliasFor = current.subCommands.get(route[route.length - 1].toLowerCase());
-        if (createAliasFor == null) {
-            throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
-        }
-        if (current.subCommands.get(alias) != null) {
-            route = route.clone();
-            route[route.length - 1] = alias;
-            throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is already mapped!");
-        }
-
-        current.subCommands.put(alias, createAliasFor);
-        // dont add to current.subcommandsOrdered, because it should not be shown in the help message
-    }
-
     // untested!
     public SubCommand getSubCommand(String path) {
         String[] args = path.split(" ");
-        CommandMap currentMap = commands;
-        int nr = 0;
-        while (currentMap != null) {
-            String currentCmdPart = args.length > nr ? args[nr] : null;
-            if (currentCmdPart != null) {
-                currentCmdPart = currentCmdPart.toLowerCase();
-            }
-            // descend to subcommand?
-            if (currentCmdPart != null && currentMap.subCommands != null) {
-                CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-                if (subMap != null) {
-                    nr += 1;
-                    currentMap = subMap;
-                    continue;
-                }
-            }
-            // found?
-            SubCommand toExecute = currentMap.executor;
-            if (toExecute != null) {
-                return toExecute;
-            }
-            return null;
-        }
-        return null;
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(null, args);
+        CommandMap currentMap = commandMapAndArg.first;
+        int nr = commandMapAndArg.second;
+        return nr == args.length ? currentMap.executor : null;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(sender, args, 1);
+        CommandMap currentMap = commandMapAndArg.first;
+        int nr = commandMapAndArg.second;
+
         String partial = args.length > 0 ? args[args.length - 1] : "";
-        CommandMap currentMap = commands;
-        int nr = 0;
-        while (currentMap != null) {
-            String currentCmdPart = args.length - 1 > nr ? args[nr] : null;
-            if (currentCmdPart != null) {
-                currentCmdPart = currentCmdPart.toLowerCase();
-            }
-            // descend to subcommand?
-            if (currentCmdPart != null && currentMap.subCommands != null) {
-                CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-                if (subMap != null) {
-                    nr += 1;
-                    currentMap = subMap;
-                    continue;
+        Collection<String> options = null;
+        List<String> optionsList = null;
+        // get tabcomplete options from command
+        if (currentMap.executor != null) {
+            options = Collections.emptyList();
+            if (hasPermission(sender, currentMap.executor.getRequiredPermission())) {
+                if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
+                    options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
                 }
             }
-            Collection<String> options = null;
-            List<String> optionsList = null;
-            // get tabcomplete options from command
-            if (currentMap.executor != null) {
-                options = Collections.emptyList();
-                if (currentMap.executor.getRequiredPermission() == null || sender.hasPermission(currentMap.executor.getRequiredPermission())) {
-                    if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
-                        options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
-                    }
-                }
-            }
-            // get tabcomplete options from subcommands
-            if (currentMap.subCommands != null) {
-                for (Entry<String, CommandMap> e : currentMap.subCommands.entrySet()) {
-                    String key = e.getKey();
-                    if (StringUtil.startsWithIgnoreCase(key, partial)) {
-                        CommandMap subcmd = e.getValue();
-                        if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
-                            if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
+        } else {
+            options = Collections.emptyList();
+        }
+        // get tabcomplete options from subcommands
+        if (nr == args.length - 1 && currentMap.subCommands != null) {
+            for (Entry<String, CommandMap> e : currentMap.subCommands.entrySet()) {
+                String key = e.getKey();
+                if (StringUtil.startsWithIgnoreCase(key, partial)) {
+                    CommandMap subcmd = e.getValue();
+                    if (hasAnyPermission(sender, subcmd.requiredPermissions)) {
+                        if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
+                            if (isAnySubCommandAvailable(sender, subcmd)) {
                                 if (optionsList == null) {
                                     optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
                                     options = optionsList;
@@ -210,55 +85,47 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                     }
                 }
             }
-            if (options != null) {
-                optionsList = StringUtil.copyPartialMatches(partial, options, new ArrayList<String>());
-                Collections.sort(optionsList);
-            }
-            return optionsList;
         }
-        return null;
+        if (options != null) {
+            optionsList = StringUtil.copyPartialMatches(partial, options, new ArrayList<String>());
+            Collections.sort(optionsList);
+        }
+        return optionsList;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        CommandMap currentMap = commands;
-        int nr = 0;
-        while (currentMap != null) {
-            String currentCmdPart = args.length > nr ? args[nr] : null;
-            if (currentCmdPart != null) {
-                currentCmdPart = currentCmdPart.toLowerCase();
-            }
-            // descend to subcommand?
-            if (currentCmdPart != null && currentMap.subCommands != null) {
-                CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-                if (subMap != null) {
-                    nr += 1;
-                    currentMap = subMap;
-                    continue;
-                }
-            }
-            // execute this?
-            SubCommand toExecute = currentMap.executor;
-            if (toExecute != null) {
-                if (toExecute.allowsCommandBlock() || !(sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-                    if (!toExecute.requiresPlayer() || sender instanceof Player) {
-                        if ((toExecute.getRequiredPermission() == null || sender.hasPermission(toExecute.getRequiredPermission())) && toExecute.isAvailable(sender)) {
-                            return toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr));
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "No permission!");
-                        }
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(sender, args);
+        CommandMap currentMap = commandMapAndArg.first;
+        int nr = commandMapAndArg.second;
+
+        // execute this?
+        SubCommand toExecute = currentMap.executor;
+        if (toExecute != null) {
+            if (toExecute.allowsCommandBlock() || !(sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
+                if (!toExecute.requiresPlayer() || sender instanceof Player) {
+                    if (hasPermission(sender, toExecute.getRequiredPermission()) && toExecute.isAvailable(sender)) {
+                        return toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr));
                     } else {
-                        sender.sendMessage(ChatColor.RED + "This command can only be executed by players!");
+                        sender.sendMessage(ChatColor.RED + "No permission!");
+                        return true;
                     }
                 } else {
-                    sender.sendMessage(ChatColor.RED + "This command is not allowed for CommandBlocks!");
+                    sender.sendMessage(ChatColor.RED + "This command can only be executed by players!");
+                    return true;
                 }
+            } else {
+                sender.sendMessage(ChatColor.RED + "This command is not allowed for CommandBlocks!");
+                return true;
             }
-            // show valid cmds
-            showHelp(sender, alias, currentMap);
+        }
+        if (!hasAnyPermission(sender, currentMap.requiredPermissions) || !isAnySubCommandAvailable(sender, currentMap)) {
+            sender.sendMessage(ChatColor.RED + "No permission!");
             return true;
         }
-        return false;
+        // show valid cmds
+        showHelp(sender, alias, currentMap);
+        return true;
     }
 
     private String getCommandString(String alias, CommandMap currentMap) {
@@ -283,9 +150,11 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
                 String key = subcmd.name;
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
-                    sender.sendMessage(prefix + key + " ...");
+                    if (hasAnyPermission(sender, subcmd.requiredPermissions) && isAnySubCommandAvailable(sender, subcmd)) {
+                        sender.sendMessage(prefix + key + " ...");
+                    }
                 } else {
-                    if ((subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) && subcmd.executor.isAvailable(sender)) {
+                    if (hasPermission(sender, subcmd.executor.getRequiredPermission()) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
                             sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
@@ -295,5 +164,36 @@ public class CommandRouter implements CommandExecutor, TabCompleter {
         } else {
 
         }
+    }
+
+    private boolean isAnySubCommandAvailable(CommandSender sender, CommandMap cmd) {
+        if (cmd.executor != null && cmd.executor.isAvailable(sender)) {
+            return true;
+        }
+        if (cmd.subcommandsOrdered != null) {
+            for (CommandMap subcommand : cmd.subcommandsOrdered) {
+                if (isAnySubCommandAvailable(sender, subcommand)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean hasPermission(CommandSender handler, String permission) {
+        return permission == null || handler.hasPermission(permission);
+    }
+
+    @Override
+    protected boolean hasAnyPermission(CommandSender handler, Set<String> permissions) {
+        if (permissions == null) {
+            return true;
+        }
+        for (String permission : permissions) {
+            if (handler.hasPermission(permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
