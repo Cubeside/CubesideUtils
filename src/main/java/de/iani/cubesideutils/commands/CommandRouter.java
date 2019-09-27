@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -17,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.util.StringUtil;
 
-public class CommandRouter extends AbstractCommandRouter<SubCommand> implements CommandExecutor, TabCompleter {
+public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSender> implements CommandExecutor, TabCompleter {
 
     public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
 
@@ -35,12 +36,12 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
     @Override
     public SubCommand getSubCommand(String path) {
         String[] args = path.split(" ");
-        return matchCommandMap(args).first.executor;
+        return matchCommandMap(null, args).first.executor;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        Pair<AbstractCommandRouter<SubCommand>.CommandMap, Integer> commandMapAndArg = matchCommandMap(args, 1);
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(sender, args, 1);
         CommandMap currentMap = commandMapAndArg.first;
         int nr = commandMapAndArg.second;
 
@@ -50,11 +51,13 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
         // get tabcomplete options from command
         if (currentMap.executor != null) {
             options = Collections.emptyList();
-            if (currentMap.executor.getRequiredPermission() == null || sender.hasPermission(currentMap.executor.getRequiredPermission())) {
+            if (hasPermission(sender, currentMap.executor.getRequiredPermission())) {
                 if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
                     options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
                 }
             }
+        } else {
+            options = Collections.emptyList();
         }
         // get tabcomplete options from subcommands
         if (currentMap.subCommands != null) {
@@ -62,13 +65,15 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
                 String key = e.getKey();
                 if (StringUtil.startsWithIgnoreCase(key, partial)) {
                     CommandMap subcmd = e.getValue();
-                    if (subcmd.executor == null || subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) {
+                    if (hasAnyPermission(sender, subcmd.requiredPermissions)) {
                         if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                            if (optionsList == null) {
-                                optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
-                                options = optionsList;
+                            if (isAnySubCommandAvailable(sender, subcmd)) {
+                                if (optionsList == null) {
+                                    optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
+                                    options = optionsList;
+                                }
+                                optionsList.add(key);
                             }
-                            optionsList.add(key);
                         }
                     }
                 }
@@ -83,7 +88,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        Pair<AbstractCommandRouter<SubCommand>.CommandMap, Integer> commandMapAndArg = matchCommandMap(args);
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(sender, args);
         CommandMap currentMap = commandMapAndArg.first;
         int nr = commandMapAndArg.second;
 
@@ -92,17 +97,24 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
         if (toExecute != null) {
             if (toExecute.allowsCommandBlock() || !(sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
                 if (!toExecute.requiresPlayer() || sender instanceof Player) {
-                    if ((toExecute.getRequiredPermission() == null || sender.hasPermission(toExecute.getRequiredPermission())) && toExecute.isAvailable(sender)) {
+                    if (hasPermission(sender, toExecute.getRequiredPermission()) && toExecute.isAvailable(sender)) {
                         return toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr));
                     } else {
                         sender.sendMessage(ChatColor.RED + "No permission!");
+                        return true;
                     }
                 } else {
                     sender.sendMessage(ChatColor.RED + "This command can only be executed by players!");
+                    return true;
                 }
             } else {
                 sender.sendMessage(ChatColor.RED + "This command is not allowed for CommandBlocks!");
+                return true;
             }
+        }
+        if (!hasAnyPermission(sender, currentMap.requiredPermissions) || !isAnySubCommandAvailable(sender, currentMap)) {
+            sender.sendMessage(ChatColor.RED + "No permission!");
+            return true;
         }
         // show valid cmds
         showHelp(sender, alias, currentMap);
@@ -131,9 +143,11 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
                 String key = subcmd.name;
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
-                    sender.sendMessage(prefix + key + " ...");
+                    if (hasAnyPermission(sender, subcmd.requiredPermissions) && isAnySubCommandAvailable(sender, subcmd)) {
+                        sender.sendMessage(prefix + key + " ...");
+                    }
                 } else {
-                    if ((subcmd.executor.getRequiredPermission() == null || sender.hasPermission(subcmd.executor.getRequiredPermission())) && subcmd.executor.isAvailable(sender)) {
+                    if (hasPermission(sender, subcmd.executor.getRequiredPermission()) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
                             sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
@@ -143,5 +157,36 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand> implements 
         } else {
 
         }
+    }
+
+    private boolean isAnySubCommandAvailable(CommandSender sender, CommandMap cmd) {
+        if (cmd.executor != null && cmd.executor.isAvailable(sender)) {
+            return true;
+        }
+        if (cmd.subcommandsOrdered != null) {
+            for (CommandMap subcommand : cmd.subcommandsOrdered) {
+                if (isAnySubCommandAvailable(sender, subcommand)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean hasPermission(CommandSender handler, String permission) {
+        return permission == null || handler.hasPermission(permission);
+    }
+
+    @Override
+    protected boolean hasAnyPermission(CommandSender handler, Set<String> permissions) {
+        if (permissions == null) {
+            return true;
+        }
+        for (String permission : permissions) {
+            if (handler.hasPermission(permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,11 +1,14 @@
 package de.iani.cubesideutils.commands;
 
+import com.google.common.base.Objects;
 import de.iani.cubesideutils.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-public abstract class AbstractCommandRouter<T> {
+public abstract class AbstractCommandRouter<ControllerT extends PermissionRequirer, HandlerT> {
 
     protected class CommandMap {
         protected String name;
@@ -16,7 +19,12 @@ public abstract class AbstractCommandRouter<T> {
 
         protected ArrayList<CommandMap> subcommandsOrdered;
 
-        protected T executor;
+        protected ControllerT executor;
+
+        /**
+         * Required permissions for executor/subcommands - if null at least one executor/subcommand does not require a permission
+         */
+        protected HashSet<String> requiredPermissions;
 
         public CommandMap(CommandMap parent, String name) {
             this.parent = parent;
@@ -30,7 +38,7 @@ public abstract class AbstractCommandRouter<T> {
         commands = new CommandMap(null, null);
     }
 
-    public void addCommandMapping(T command, String... route) {
+    public void addCommandMapping(ControllerT command, String... route) {
         if (route.length == 1) {
             if (route[0].isEmpty()) {
                 addCommandMapping(command);
@@ -54,6 +62,7 @@ public abstract class AbstractCommandRouter<T> {
                 part = new CommandMap(current, routePart);
                 current.subCommands.put(routePart, part);
                 current.subcommandsOrdered.add(part);
+                onSubCommandsModified(current);
             }
             current = part;
         }
@@ -61,6 +70,7 @@ public abstract class AbstractCommandRouter<T> {
             throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is already mapped!");
         }
         current.executor = command;
+        onSubCommandsModified(current);
     }
 
     public void addAliases(String aliases[], String... route) {
@@ -109,10 +119,11 @@ public abstract class AbstractCommandRouter<T> {
 
         current.subCommands.put(alias, createAliasFor);
         // dont add to current.subcommandsOrdered, because it should not be shown in the help message
+        onSubCommandsModified(current);
     }
 
     // untested!
-    public T getSubCommand(String path) {
+    public ControllerT getSubCommand(String path) {
         String[] args = path.split(" ");
         CommandMap currentMap = commands;
         int nr = 0;
@@ -131,7 +142,7 @@ public abstract class AbstractCommandRouter<T> {
                 }
             }
             // found?
-            T toExecute = currentMap.executor;
+            ControllerT toExecute = currentMap.executor;
             if (toExecute != null) {
                 return toExecute;
             }
@@ -140,11 +151,11 @@ public abstract class AbstractCommandRouter<T> {
         return null;
     }
 
-    protected Pair<CommandMap, Integer> matchCommandMap(String[] args) {
-        return matchCommandMap(args, 0);
+    protected Pair<CommandMap, Integer> matchCommandMap(HandlerT handler, String[] args) {
+        return matchCommandMap(handler, args, 0);
     }
 
-    protected Pair<CommandMap, Integer> matchCommandMap(String[] args, int ignoredLastArgs) {
+    protected Pair<CommandMap, Integer> matchCommandMap(HandlerT handler, String[] args, int ignoredLastArgs) {
         CommandMap currentMap = commands;
         int nr = 0;
         while (true) {
@@ -153,16 +164,61 @@ public abstract class AbstractCommandRouter<T> {
                 currentCmdPart = currentCmdPart.toLowerCase();
             }
             // descend to subcommand?
-            if (currentCmdPart != null && currentMap.subCommands != null) {
-                CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-                if (subMap != null) {
-                    nr += 1;
-                    currentMap = subMap;
-                    continue;
+            if (currentCmdPart == null || currentMap.subCommands == null) {
+                break;
+            }
+            CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
+            if (subMap == null || (subMap.requiredPermissions != null && !hasAnyPermission(handler, subMap.requiredPermissions))) {
+                break;
+            }
+            nr += 1;
+            currentMap = subMap;
+        }
+        return new Pair<>(currentMap, nr);
+    }
+
+    abstract protected boolean hasAnyPermission(HandlerT handler, Set<String> permissions);
+
+    protected void onSubCommandsModified(CommandMap map) {
+        HashSet<String> requiredPermissions = null;
+        if (map.executor != null) {
+            String requiredPermission = map.executor.getRequiredPermission();
+            if (requiredPermission == null) {
+                if (map.requiredPermissions != null) {
+                    map.requiredPermissions = null;
+                    if (map.parent != null) {
+                        onSubCommandsModified(map.parent);
+                    }
+                }
+                return;
+            } else {
+                requiredPermissions = new HashSet<>();
+                requiredPermissions.add(requiredPermission);
+            }
+        }
+        if (map.subcommandsOrdered != null) {
+            for (CommandMap subMap : map.subcommandsOrdered) {
+                if (subMap.requiredPermissions == null) {
+                    if (map.requiredPermissions != null) {
+                        map.requiredPermissions = null;
+                        if (map.parent != null) {
+                            onSubCommandsModified(map.parent);
+                        }
+                    }
+                    return;
+                } else {
+                    if (requiredPermissions == null) {
+                        requiredPermissions = new HashSet<>();
+                    }
+                    requiredPermissions.addAll(subMap.requiredPermissions);
                 }
             }
-
-            return new Pair<>(currentMap, nr);
+        }
+        if (!Objects.equal(map.requiredPermissions, requiredPermissions)) {
+            map.requiredPermissions = requiredPermissions;
+            if (map.parent != null) {
+                onSubCommandsModified(map.parent);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public abstract class SubCommand {
+public abstract class SubCommand implements PermissionRequirer {
     public boolean requiresPlayer() {
         return false;
     }
@@ -13,6 +13,7 @@ public abstract class SubCommand {
         return false;
     }
 
+    @Override
     public String getRequiredPermission() {
         return null;
     }
