@@ -23,6 +23,11 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
     public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
 
     public CommandRouter(PluginCommand command) {
+        this(command, true);
+    }
+
+    public CommandRouter(PluginCommand command, boolean caseInsensitive) {
+        super(caseInsensitive);
         command.setExecutor(this);
         command.setTabCompleter(this);
     }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 public abstract class AbstractCommandRouter<ControllerT extends PermissionRequirer, HandlerT> {
@@ -32,10 +33,13 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
         }
     }
 
-    private CommandMap commands;
+    private final CommandMap commands;
 
-    public AbstractCommandRouter() {
+    private final boolean caseInsensitive;
+
+    public AbstractCommandRouter(boolean caseInsensitive) {
         commands = new CommandMap(null, null);
+        this.caseInsensitive = caseInsensitive;
     }
 
     public void addCommandMapping(ControllerT command, String... route) {
@@ -56,7 +60,7 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
                 current.subCommands = new HashMap<>();
                 current.subcommandsOrdered = new ArrayList<>();
             }
-            String routePart = route[i].toLowerCase();
+            String routePart = toLowerCaseIfCaseInsensitive(route[i]);
             CommandMap part = current.subCommands.get(routePart);
             if (part == null) {
                 part = new CommandMap(current, routePart);
@@ -93,21 +97,20 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
             addAlias(alias, route[0].split(" "));
             return;
         }
-
-        alias = alias.toLowerCase().trim();
+        alias = toLowerCaseIfCaseInsensitive(alias);
         CommandMap current = commands;
         for (int i = 0; i < route.length - 1; i++) {
             if (current.subCommands == null) {
                 throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
             }
-            String routePart = route[i].toLowerCase();
+            String routePart = toLowerCaseIfCaseInsensitive(route[i]);
             CommandMap part = current.subCommands.get(routePart);
             if (part == null) {
                 throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
             }
             current = part;
         }
-        CommandMap createAliasFor = current.subCommands.get(route[route.length - 1].toLowerCase());
+        CommandMap createAliasFor = current.subCommands.get(toLowerCaseIfCaseInsensitive(route[route.length - 1]));
         if (createAliasFor == null) {
             throw new IllegalArgumentException("Path " + Arrays.toString(route) + " is not mapped!");
         }
@@ -130,7 +133,7 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
         while (currentMap != null) {
             String currentCmdPart = args.length > nr ? args[nr] : null;
             if (currentCmdPart != null) {
-                currentCmdPart = currentCmdPart.toLowerCase();
+                currentCmdPart = toLowerCaseIfCaseInsensitive(currentCmdPart);
             }
             // descend to subcommand?
             if (currentCmdPart != null && currentMap.subCommands != null) {
@@ -161,7 +164,7 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
         while (true) {
             String currentCmdPart = args.length - ignoredLastArgs > nr ? args[nr] : null;
             if (currentCmdPart != null) {
-                currentCmdPart = currentCmdPart.toLowerCase();
+                currentCmdPart = toLowerCaseIfCaseInsensitive(currentCmdPart);
             }
             // descend to subcommand?
             if (currentCmdPart == null || currentMap.subCommands == null) {
@@ -220,5 +223,9 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
                 onSubCommandsModified(map.parent);
             }
         }
+    }
+
+    protected String toLowerCaseIfCaseInsensitive(String s) {
+        return caseInsensitive ? s.toLowerCase(Locale.US) : s;
     }
 }
