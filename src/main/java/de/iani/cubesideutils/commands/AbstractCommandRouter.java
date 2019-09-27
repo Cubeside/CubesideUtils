@@ -125,35 +125,6 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
         onSubCommandsModified(current);
     }
 
-    // untested!
-    public ControllerT getSubCommand(String path) {
-        String[] args = path.split(" ");
-        CommandMap currentMap = commands;
-        int nr = 0;
-        while (currentMap != null) {
-            String currentCmdPart = args.length > nr ? args[nr] : null;
-            if (currentCmdPart != null) {
-                currentCmdPart = toLowerCaseIfCaseInsensitive(currentCmdPart);
-            }
-            // descend to subcommand?
-            if (currentCmdPart != null && currentMap.subCommands != null) {
-                CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-                if (subMap != null) {
-                    nr += 1;
-                    currentMap = subMap;
-                    continue;
-                }
-            }
-            // found?
-            ControllerT toExecute = currentMap.executor;
-            if (toExecute != null) {
-                return toExecute;
-            }
-            return null;
-        }
-        return null;
-    }
-
     protected Pair<CommandMap, Integer> matchCommandMap(HandlerT handler, String[] args) {
         return matchCommandMap(handler, args, 0);
     }

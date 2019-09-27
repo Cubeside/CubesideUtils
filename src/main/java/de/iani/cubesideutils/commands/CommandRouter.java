@@ -38,10 +38,12 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
     }
 
     // untested!
-    @Override
     public SubCommand getSubCommand(String path) {
         String[] args = path.split(" ");
-        return matchCommandMap(null, args).first.executor;
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(null, args);
+        CommandMap currentMap = commandMapAndArg.first;
+        int nr = commandMapAndArg.second;
+        return nr == args.length ? currentMap.executor : null;
     }
 
     @Override
