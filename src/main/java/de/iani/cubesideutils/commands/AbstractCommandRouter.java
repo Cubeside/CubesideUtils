@@ -12,20 +12,20 @@ import java.util.Set;
 public abstract class AbstractCommandRouter<ControllerT extends PermissionRequirer, HandlerT> {
 
     protected class CommandMap {
-        protected String name;
+        public final String name;
 
-        protected CommandMap parent;
+        public final CommandMap parent;
 
-        protected HashMap<String, CommandMap> subCommands;
+        public HashMap<String, CommandMap> subCommands;
 
-        protected ArrayList<CommandMap> subcommandsOrdered;
+        public ArrayList<CommandMap> subcommandsOrdered;
 
-        protected ControllerT executor;
+        public ControllerT executor;
 
         /**
          * Required permissions for executor/subcommands - if null at least one executor/subcommand does not require a permission
          */
-        protected HashSet<String> requiredPermissions;
+        public HashSet<String> requiredPermissions;
 
         public CommandMap(CommandMap parent, String name) {
             this.parent = parent;
