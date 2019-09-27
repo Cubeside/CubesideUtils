@@ -60,7 +60,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             options = Collections.emptyList();
         }
         // get tabcomplete options from subcommands
-        if (currentMap.subCommands != null) {
+        if (nr == args.length - 1 && currentMap.subCommands != null) {
             for (Entry<String, CommandMap> e : currentMap.subCommands.entrySet()) {
                 String key = e.getKey();
                 if (StringUtil.startsWithIgnoreCase(key, partial)) {
