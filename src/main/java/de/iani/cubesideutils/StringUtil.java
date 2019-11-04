@@ -331,7 +331,7 @@ public class StringUtil {
         return breakLines(text, lineLength, ignoreForLength, forceLineBreak, ignoreForLength == BungeeStatics.COLOR_CODES_PATTERN);
     }
 
-    // preserveColorCodes without ignoreForLength set to MATCH_COLOR_CODES may lead to strange results
+    // preserveColorCodes without ignoreForLength set to COLOR_CODES_PATTERN may lead to strange results
     public static List<String> breakLines(String text, int lineLength, Pattern ignoreForLength, boolean forceLineBreak, boolean preserveColorCodes) {
         if (lineLength <= 0) {
             throw new IllegalArgumentException("lineLength must be positive");
