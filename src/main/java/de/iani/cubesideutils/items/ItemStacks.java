@@ -248,33 +248,70 @@ public class ItemStacks {
      * @return missing items (empty if all items are present)
      */
     public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes) {
+        return doesHave(player, items, removeIfYes, true, true);
+    }
+
+    /**
+     * Checks whether the given player's inventory contains the given items.
+     *
+     * Returns all missing items. If removeIfYes is true and all items are present, they are removed.
+     * If a non-empty array is returned, or if removeIfYes is false, the player's inventory has been left unchanged.
+     *
+     * @param player
+     *            the player to check
+     * @param items
+     *            the items to check for
+     * @param includeExtra
+     *            whether or not to include the player's off hand as part of the inventory
+     * @param includeArmor
+     *            whether or not to include the player's armor slots as part of the inventory
+     * @return missing items (empty if all items are present)
+     */
+    public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes, boolean includeExtra, boolean includeArmor) {
         items = deepCopy(items);
 
-        ItemStack[] oldHis = player.getInventory().getStorageContents();
-        ItemStack[] his = deepCopy(oldHis);
+        ItemStack[] oldContents = player.getInventory().getStorageContents();
+        ItemStack[] oldExtraContents = includeExtra ? player.getInventory().getExtraContents() : null;
+        ItemStack[] oldArmorConents = includeArmor ? player.getInventory().getArmorContents() : null;
+
+        ItemStack[] normalContents = deepCopy(oldContents);
+        ItemStack[] extraContents = includeExtra ? deepCopy(oldExtraContents) : null;
+        ItemStack[] armorContents = includeArmor ? deepCopy(oldArmorConents) : null;
+
+        List<ItemStack[]> contentList = new ArrayList<>(3);
+        contentList.add(normalContents);
+        if (includeExtra) {
+            // extra before armor, because off hand should be used before armor
+            contentList.add(extraContents);
+        }
+        if (includeArmor) {
+            contentList.add(armorContents);
+        }
 
         boolean has = true;
         outer: for (ItemStack toStack : items) {
-            for (int i = 0; i < his.length; i++) {
-                ItemStack hisStack = his[i];
-                if (hisStack == null || hisStack.getAmount() <= 0) {
-                    continue;
-                }
-                if (!hisStack.isSimilar(toStack)) {
-                    continue;
-                }
-                if (toStack.getAmount() > hisStack.getAmount()) {
-                    toStack.setAmount(toStack.getAmount() - hisStack.getAmount());
-                    his[i] = null;
-                    continue;
-                } else if (toStack.getAmount() < hisStack.getAmount()) {
-                    hisStack.setAmount(hisStack.getAmount() - toStack.getAmount());
-                    toStack.setAmount(0);
-                    continue outer;
-                } else {
-                    his[i] = null;
-                    toStack.setAmount(0);
-                    continue outer;
+            for (ItemStack[] contents : contentList) {
+                for (int i = 0; i < contents.length; i++) {
+                    ItemStack hisStack = contents[i];
+                    if (hisStack == null || hisStack.getAmount() <= 0) {
+                        continue;
+                    }
+                    if (!hisStack.isSimilar(toStack)) {
+                        continue;
+                    }
+                    if (toStack.getAmount() > hisStack.getAmount()) {
+                        toStack.setAmount(toStack.getAmount() - hisStack.getAmount());
+                        contents[i] = null;
+                        continue;
+                    } else if (toStack.getAmount() < hisStack.getAmount()) {
+                        hisStack.setAmount(hisStack.getAmount() - toStack.getAmount());
+                        toStack.setAmount(0);
+                        continue outer;
+                    } else {
+                        contents[i] = null;
+                        toStack.setAmount(0);
+                        continue outer;
+                    }
                 }
             }
             has = false;
@@ -290,7 +327,13 @@ public class ItemStacks {
         }
 
         if (removeIfYes) {
-            player.getInventory().setStorageContents(his);
+            player.getInventory().setStorageContents(normalContents);
+            if (includeExtra) {
+                player.getInventory().setExtraContents(extraContents);
+            }
+            if (includeArmor) {
+                player.getInventory().setArmorContents(armorContents);
+            }
             player.updateInventory();
         }
         return new ItemStack[0];
