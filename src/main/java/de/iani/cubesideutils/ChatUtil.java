@@ -1,9 +1,13 @@
 package de.iani.cubesideutils;
 
 import de.iani.cubesideutils.plugin.UtilsPlugin;
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.IntSupplier;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -52,6 +56,43 @@ public class ChatUtil {
         }
     }
 
+    public static class CachedSendableList<T extends Sendable> extends AbstractList<T> {
+
+        private IntSupplier sizeGetter;
+        private BiFunction<Integer, Integer, List<T>> listFiller;
+
+        private int cacheSize;
+        private int cacheStartIndex;
+        private List<T> cache;
+
+        public CachedSendableList(IntSupplier sizeGetter, BiFunction<Integer, Integer, List<T>> listFiller, int cacheSize) {
+            this.sizeGetter = sizeGetter;
+            this.listFiller = listFiller;
+            this.cacheSize = cacheSize;
+            this.cache = Collections.emptyList();
+        }
+
+        public CachedSendableList(IntSupplier sizeGetter, BiFunction<Integer, Integer, List<T>> listFiller) {
+            this(sizeGetter, listFiller, PAGE_LENGTH);
+        }
+
+        @Override
+        public T get(int index) {
+            int transformedIndex = index - cacheStartIndex;
+            if (transformedIndex < 0 || transformedIndex >= cacheSize) {
+                cache = listFiller.apply(index, index + cacheSize);
+                cacheStartIndex = index;
+            }
+            return cache.get(transformedIndex);
+        }
+
+        @Override
+        public int size() {
+            return sizeGetter.getAsInt();
+        }
+
+    }
+
     public static List<Sendable> stringToSendableList(List<String> msges) {
         ArrayList<Sendable> result = new ArrayList<>(msges.size());
         for (String msg : msges) {
@@ -84,7 +125,8 @@ public class ChatUtil {
             return;
         }
 
-        int numPages = (int) Math.ceil(messages.size() / (double) PAGE_LENGTH);
+        int listSize = messages.size();
+        int numPages = (int) Math.ceil(listSize / (double) PAGE_LENGTH);
         if (page >= numPages && page > 0) {
             sendMessage(recipient, pluginPrefix, warningColor.toString(), name, " hat keine Seite ", (page + 1));
             return;
@@ -100,12 +142,12 @@ public class ChatUtil {
             sendMessage(recipient, pluginPrefix, normalColor.toString(), name, ":");
         }
 
-        if (messages.isEmpty()) {
+        if (listSize == 0) {
             recipient.sendMessage(ChatColor.GRAY + " -- keine --");
         }
 
         int index = page * PAGE_LENGTH;
-        for (int i = 0; i < PAGE_LENGTH && index < messages.size();) {
+        for (int i = 0; i < PAGE_LENGTH && index < listSize;) {
             messages.get(index).send(recipient);
 
             i++;
