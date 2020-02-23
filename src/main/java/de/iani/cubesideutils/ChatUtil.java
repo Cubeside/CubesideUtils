@@ -2,7 +2,6 @@ package de.iani.cubesideutils;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -66,7 +65,6 @@ public class ChatUtil {
             this.sizeGetter = sizeGetter;
             this.listFiller = listFiller;
             this.cacheSize = cacheSize;
-            this.cache = Collections.emptyList();
         }
 
         public CachedSendableList(IntSupplier sizeGetter, BiFunction<Integer, Integer, List<T>> listFiller) {
@@ -76,9 +74,10 @@ public class ChatUtil {
         @Override
         public T get(int index) {
             int transformedIndex = index - cacheStartIndex;
-            if (transformedIndex < 0 || transformedIndex >= cacheSize) {
-                cache = listFiller.apply(index, index + cacheSize);
+            if (cache == null || transformedIndex < 0 || transformedIndex >= cacheSize) {
+                cache = listFiller.apply(index, cacheSize);
                 cacheStartIndex = index;
+                transformedIndex = 0;
             }
             return cache.get(transformedIndex);
         }
