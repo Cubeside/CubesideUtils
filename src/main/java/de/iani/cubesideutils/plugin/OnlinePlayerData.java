@@ -138,7 +138,7 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     @Override
-    void checkRank() {
+    public void checkRank() {
         String rank = null;
         for (String possible : UtilsPlugin.getInstance().getRanks()) {
             String permission = UtilsPlugin.getInstance().getPermission(possible);
