@@ -210,7 +210,7 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_PIGMAN_SPAWN_EGG, EntityType.PIG_ZOMBIE);
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_SPAWN_EGG, EntityType.ZOMBIE);
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_VILLAGER_SPAWN_EGG, EntityType.ZOMBIE_VILLAGER);
-
+        // 1.14
         SPAWN_EGGS_INTERNAL.put(Material.CAT_SPAWN_EGG, EntityType.CAT);
         SPAWN_EGGS_INTERNAL.put(Material.FOX_SPAWN_EGG, EntityType.FOX);
         SPAWN_EGGS_INTERNAL.put(Material.PANDA_SPAWN_EGG, EntityType.PANDA);
@@ -218,6 +218,8 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.PILLAGER_SPAWN_EGG, EntityType.PILLAGER);
         SPAWN_EGGS_INTERNAL.put(Material.TRADER_LLAMA_SPAWN_EGG, EntityType.TRADER_LLAMA);
         SPAWN_EGGS_INTERNAL.put(Material.WANDERING_TRADER_SPAWN_EGG, EntityType.WANDERING_TRADER);
+        // 1.15
+        SPAWN_EGGS_INTERNAL.put(Material.BEE_SPAWN_EGG, EntityType.BEE);
 
         for (Material m : Material.values()) {
             String name = m.name();
