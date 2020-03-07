@@ -2,6 +2,7 @@ package de.iani.cubesideutils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -839,4 +840,24 @@ public class StringUtil {
         return of + "s";
     }
 
+    /**
+     * Creates a random password consisting of the characters 0-9 and a-z.
+     *
+     * @param chars
+     *            the amount of chars
+     * @return the random password
+     */
+    public static String generateRandomPassword(int chars) {
+        SecureRandom random = new SecureRandom();
+        char[] charArray = new char[chars];
+        for (int i = 0; i < chars; i++) {
+            int v = random.nextInt(36);
+            if (v < 10) {
+                charArray[i] = (char) ('0' + v);
+            } else {
+                charArray[i] = (char) ('a' + (v - 10));
+            }
+        }
+        return new String(charArray);
+    }
 }
