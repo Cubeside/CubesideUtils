@@ -1,5 +1,6 @@
 package de.iani.cubesideutils;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
@@ -10,6 +11,7 @@ public class RandomUtil {
     }
 
     public static final Random SHARED_RANDOM = new Random();
+    public static final Random SHARED_SECURE_RANDOM = new SecureRandom();
 
     // The bound is exclusive and symmetrical, so the result lies within the interval (-bound, bound).
     // May take "some" time for low bounds...
@@ -40,5 +42,25 @@ public class RandomUtil {
 
     public static int randomInt(int bound) {
         return SHARED_RANDOM.nextInt(bound);
+    }
+
+    /**
+     * Creates a random password consisting of the characters 0-9 and a-z.
+     *
+     * @param chars
+     *            the amount of chars
+     * @return the random password
+     */
+    public static String generateRandomPassword(int chars) {
+        char[] charArray = new char[chars];
+        for (int i = 0; i < chars; i++) {
+            int v = SHARED_SECURE_RANDOM.nextInt(36);
+            if (v < 10) {
+                charArray[i] = (char) ('0' + v);
+            } else {
+                charArray[i] = (char) ('a' + (v - 10));
+            }
+        }
+        return new String(charArray);
     }
 }
