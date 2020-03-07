@@ -38,4 +38,7 @@ public class RandomUtil {
         return randomElement(list, SHARED_RANDOM);
     }
 
+    public static int randomInt(int bound) {
+        return SHARED_RANDOM.nextInt(bound);
+    }
 }
