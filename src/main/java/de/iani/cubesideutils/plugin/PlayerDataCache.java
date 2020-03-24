@@ -159,7 +159,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
                     try {
                         data = UtilsPlugin.getInstance().getDatabase().getPlayerData(k, createIfMissing);
                     } catch (SQLException e) {
-                        // TODO: handle
+                        UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to query database for PlayerData.", e);
                         return null;
                     }
                     return data;
