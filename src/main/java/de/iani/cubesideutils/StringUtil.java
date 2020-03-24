@@ -870,5 +870,4 @@ public class StringUtil {
         }
         return of + "s";
     }
-
 }
