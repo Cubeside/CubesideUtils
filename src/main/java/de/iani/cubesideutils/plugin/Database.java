@@ -68,21 +68,21 @@ class Database {
         this.removeRealServerQuery = "DELETE FROM `" + this.realServersTableName + "` WHERE server = ?";
         this.getRealServersQuery = "SELECT (server) FROM `" + this.realServersTableName + "`";
 
-        this.getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, rank FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
-        this.addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, rank) VALUES (?, 0, NULL)";
+        this.getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, `rank` FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
+        this.addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, `rank`) VALUES (?, 0, NULL)";
         this.setPlayerFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
         this.setPlayerLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastJoin = ?, lastSeen = ? WHERE playerId = ?";
         this.setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
         this.setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` SET afk = ? WHERE playerId = ?";
-        this.setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` SET rank = ? WHERE playerId = ?";
+        this.setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` SET `rank` = ? WHERE playerId = ?";
 
         this.getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
         this.addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
         this.removeAfkServerQuery = "DELETE FROM `" + this.afkPlayersTableName + "` WHERE player = ? AND server = ?";
 
-        this.getRankInformationQuery = "SELECT rank, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
-        this.setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` (rank, priority, permission, prefix) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
-        this.removeRankInformationQuery = "DELETE FROM `" + this.ranksTableName + "` WHERE rank = ?";
+        this.getRankInformationQuery = "SELECT `rank`, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
+        this.setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` (`rank`, priority, permission, prefix) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
+        this.removeRankInformationQuery = "DELETE FROM `" + this.ranksTableName + "` WHERE `rank` = ?";
 
         createMissingTables();
     }
@@ -101,7 +101,7 @@ class Database {
             }
             if (!sqlConnection.hasTable(this.playerDataTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "playerId CHAR(36), " + "firstJoin BIGINT NOT NULL DEFAULT 0, " + "lastJoin BIGINT NOT NULL DEFAULT 0, " + "lastSeen BIGINT NOT NULL DEFAULT 0, " + "afk BIT NOT NULL, " + "rank VARCHAR(64), "
+                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "playerId CHAR(36), " + "firstJoin BIGINT NOT NULL DEFAULT 0, " + "lastJoin BIGINT NOT NULL DEFAULT 0, " + "lastSeen BIGINT NOT NULL DEFAULT 0, " + "afk BIT NOT NULL, " + "`rank` VARCHAR(64), "
                         + "PRIMARY KEY (playerId)) " + "ENGINE = innodb");
                 smt.close();
             }
@@ -113,7 +113,7 @@ class Database {
             }
             if (!sqlConnection.hasTable(this.ranksTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "rank VARCHAR(64), " + "priority INT, " + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (rank) " + ") ENGINE = innodb");
+                smt.executeUpdate("CREATE TABLE `" + this.ranksTableName + "` (" + "`rank` VARCHAR(64), " + "priority INT, " + "permission TINYTEXT, " + "prefix TINYTEXT, " + "PRIMARY KEY (`rank`) " + ") ENGINE = innodb");
                 smt.close();
             }
             return null;
