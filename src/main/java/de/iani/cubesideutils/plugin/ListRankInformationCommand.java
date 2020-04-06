@@ -28,10 +28,12 @@ class ListRankInformationCommand extends SubCommand {
         }
 
         List<Sendable> msgs = UtilsPlugin.getInstance().getRanks().stream().map(rank -> {
+            int priority = UtilsPlugin.getInstance().getPriority(rank);
             String permission = UtilsPlugin.getInstance().getPermission(rank);
             String prefix = UtilsPlugin.getInstance().getPrefix(rank);
 
             StringBuilder info = new StringBuilder(rank).append(": ");
+            info.append("priority ").append(priority).append(", ");
             info.append("permission ").append(permission == null ? "-" : permission).append(", ");
             info.append("prefix ").append(StringUtil.revertColors(prefix));
 

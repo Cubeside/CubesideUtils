@@ -3,7 +3,7 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
-import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.commands.CommandRouter;
 import de.iani.cubesideutils.sql.SQLConfig;
 import java.sql.SQLException;
@@ -47,7 +47,7 @@ public class UtilsPlugin extends JavaPlugin {
 
     private ReadWriteLock rankLock;
     private List<String> ranks;
-    private Map<String, Pair<String, String>> rankPermissionsAndPrefixes;
+    private Map<String, Triple<Integer, String, String>> rankPermissionsAndPrefixes;
 
     private String defaultDisplayName;
     private Map<String, String> worldDisplayNames;
@@ -182,7 +182,7 @@ public class UtilsPlugin extends JavaPlugin {
         }
     }
 
-    public String getPermission(String rank) {
+    public int getPriority(String rank) {
         this.rankLock.readLock().lock();
 
         try {
@@ -192,11 +192,21 @@ public class UtilsPlugin extends JavaPlugin {
         }
     }
 
-    public String getPrefix(String rank) {
+    public String getPermission(String rank) {
         this.rankLock.readLock().lock();
 
         try {
             return this.rankPermissionsAndPrefixes.get(rank).second;
+        } finally {
+            this.rankLock.readLock().unlock();
+        }
+    }
+
+    public String getPrefix(String rank) {
+        this.rankLock.readLock().lock();
+
+        try {
+            return this.rankPermissionsAndPrefixes.get(rank).third;
         } finally {
             this.rankLock.readLock().unlock();
         }

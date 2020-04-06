@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.plugin;
 
-import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.sql.MySQLConnection;
 import de.iani.cubesideutils.sql.SQLConfig;
 import de.iani.cubesideutils.sql.SQLConnection;
@@ -80,7 +80,7 @@ class Database {
         this.addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
         this.removeAfkServerQuery = "DELETE FROM `" + this.afkPlayersTableName + "` WHERE player = ? AND server = ?";
 
-        this.getRankInformationQuery = "SELECT `rank`, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
+        this.getRankInformationQuery = "SELECT `rank`, priority, permission, prefix FROM `" + this.ranksTableName + "` ORDER BY priority DESC";
         this.setRankInformationQuery = "INSERT INTO `" + this.ranksTableName + "` (`rank`, priority, permission, prefix) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?, permission = ?, prefix = ?";
         this.removeRankInformationQuery = "DELETE FROM `" + this.ranksTableName + "` WHERE `rank` = ?";
 
@@ -311,14 +311,14 @@ class Database {
         });
     }
 
-    public Map<String, Pair<String, String>> getRankInformation() throws SQLException {
+    public Map<String, Triple<Integer, String, String>> getRankInformation() throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getRankInformationQuery);
             ResultSet rs = smt.executeQuery();
 
-            Map<String, Pair<String, String>> result = new LinkedHashMap<>();
+            Map<String, Triple<Integer, String, String>> result = new LinkedHashMap<>();
             while (rs.next()) {
-                result.put(rs.getString(1), new Pair<>(rs.getString(2), rs.getString(3)));
+                result.put(rs.getString(1), new Triple<>(rs.getInt(2), rs.getString(3), rs.getString(4)));
             }
 
             return result;
