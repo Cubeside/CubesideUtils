@@ -56,7 +56,7 @@ public abstract class GlobalDataHelper<T extends Enum<T>> extends GlobalDataBund
 
             byte[] msgarry = msgbytes.toByteArray();
             if (servers == null) {
-                sendData(channel, msgarry, false);
+                sendData(channel, msgarry, true);
             } else {
                 for (GlobalServer server : servers) {
                     server.sendData(channel, msgarry);
