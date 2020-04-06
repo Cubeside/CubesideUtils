@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -646,6 +647,10 @@ public class StringUtil {
         }
 
         return ("0" + s).trim();
+    }
+
+    public static String formatTimespanClassic(long ms) {
+        return formatTimespan(ChronoUtil.roundTimespan(ms, ChronoUnit.SECONDS), "", "", "", "", ":", ":", false, true);
     }
 
     public static long parseTimespan(String arg) {
