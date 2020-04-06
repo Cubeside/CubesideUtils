@@ -49,7 +49,7 @@ public class OnlinePlayerData extends PlayerData {
     }
 
     public synchronized void checkAfk(boolean messagePlayer) {
-        boolean afk = System.currentTimeMillis() >= this.lastLocalAction + UtilsPlugin.AFK_THRESHOLD;
+        boolean afk = System.currentTimeMillis() >= this.lastLocalAction + AfkManager.AFK_THRESHOLD;
         if (afk == isLocallyAfk()) {
             return;
         }

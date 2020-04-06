@@ -18,6 +18,8 @@ class AfkManager implements Listener {
     private Set<Player>[] onlinePlayers;
     private int currentTick;
 
+    static final long AFK_THRESHOLD = 2L * 60L * 1000L;
+
     @SuppressWarnings("unchecked")
     public AfkManager() {
         this.plugin = UtilsPlugin.getInstance();

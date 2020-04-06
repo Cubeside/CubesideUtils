@@ -4,6 +4,7 @@ import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.commands.CommandRouter;
 import de.iani.cubesideutils.sql.SQLConfig;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,9 +29,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class UtilsPlugin extends JavaPlugin {
 
-    public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
-
     static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
+    static final String RANKS_COMMAND = "ranks";
 
     private static UtilsPlugin instance = null;
 
@@ -41,8 +41,6 @@ public class UtilsPlugin extends JavaPlugin {
     private Database database;
     private GeneralDataCache generalDataCache;
     private PlayerDataCache playerDataCache;
-    private EventListener eventListener;
-    private AfkManager afkManager;
     private GlobalClientPlugin globalClientPlugin;
     private UtilsGlobalDataHelper globalDataHelper;
     private GlobalDataBundle globalDataBundle;
@@ -86,8 +84,8 @@ public class UtilsPlugin extends JavaPlugin {
             this.database = new Database();
             this.generalDataCache = new GeneralDataCache();
             this.playerDataCache = new PlayerDataCache();
-            this.eventListener = new EventListener();
-            this.afkManager = new AfkManager();
+            new EventListener();
+            new AfkManager();
 
             this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
             this.globalDataHelper = new UtilsGlobalDataHelper(this);
@@ -98,6 +96,11 @@ public class UtilsPlugin extends JavaPlugin {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
             Bukkit.getServer().shutdown();
         }
+
+        CommandRouter ranksCommand = new CommandRouter(getCommand(RANKS_COMMAND));
+        ranksCommand.addCommandMapping(new ListRankInformationCommand(), ListRankInformationCommand.COMMAND_PATH);
+        ranksCommand.addCommandMapping(new ChangeRankInformationCommand(true), ChangeRankInformationCommand.SET_COMMAND_PATH);
+        ranksCommand.addCommandMapping(new ChangeRankInformationCommand(false), ChangeRankInformationCommand.REMOVE_COMMAND_PATH);
 
         updateRankInformation();
     }
@@ -165,7 +168,7 @@ public class UtilsPlugin extends JavaPlugin {
         }
     }
 
-    String getDefaultRank() {
+    public String getDefaultRank() {
         this.rankLock.readLock().lock();
 
         try {
@@ -197,6 +200,22 @@ public class UtilsPlugin extends JavaPlugin {
         } finally {
             this.rankLock.readLock().unlock();
         }
+    }
+
+    void setRankInformation(String rank, int priority, String permission, String prefix) throws SQLException {
+        this.database.setRankInformation(rank, priority, permission, prefix);
+        this.globalDataHelper.sendData(MessageType.RANK_INFORMATION_CHANGED);
+        updateRankInformation();
+    }
+
+    boolean removeRankInformation(String rank) throws SQLException {
+        if (!this.database.removeRankInformation(rank)) {
+            return false;
+        }
+        this.globalDataHelper.sendData(MessageType.RANK_INFORMATION_CHANGED);
+        updateRankInformation();
+
+        return true;
     }
 
     void updateRankInformation() {

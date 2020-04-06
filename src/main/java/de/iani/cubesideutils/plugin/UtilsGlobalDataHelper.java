@@ -15,6 +15,9 @@ class UtilsGlobalDataHelper extends GlobalDataHelper<MessageType> {
     @Override
     protected void handleMessage(MessageType messageType, DataInputStream data) throws IOException {
         switch (messageType) {
+            case RANK_INFORMATION_CHANGED:
+                UtilsPlugin.getInstance().updateRankInformation();
+                break;
             case GENERAL_DATA_CHANGED:
                 UtilsPlugin.getInstance().getGeneralDataCache().invalidate(data.readUTF());
                 break;

@@ -340,11 +340,11 @@ class Database {
         });
     }
 
-    public void removeRankInformation(String rank) throws SQLException {
-        this.connection.runCommands((connection, sqlConnection) -> {
+    public boolean removeRankInformation(String rank) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.removeRankInformationQuery);
             smt.setString(1, rank);
-            return null;
+            return smt.executeUpdate() > 0;
         });
     }
 
