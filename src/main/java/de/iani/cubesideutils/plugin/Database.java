@@ -177,14 +177,14 @@ class Database {
     }
 
     public PlayerData getPlayerData(UUID playerId, boolean insertIfMissing) throws SQLException {
-        return getPlayerData(playerId, false, insertIfMissing, 0);
+        return getPlayerData(playerId, false, insertIfMissing, 0, false);
     }
 
-    public OnlinePlayerData getOnlinePlayerData(UUID playerId, boolean insertIfMissing, long lastAction) throws SQLException {
-        return (OnlinePlayerData) getPlayerData(playerId, true, insertIfMissing, lastAction);
+    public OnlinePlayerData getOnlinePlayerData(UUID playerId, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
+        return (OnlinePlayerData) getPlayerData(playerId, true, insertIfMissing, lastAction, manuallySetAfk);
     }
 
-    private PlayerData getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction) throws SQLException {
+    private PlayerData getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerDataQuery);
             smt.setString(1, playerId.toString());
@@ -199,7 +199,7 @@ class Database {
                 PreparedStatement insertSmt = sqlConnection.getOrCreateStatement(this.addPlayerDataQuery);
                 insertSmt.setString(1, playerId.toString());
                 insertSmt.executeUpdate();
-                return getPlayerData(playerId, isOnline, insertIfMissing, lastAction);
+                return getPlayerData(playerId, isOnline, insertIfMissing, lastAction, manuallySetAfk);
             }
 
             long firstJoin = rs.getLong(1);
@@ -207,7 +207,7 @@ class Database {
             long lastSeen = rs.getLong(3);
             boolean afk = rs.getBoolean(4);
             String rank = rs.getString(5);
-            PlayerData result = isOnline ? new OnlinePlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, lastAction, rank) : new PlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
+            PlayerData result = isOnline ? new OnlinePlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, lastAction, manuallySetAfk, rank) : new PlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
             rs.close();
             return result;

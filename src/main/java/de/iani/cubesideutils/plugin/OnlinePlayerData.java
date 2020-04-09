@@ -14,12 +14,14 @@ import org.bukkit.entity.Player;
 public class OnlinePlayerData extends PlayerData {
 
     private long lastLocalAction;
+    private boolean manuallySetAfk;
     private boolean locallyAfk;
 
-    OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, String rank) {
+    OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String rank) {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
         this.lastLocalAction = lastAction;
+        this.manuallySetAfk = manuallySetAfk;
         this.locallyAfk = afk;
     }
 
@@ -45,12 +47,13 @@ public class OnlinePlayerData extends PlayerData {
 
     synchronized void madeAction() {
         this.lastLocalAction = System.currentTimeMillis();
+        this.manuallySetAfk = false;
         checkAfk(true);
     }
 
     public synchronized void checkAfk(boolean messagePlayer) {
         boolean afk = System.currentTimeMillis() >= this.lastLocalAction + AfkManager.AFK_THRESHOLD;
-        if (afk == isLocallyAfk()) {
+        if (afk == isLocallyAfk() || (!afk && manuallySetAfk)) {
             return;
         }
 
@@ -65,8 +68,13 @@ public class OnlinePlayerData extends PlayerData {
         return this.locallyAfk;
     }
 
-    public synchronized void setLocallyAfk(boolean afk) {
-        setLocallyAfk(afk, true);
+    public synchronized boolean isManuallySetAfk() {
+        return this.manuallySetAfk;
+    }
+
+    public synchronized void manuallySetAfk(boolean messagePlayer) {
+        this.manuallySetAfk = true;
+        setLocallyAfk(true, messagePlayer);
     }
 
     public synchronized void setLocallyAfk(boolean afk, boolean messagePlayer) {
@@ -85,6 +93,10 @@ public class OnlinePlayerData extends PlayerData {
         }
 
         this.locallyAfk = afk;
+        if (!afk) {
+            this.manuallySetAfk = false;
+        }
+
         try {
             UtilsPlugin.getInstance().getDatabase().setLocallyAfk(this.getPlayerId(), afk);
         } catch (SQLException e) {

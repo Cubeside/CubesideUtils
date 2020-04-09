@@ -46,17 +46,19 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
         try {
             boolean isOnline = false;
             long lastAction = 0;
+            boolean manuallySetAfk = false;
             PlayerData data = this.onlinePlayers.remove(playerId);
             if (data != null) {
                 isOnline = true;
                 lastAction = data.getOnlineData().getLastAction();
+                manuallySetAfk = data.getOnlineData().isManuallySetAfk();
             } else {
                 data = super.remove(playerId);
             }
 
             if (isOnline) {
                 try {
-                    data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, lastAction);
+                    data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, lastAction, manuallySetAfk);
                 } catch (SQLException e) {
                     UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                     return;
@@ -85,7 +87,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
             invalidate(playerId);
             OnlinePlayerData data;
             try {
-                data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, System.currentTimeMillis());
+                data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, System.currentTimeMillis(), false);
             } catch (SQLException e) {
                 UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                 // TODO: disallow?
