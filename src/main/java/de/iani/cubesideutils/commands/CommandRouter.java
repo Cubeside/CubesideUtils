@@ -1,13 +1,18 @@
 package de.iani.cubesideutils.commands;
 
 import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.commands.exceptions.DisallowsCommandBlockException;
+import de.iani.cubesideutils.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.commands.exceptions.NoPermissionForPathException;
+import de.iani.cubesideutils.commands.exceptions.RequiresPlayerException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,14 +27,22 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
 
     public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
 
+    private CommandExceptionHandler exceptionHandler;
+
     public CommandRouter(PluginCommand command) {
         this(command, true);
     }
 
     public CommandRouter(PluginCommand command, boolean caseInsensitive) {
+        this(command, caseInsensitive, CommandExceptionHandler.DEFAULT_HANDLER);
+    }
+
+    public CommandRouter(PluginCommand command, boolean caseInsensitive, CommandExceptionHandler exceptionHandler) {
         super(caseInsensitive);
         command.setExecutor(this);
         command.setTabCompleter(this);
+
+        this.exceptionHandler = exceptionHandler;
     }
 
     public void addPluginCommand(PluginCommand command) {
@@ -58,10 +71,8 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         // get tabcomplete options from command
         if (currentMap.executor != null) {
             options = Collections.emptyList();
-            if (hasPermission(sender, currentMap.executor.getRequiredPermission())) {
-                if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
-                    options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
-                }
+            if (currentMap.executor.isExecutable(sender)) {
+                options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
             }
         } else {
             options = Collections.emptyList();
@@ -72,15 +83,13 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 String key = e.getKey();
                 if (StringUtil.startsWithIgnoreCase(key, partial)) {
                     CommandMap subcmd = e.getValue();
-                    if (hasAnyPermission(sender, subcmd.requiredPermissions)) {
+                    if (isAnySubCommandDisplayable(sender, subcmd)) {
                         if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                            if (isAnySubCommandAvailable(sender, subcmd)) {
-                                if (optionsList == null) {
-                                    optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
-                                    options = optionsList;
-                                }
-                                optionsList.add(key);
+                            if (optionsList == null) {
+                                optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
+                                options = optionsList;
                             }
+                            optionsList.add(key);
                         }
                     }
                 }
@@ -102,29 +111,37 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         // execute this?
         SubCommand toExecute = currentMap.executor;
         if (toExecute != null) {
-            if (toExecute.allowsCommandBlock() || !(sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-                if (!toExecute.requiresPlayer() || sender instanceof Player) {
-                    if (hasPermission(sender, toExecute.getRequiredPermission()) && toExecute.isAvailable(sender)) {
-                        if (!toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
-                            showHelp(sender, alias, currentMap);
-                        }
-                        return true;
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "No permission!");
-                        return true;
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "This command can only be executed by players!");
-                    return true;
+            try {
+                if (!toExecute.allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
+                    throw new DisallowsCommandBlockException(sender, command, alias, toExecute, args);
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED + "This command is not allowed for CommandBlocks!");
-                return true;
+                if (toExecute.requiresPlayer() && !(sender instanceof Player)) {
+                    throw new RequiresPlayerException(sender, command, alias, toExecute, args);
+                }
+                if (!toExecute.hasRequiredPermission(sender) || !toExecute.isAvailable(sender)) {
+                    throw new NoPermissionException(sender, command, alias, toExecute, args, toExecute.getRequiredPermission());
+                }
+
+                if (toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
+                    return true;
+                } else {
+                    throw new IllegalSyntaxException(sender, command, alias, toExecute, args);
+                }
+            } catch (DisallowsCommandBlockException e) {
+                return exceptionHandler.handleDisallowsCommandBlock(e);
+            } catch (RequiresPlayerException e) {
+                return exceptionHandler.handleRequiresPlayer(e);
+            } catch (NoPermissionException e) {
+                return exceptionHandler.handleNoPermission(e);
+            } catch (IllegalSyntaxException e) {
+                return exceptionHandler.handleIllegalSyntax(e);
+            } catch (Throwable t) {
+                return exceptionHandler.handleInternalException(new InternalCommandException(sender, command, alias, toExecute, args, t));
             }
         }
-        if (!hasAnyPermission(sender, currentMap.requiredPermissions) || !isAnySubCommandAvailable(sender, currentMap)) {
-            sender.sendMessage(ChatColor.RED + "No permission!");
-            return true;
+
+        if (!isAnySubCommandExecutable(sender, currentMap)) {
+            return exceptionHandler.handleNoPermissionForPath(new NoPermissionForPathException(sender, command, alias, args));
         }
         // show valid cmds
         showHelp(sender, alias, currentMap);
@@ -153,42 +170,65 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 String key = subcmd.name;
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
-                    if (hasAnyPermission(sender, subcmd.requiredPermissions) && isAnySubCommandAvailable(sender, subcmd)) {
+                    if (isAnySubCommandDisplayable(sender, subcmd)) {
                         sender.sendMessage(prefix + key + " ...");
                     }
                 } else {
-                    if (hasPermission(sender, subcmd.executor.getRequiredPermission()) && subcmd.executor.isAvailable(sender)) {
+                    if (subcmd.executor.hasRequiredPermission(sender) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
                             sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
                     }
                 }
             }
-        } else {
-
+        } else if (currentMap.executor != null) {
+            SubCommand executor = currentMap.executor;
+            if (executor.hasRequiredPermission(sender) && executor.isAvailable(sender)) {
+                String prefix = getCommandString(alias, currentMap);
+                if (sender instanceof Player || !executor.requiresPlayer()) {
+                    sender.sendMessage(prefix + executor.getUsage(sender));
+                }
+            }
         }
     }
 
-    private boolean isAnySubCommandAvailable(CommandSender sender, CommandMap cmd) {
-        if (cmd.executor != null && cmd.executor.isAvailable(sender)) {
+    private boolean isAnySubCommandExecutable(CommandSender sender, CommandMap cmd) {
+        if (cmd.executor != null && cmd.executor.isExecutable(sender)) {
             return true;
         }
-        if (cmd.subcommandsOrdered != null) {
-            for (CommandMap subcommand : cmd.subcommandsOrdered) {
-                if (isAnySubCommandAvailable(sender, subcommand)) {
-                    return true;
-                }
+        if (cmd.subcommandsOrdered == null) {
+            return false;
+        }
+        if (!hasAnyPermission(sender, cmd.requiredPermissions)) {
+            return false;
+        }
+        for (CommandMap subcommand : cmd.subcommandsOrdered) {
+            if (isAnySubCommandExecutable(sender, subcommand)) {
+                return true;
             }
         }
         return false;
     }
 
-    protected boolean hasPermission(CommandSender handler, String permission) {
-        return permission == null || handler.hasPermission(permission);
+    private boolean isAnySubCommandDisplayable(CommandSender sender, CommandMap cmd) {
+        if (cmd.executor != null && cmd.executor.isDisplayable(sender)) {
+            return true;
+        }
+        if (cmd.subcommandsOrdered == null) {
+            return false;
+        }
+        if (!hasAnyPermission(sender, cmd.requiredPermissions)) {
+            return false;
+        }
+        for (CommandMap subcommand : cmd.subcommandsOrdered) {
+            if (isAnySubCommandDisplayable(sender, subcommand)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    @Override
-    protected boolean hasAnyPermission(CommandSender handler, Set<String> permissions) {
+    private boolean hasAnyPermission(CommandSender handler, Set<String> permissions) {
         if (permissions == null) {
             return true;
         }
@@ -199,4 +239,5 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         }
         return false;
     }
+
 }

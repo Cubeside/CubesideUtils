@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 public abstract class AbstractCommandRouter<ControllerT extends PermissionRequirer, HandlerT> {
 
@@ -142,7 +141,7 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
                 break;
             }
             CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-            if (subMap == null || (subMap.requiredPermissions != null && handler != null && !hasAnyPermission(handler, subMap.requiredPermissions))) {
+            if (subMap == null) {
                 break;
             }
             nr += 1;
@@ -150,8 +149,6 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
         }
         return new Pair<>(currentMap, nr);
     }
-
-    abstract protected boolean hasAnyPermission(HandlerT handler, Set<String> permissions);
 
     protected void onSubCommandsModified(CommandMap map) {
         HashSet<String> requiredPermissions = null;

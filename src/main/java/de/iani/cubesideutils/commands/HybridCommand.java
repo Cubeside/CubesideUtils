@@ -1,10 +1,15 @@
 package de.iani.cubesideutils.commands;
 
+import de.iani.cubesideutils.commands.exceptions.DisallowsCommandBlockException;
+import de.iani.cubesideutils.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.commands.exceptions.RequiresPlayerException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.ChatColor;
+import java.util.Objects;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,20 +21,45 @@ import org.bukkit.util.StringUtil;
 
 public abstract class HybridCommand extends SubCommand implements CommandExecutor, TabCompleter {
 
+    private CommandExceptionHandler handler;
+
+    public HybridCommand(CommandExceptionHandler handler) {
+        this.handler = Objects.requireNonNull(handler);
+    }
+
+    public HybridCommand() {
+        this(CommandExceptionHandler.DEFAULT_HANDLER);
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        if (!allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-            sender.sendMessage(ChatColor.RED + "This command is not allowed for CommandBlocks!");
-        }
-        if (requiresPlayer() && !(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be executed by players!");
-        }
-        if (getRequiredPermission() != null && !sender.hasPermission(getRequiredPermission())) {
-            sender.sendMessage(ChatColor.RED + "No permission!");
-            return true;
-        }
+        try {
+            if (!allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
+                throw new DisallowsCommandBlockException(sender, command, alias, this, args);
+            }
+            if (requiresPlayer() && !(sender instanceof Player)) {
+                throw new RequiresPlayerException(sender, command, alias, this, args);
+            }
+            if (!hasRequiredPermission(sender) || !isAvailable(sender)) {
+                throw new NoPermissionException(sender, command, alias, this, args, this.getRequiredPermission());
+            }
 
-        return onCommand(sender, command, alias, "/" + alias, new ArgsParser(args));
+            if (onCommand(sender, command, alias, "/" + alias, new ArgsParser(args))) {
+                return true;
+            } else {
+                throw new IllegalSyntaxException(sender, command, alias, this, args);
+            }
+        } catch (DisallowsCommandBlockException e) {
+            return handler.handleDisallowsCommandBlock(e);
+        } catch (RequiresPlayerException e) {
+            return handler.handleRequiresPlayer(e);
+        } catch (NoPermissionException e) {
+            return handler.handleNoPermission(e);
+        } catch (IllegalSyntaxException e) {
+            return handler.handleIllegalSyntax(e);
+        } catch (Throwable t) {
+            return handler.handleInternalException(new InternalCommandException(sender, command, alias, this, args, t));
+        }
     }
 
     @Override
