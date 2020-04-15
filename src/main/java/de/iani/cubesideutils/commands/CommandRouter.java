@@ -41,6 +41,8 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         super(caseInsensitive);
         command.setExecutor(this);
         command.setTabCompleter(this);
+
+        this.exceptionHandler = exceptionHandler;
     }
 
     public void addPluginCommand(PluginCommand command) {
