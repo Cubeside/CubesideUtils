@@ -71,10 +71,8 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         // get tabcomplete options from command
         if (currentMap.executor != null) {
             options = Collections.emptyList();
-            if (currentMap.executor.hasRequiredPermission(sender)) {
-                if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
-                    options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
-                }
+            if (currentMap.executor.isExecutable(sender)) {
+                options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
             }
         } else {
             options = Collections.emptyList();
@@ -85,15 +83,13 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 String key = e.getKey();
                 if (StringUtil.startsWithIgnoreCase(key, partial)) {
                     CommandMap subcmd = e.getValue();
-                    if (hasAnyPermission(sender, subcmd.requiredPermissions)) {
+                    if (displayAnySubCommand(sender, subcmd)) {
                         if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                            if (isAnySubCommandAvailable(sender, subcmd)) {
-                                if (optionsList == null) {
-                                    optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
-                                    options = optionsList;
-                                }
-                                optionsList.add(key);
+                            if (optionsList == null) {
+                                optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
+                                options = optionsList;
                             }
+                            optionsList.add(key);
                         }
                     }
                 }
@@ -144,7 +140,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             }
         }
 
-        if (!hasAnyPermission(sender, currentMap.requiredPermissions) || !isAnySubCommandAvailable(sender, currentMap)) {
+        if (!isAnySubCommandExecutable(sender, currentMap)) {
             return exceptionHandler.handleNoPermissionForPath(new NoPermissionForPathException(sender, command, alias, args));
         }
         // show valid cmds
@@ -174,7 +170,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 String key = subcmd.name;
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
-                    if (hasAnyPermission(sender, subcmd.requiredPermissions) && isAnySubCommandAvailable(sender, subcmd)) {
+                    if (displayAnySubCommand(sender, subcmd)) {
                         sender.sendMessage(prefix + key + " ...");
                     }
                 } else {
@@ -196,22 +192,43 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         }
     }
 
-    private boolean isAnySubCommandAvailable(CommandSender sender, CommandMap cmd) {
-        if (cmd.executor != null && cmd.executor.isAvailable(sender)) {
+    private boolean isAnySubCommandExecutable(CommandSender sender, CommandMap cmd) {
+        if (cmd.executor != null && cmd.executor.isExecutable(sender)) {
             return true;
         }
-        if (cmd.subcommandsOrdered != null) {
-            for (CommandMap subcommand : cmd.subcommandsOrdered) {
-                if (isAnySubCommandAvailable(sender, subcommand)) {
-                    return true;
-                }
+        if (cmd.subcommandsOrdered == null) {
+            return false;
+        }
+        if (!hasAnyPermission(sender, cmd.requiredPermissions)) {
+            return false;
+        }
+        for (CommandMap subcommand : cmd.subcommandsOrdered) {
+            if (isAnySubCommandExecutable(sender, subcommand)) {
+                return true;
             }
         }
         return false;
     }
 
-    @Override
-    protected boolean hasAnyPermission(CommandSender handler, Set<String> permissions) {
+    private boolean displayAnySubCommand(CommandSender sender, CommandMap cmd) {
+        if (cmd.executor != null && cmd.executor.isDisplayable(sender)) {
+            return true;
+        }
+        if (cmd.subcommandsOrdered == null) {
+            return false;
+        }
+        if (!hasAnyPermission(sender, cmd.requiredPermissions)) {
+            return false;
+        }
+        for (CommandMap subcommand : cmd.subcommandsOrdered) {
+            if (displayAnySubCommand(sender, subcommand)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasAnyPermission(CommandSender handler, Set<String> permissions) {
         if (permissions == null) {
             return true;
         }
@@ -222,4 +239,5 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         }
         return false;
     }
+
 }
