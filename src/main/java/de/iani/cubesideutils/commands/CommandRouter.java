@@ -105,7 +105,10 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             if (toExecute.allowsCommandBlock() || !(sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
                 if (!toExecute.requiresPlayer() || sender instanceof Player) {
                     if (hasPermission(sender, toExecute.getRequiredPermission()) && toExecute.isAvailable(sender)) {
-                        return toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr));
+                        if (!toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
+                            showHelp(sender, alias, currentMap);
+                        }
+                        return true;
                     } else {
                         sender.sendMessage(ChatColor.RED + "No permission!");
                         return true;
