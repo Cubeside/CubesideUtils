@@ -8,7 +8,7 @@ public class InternalCommandException extends SubCommandException {
 
     private static final long serialVersionUID = 3290684802913534615L;
 
-    public InternalCommandException(CommandSender sender, Command command, SubCommand subCommand, String alias, String[] args, Throwable cause) {
+    public InternalCommandException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, Throwable cause) {
         super(sender, command, alias, subCommand, args, cause);
     }
 

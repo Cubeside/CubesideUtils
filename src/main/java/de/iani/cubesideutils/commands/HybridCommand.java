@@ -1,9 +1,15 @@
 package de.iani.cubesideutils.commands;
 
+import de.iani.cubesideutils.commands.exceptions.DisallowsCommandBlockException;
+import de.iani.cubesideutils.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.commands.exceptions.RequiresPlayerException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,13 +19,39 @@ import org.bukkit.util.StringUtil;
 
 public abstract class HybridCommand extends SubCommand implements CommandExecutor, TabCompleter {
 
+    private CommandExceptionHandler handler;
+
+    public HybridCommand(CommandExceptionHandler handler) {
+        this.handler = Objects.requireNonNull(handler);
+    }
+
+    public HybridCommand() {
+        this(CommandExceptionHandler.DEFAULT_HANDLER);
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (this.getRequiredPermission() != null && !sender.hasPermission(getRequiredPermission())) {
             sender.sendMessage(ChatColor.RED + "No permission!");
             return true;
         }
-        return onCommand(sender, command, alias, "/" + alias, new ArgsParser(args));
+        try {
+            if (onCommand(sender, command, alias, "/" + alias, new ArgsParser(args))) {
+                return true;
+            } else {
+                throw new IllegalSyntaxException(sender, command, alias, this, args);
+            }
+        } catch (DisallowsCommandBlockException e) {
+            return handler.handleDisallowsCommandBlock(e);
+        } catch (RequiresPlayerException e) {
+            return handler.handleRequiresPlayer(e);
+        } catch (NoPermissionException e) {
+            return handler.handleNoPermission(e);
+        } catch (IllegalSyntaxException e) {
+            return handler.handleIllegalSyntax(e);
+        } catch (Throwable t) {
+            return handler.handleInternalException(new InternalCommandException(sender, command, alias, this, args, t));
+        }
     }
 
     @Override

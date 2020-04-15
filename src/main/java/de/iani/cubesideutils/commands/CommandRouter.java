@@ -1,13 +1,18 @@
 package de.iani.cubesideutils.commands;
 
 import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.commands.exceptions.DisallowsCommandBlockException;
+import de.iani.cubesideutils.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.commands.exceptions.NoPermissionForPathException;
+import de.iani.cubesideutils.commands.exceptions.RequiresPlayerException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,11 +27,17 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
 
     public static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command. Type \"/help\" for help.";
 
+    private CommandExceptionHandler exceptionHandler;
+
     public CommandRouter(PluginCommand command) {
         this(command, true);
     }
 
     public CommandRouter(PluginCommand command, boolean caseInsensitive) {
+        this(command, caseInsensitive, CommandExceptionHandler.DEFAULT_HANDLER);
+    }
+
+    public CommandRouter(PluginCommand command, boolean caseInsensitive, CommandExceptionHandler exceptionHandler) {
         super(caseInsensitive);
         command.setExecutor(this);
         command.setTabCompleter(this);
@@ -102,29 +113,37 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         // execute this?
         SubCommand toExecute = currentMap.executor;
         if (toExecute != null) {
-            if (toExecute.allowsCommandBlock() || !(sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-                if (!toExecute.requiresPlayer() || sender instanceof Player) {
-                    if (hasPermission(sender, toExecute.getRequiredPermission()) && toExecute.isAvailable(sender)) {
-                        if (!toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
-                            showHelp(sender, alias, currentMap);
-                        }
-                        return true;
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "No permission!");
-                        return true;
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "This command can only be executed by players!");
+            if (!toExecute.allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
+                return exceptionHandler.handleDisallowsCommandBlock(new DisallowsCommandBlockException(sender, command, alias, toExecute, args));
+            }
+            if (toExecute.requiresPlayer() && !(sender instanceof Player)) {
+                return exceptionHandler.handleRequiresPlayer(new RequiresPlayerException(sender, command, alias, toExecute, args));
+            }
+            if (!hasPermission(sender, toExecute.getRequiredPermission()) || !toExecute.isAvailable(sender)) {
+                return exceptionHandler.handleNoPermission(new NoPermissionException(sender, command, alias, toExecute, args));
+            }
+
+            try {
+                if (toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
                     return true;
+                } else {
+                    throw new IllegalSyntaxException(sender, command, alias, toExecute, args);
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED + "This command is not allowed for CommandBlocks!");
-                return true;
+            } catch (DisallowsCommandBlockException e) {
+                return exceptionHandler.handleDisallowsCommandBlock(e);
+            } catch (RequiresPlayerException e) {
+                return exceptionHandler.handleRequiresPlayer(e);
+            } catch (NoPermissionException e) {
+                return exceptionHandler.handleNoPermission(e);
+            } catch (IllegalSyntaxException e) {
+                return exceptionHandler.handleIllegalSyntax(e);
+            } catch (Throwable t) {
+                return exceptionHandler.handleInternalException(new InternalCommandException(sender, command, alias, toExecute, args, t));
             }
         }
+
         if (!hasAnyPermission(sender, currentMap.requiredPermissions) || !isAnySubCommandAvailable(sender, currentMap)) {
-            sender.sendMessage(ChatColor.RED + "No permission!");
-            return true;
+            return exceptionHandler.handleNoPermissionForPath(new NoPermissionForPathException(sender, command, alias, args));
         }
         // show valid cmds
         showHelp(sender, alias, currentMap);
