@@ -6,10 +6,14 @@ import org.bukkit.command.CommandSender;
 
 public class InternalCommandException extends SubCommandException {
 
-    private static final long serialVersionUID = 3290684802913534615L;
+    private static final long serialVersionUID = -6856078921802113528L;
+
+    public InternalCommandException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, String message, Throwable cause) {
+        super(sender, command, alias, subCommand, args, message, cause);
+    }
 
     public InternalCommandException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, Throwable cause) {
-        super(sender, command, alias, subCommand, args, cause);
+        this(sender, command, alias, subCommand, args, "An internal error occured.", cause);
     }
 
 }

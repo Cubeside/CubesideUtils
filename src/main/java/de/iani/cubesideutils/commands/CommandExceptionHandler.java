@@ -47,7 +47,7 @@ public interface CommandExceptionHandler {
 
     public default boolean handleInternalException(InternalCommandException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(ChatColor.RED + "An internal error occured.");
+        sender.sendMessage(ChatColor.RED + thrown.getMessage());
 
         Throwable cause = thrown.getCause();
         if (cause instanceof Error) {
