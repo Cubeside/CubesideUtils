@@ -142,7 +142,7 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
                 break;
             }
             CommandMap subMap = currentMap.subCommands.get(currentCmdPart);
-            if (subMap == null || (subMap.requiredPermissions != null && handler != null && !hasAnyPermission(handler, subMap.requiredPermissions))) {
+            if (subMap == null) {
                 break;
             }
             nr += 1;
