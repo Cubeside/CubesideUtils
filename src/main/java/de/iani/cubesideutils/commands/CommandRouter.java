@@ -164,8 +164,14 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                     }
                 }
             }
-        } else {
-
+        } else if (currentMap.executor != null) {
+            SubCommand executor = currentMap.executor;
+            if (hasPermission(sender, executor.getRequiredPermission()) && executor.isAvailable(sender)) {
+                String prefix = getCommandString(alias, currentMap);
+                if (sender instanceof Player || !executor.requiresPlayer()) {
+                    sender.sendMessage(prefix + executor.getUsage(sender));
+                }
+            }
         }
     }
 
