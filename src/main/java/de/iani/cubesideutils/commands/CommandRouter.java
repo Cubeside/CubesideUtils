@@ -83,7 +83,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 String key = e.getKey();
                 if (StringUtil.startsWithIgnoreCase(key, partial)) {
                     CommandMap subcmd = e.getValue();
-                    if (displayAnySubCommand(sender, subcmd)) {
+                    if (isAnySubCommandDisplayable(sender, subcmd)) {
                         if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
                             if (optionsList == null) {
                                 optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
@@ -170,7 +170,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 String key = subcmd.name;
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
-                    if (displayAnySubCommand(sender, subcmd)) {
+                    if (isAnySubCommandDisplayable(sender, subcmd)) {
                         sender.sendMessage(prefix + key + " ...");
                     }
                 } else {
@@ -210,7 +210,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         return false;
     }
 
-    private boolean displayAnySubCommand(CommandSender sender, CommandMap cmd) {
+    private boolean isAnySubCommandDisplayable(CommandSender sender, CommandMap cmd) {
         if (cmd.executor != null && cmd.executor.isDisplayable(sender)) {
             return true;
         }
@@ -221,7 +221,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             return false;
         }
         for (CommandMap subcommand : cmd.subcommandsOrdered) {
-            if (displayAnySubCommand(sender, subcommand)) {
+            if (isAnySubCommandDisplayable(sender, subcommand)) {
                 return true;
             }
         }
