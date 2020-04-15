@@ -22,6 +22,10 @@ public abstract class SubCommand implements PermissionRequirer {
         return null;
     }
 
+    public boolean hasRequiredPermission(CommandSender sender) {
+        return getRequiredPermission() == null || sender.hasPermission(getRequiredPermission());
+    }
+
     public boolean isAvailable(CommandSender sender) {
         return true;
     }

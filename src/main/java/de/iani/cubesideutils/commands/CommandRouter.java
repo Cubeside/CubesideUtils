@@ -69,7 +69,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         // get tabcomplete options from command
         if (currentMap.executor != null) {
             options = Collections.emptyList();
-            if (hasPermission(sender, currentMap.executor.getRequiredPermission())) {
+            if (currentMap.executor.hasRequiredPermission(sender)) {
                 if (sender instanceof Player || !currentMap.executor.requiresPlayer()) {
                     options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
                 }
@@ -113,17 +113,17 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         // execute this?
         SubCommand toExecute = currentMap.executor;
         if (toExecute != null) {
-            if (!toExecute.allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-                return exceptionHandler.handleDisallowsCommandBlock(new DisallowsCommandBlockException(sender, command, alias, toExecute, args));
-            }
-            if (toExecute.requiresPlayer() && !(sender instanceof Player)) {
-                return exceptionHandler.handleRequiresPlayer(new RequiresPlayerException(sender, command, alias, toExecute, args));
-            }
-            if (!hasPermission(sender, toExecute.getRequiredPermission()) || !toExecute.isAvailable(sender)) {
-                return exceptionHandler.handleNoPermission(new NoPermissionException(sender, command, alias, toExecute, args));
-            }
-
             try {
+                if (!toExecute.allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
+                    throw new DisallowsCommandBlockException(sender, command, alias, toExecute, args);
+                }
+                if (toExecute.requiresPlayer() && !(sender instanceof Player)) {
+                    throw new RequiresPlayerException(sender, command, alias, toExecute, args);
+                }
+                if (!toExecute.hasRequiredPermission(sender) || !toExecute.isAvailable(sender)) {
+                    throw new NoPermissionException(sender, command, alias, toExecute, args, toExecute.getRequiredPermission());
+                }
+
                 if (toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
                     return true;
                 } else {
@@ -176,7 +176,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                         sender.sendMessage(prefix + key + " ...");
                     }
                 } else {
-                    if (hasPermission(sender, subcmd.executor.getRequiredPermission()) && subcmd.executor.isAvailable(sender)) {
+                    if (subcmd.executor.hasRequiredPermission(sender) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
                             sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
@@ -185,7 +185,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             }
         } else if (currentMap.executor != null) {
             SubCommand executor = currentMap.executor;
-            if (hasPermission(sender, executor.getRequiredPermission()) && executor.isAvailable(sender)) {
+            if (executor.hasRequiredPermission(sender) && executor.isAvailable(sender)) {
                 String prefix = getCommandString(alias, currentMap);
                 if (sender instanceof Player || !executor.requiresPlayer()) {
                     sender.sendMessage(prefix + executor.getUsage(sender));
@@ -206,10 +206,6 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             }
         }
         return false;
-    }
-
-    protected boolean hasPermission(CommandSender handler, String permission) {
-        return permission == null || handler.hasPermission(permission);
     }
 
     @Override

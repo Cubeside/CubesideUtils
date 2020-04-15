@@ -10,11 +10,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.util.StringUtil;
 
 public abstract class HybridCommand extends SubCommand implements CommandExecutor, TabCompleter {
@@ -31,11 +33,17 @@ public abstract class HybridCommand extends SubCommand implements CommandExecuto
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        if (this.getRequiredPermission() != null && !sender.hasPermission(getRequiredPermission())) {
-            sender.sendMessage(ChatColor.RED + "No permission!");
-            return true;
-        }
         try {
+            if (!allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
+                throw new DisallowsCommandBlockException(sender, command, alias, this, args);
+            }
+            if (requiresPlayer() && !(sender instanceof Player)) {
+                throw new RequiresPlayerException(sender, command, alias, this, args);
+            }
+            if (!hasRequiredPermission(sender) || !isAvailable(sender)) {
+                throw new NoPermissionException(sender, command, alias, this, args, this.getRequiredPermission());
+            }
+
             if (onCommand(sender, command, alias, "/" + alias, new ArgsParser(args))) {
                 return true;
             } else {
