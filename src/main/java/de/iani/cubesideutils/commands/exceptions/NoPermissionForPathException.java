@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.commands.exceptions;
 
+import de.iani.cubesideutils.commands.CommandRouter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -7,12 +8,12 @@ public class NoPermissionForPathException extends CommandRouterException {
 
     private static final long serialVersionUID = 1295353884134111903L;
 
-    public NoPermissionForPathException(CommandSender sender, Command command, String alias, String[] args, String message) {
-        super(sender, command, alias, args, message);
+    public NoPermissionForPathException(CommandRouter router, CommandSender sender, Command command, String alias, String[] args, String message) {
+        super(router, sender, command, alias, args, message);
     }
 
-    public NoPermissionForPathException(CommandSender sender, Command command, String alias, String[] args) {
-        this(sender, command, alias, args, "No permission!");
+    public NoPermissionForPathException(CommandRouter router, CommandSender sender, Command command, String alias, String[] args) {
+        this(router, sender, command, alias, args, "No permission!");
     }
 
 }

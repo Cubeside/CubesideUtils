@@ -21,6 +21,19 @@ import org.bukkit.util.StringUtil;
 
 public abstract class HybridCommand extends SubCommand implements CommandExecutor, TabCompleter {
 
+    public static final CommandExceptionHandler SPECIAL_DEFAULT_HANDLER = new CommandExceptionHandler() {
+
+        @Override
+        public boolean handleIllegalSyntax(IllegalSyntaxException thrown) {
+            CommandSender sender = thrown.getSender();
+            String alias = thrown.getAlias();
+            SubCommand subCommand = thrown.getSubCommand();
+            sender.sendMessage("/" + alias + " " + subCommand.getUsage(sender));
+            return true;
+        }
+
+    };
+
     private CommandExceptionHandler handler;
 
     public HybridCommand(CommandExceptionHandler handler) {
@@ -28,26 +41,26 @@ public abstract class HybridCommand extends SubCommand implements CommandExecuto
     }
 
     public HybridCommand() {
-        this(CommandExceptionHandler.DEFAULT_HANDLER);
+        this(HybridCommand.SPECIAL_DEFAULT_HANDLER);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         try {
             if (!allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-                throw new DisallowsCommandBlockException(sender, command, alias, this, args);
+                throw new DisallowsCommandBlockException(null, sender, command, alias, this, args);
             }
             if (requiresPlayer() && !(sender instanceof Player)) {
-                throw new RequiresPlayerException(sender, command, alias, this, args);
+                throw new RequiresPlayerException(null, sender, command, alias, this, args);
             }
             if (!hasRequiredPermission(sender) || !isAvailable(sender)) {
-                throw new NoPermissionException(sender, command, alias, this, args, this.getRequiredPermission());
+                throw new NoPermissionException(null, sender, command, alias, this, args, this.getRequiredPermission());
             }
 
             if (onCommand(sender, command, alias, "/" + alias, new ArgsParser(args))) {
                 return true;
             } else {
-                throw new IllegalSyntaxException(sender, command, alias, this, args);
+                throw new IllegalSyntaxException(null, sender, command, alias, this, args);
             }
         } catch (DisallowsCommandBlockException e) {
             return handler.handleDisallowsCommandBlock(e);
@@ -60,15 +73,22 @@ public abstract class HybridCommand extends SubCommand implements CommandExecuto
         } catch (InternalCommandException e) {
             return handler.handleInternalException(e);
         } catch (Throwable t) {
-            return handler.handleInternalException(new InternalCommandException(sender, command, alias, this, args, t));
+            return handler.handleInternalException(new InternalCommandException(null, sender, command, alias, this, args, t));
         }
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (this.getRequiredPermission() != null && !sender.hasPermission(getRequiredPermission())) {
+        if (!allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
             return Collections.emptyList();
         }
+        if (requiresPlayer() && !(sender instanceof Player)) {
+            return Collections.emptyList();
+        }
+        if (getRequiredPermission() != null && !sender.hasPermission(getRequiredPermission())) {
+            return Collections.emptyList();
+        }
+
         Collection<String> options = onTabComplete(sender, command, alias, new ArgsParser(args));
         if (options == null) {
             return null;
