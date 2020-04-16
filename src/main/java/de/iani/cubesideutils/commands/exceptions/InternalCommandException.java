@@ -13,7 +13,7 @@ public class InternalCommandException extends SubCommandException {
     }
 
     public InternalCommandException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, Throwable cause) {
-        this(sender, command, alias, subCommand, args, "An internal error occured.", cause);
+        this(sender, command, alias, subCommand, args, null, cause);
     }
 
 }

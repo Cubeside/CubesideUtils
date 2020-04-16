@@ -46,8 +46,10 @@ public interface CommandExceptionHandler {
     }
 
     public default boolean handleInternalException(InternalCommandException thrown) {
-        CommandSender sender = thrown.getSender();
-        sender.sendMessage(ChatColor.RED + thrown.getMessage());
+        if (thrown.getMessage() != null) {
+            CommandSender sender = thrown.getSender();
+            sender.sendMessage(ChatColor.RED + thrown.getMessage());
+        }
 
         Throwable cause = thrown.getCause();
         if (cause instanceof Error) {
