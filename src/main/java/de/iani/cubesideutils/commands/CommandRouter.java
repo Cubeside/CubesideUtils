@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -42,7 +43,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         command.setExecutor(this);
         command.setTabCompleter(this);
 
-        this.exceptionHandler = exceptionHandler;
+        this.exceptionHandler = Objects.requireNonNull(exceptionHandler);
     }
 
     public void addPluginCommand(PluginCommand command) {
@@ -135,6 +136,8 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 return exceptionHandler.handleNoPermission(e);
             } catch (IllegalSyntaxException e) {
                 return exceptionHandler.handleIllegalSyntax(e);
+            } catch (InternalCommandException e) {
+                return exceptionHandler.handleInternalException(e);
             } catch (Throwable t) {
                 return exceptionHandler.handleInternalException(new InternalCommandException(sender, command, alias, toExecute, args, t));
             }
