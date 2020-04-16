@@ -114,19 +114,19 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         if (toExecute != null) {
             try {
                 if (!toExecute.allowsCommandBlock() && (sender instanceof BlockCommandSender || sender instanceof CommandMinecart)) {
-                    throw new DisallowsCommandBlockException(sender, command, alias, toExecute, args);
+                    throw new DisallowsCommandBlockException(this, sender, command, alias, toExecute, args);
                 }
                 if (toExecute.requiresPlayer() && !(sender instanceof Player)) {
-                    throw new RequiresPlayerException(sender, command, alias, toExecute, args);
+                    throw new RequiresPlayerException(this, sender, command, alias, toExecute, args);
                 }
                 if (!toExecute.hasRequiredPermission(sender) || !toExecute.isAvailable(sender)) {
-                    throw new NoPermissionException(sender, command, alias, toExecute, args, toExecute.getRequiredPermission());
+                    throw new NoPermissionException(this, sender, command, alias, toExecute, args, toExecute.getRequiredPermission());
                 }
 
                 if (toExecute.onCommand(sender, command, alias, getCommandString(alias, currentMap), new ArgsParser(args, nr))) {
                     return true;
                 } else {
-                    throw new IllegalSyntaxException(sender, command, alias, toExecute, args);
+                    throw new IllegalSyntaxException(this, sender, command, alias, toExecute, args);
                 }
             } catch (DisallowsCommandBlockException e) {
                 return exceptionHandler.handleDisallowsCommandBlock(e);
@@ -139,12 +139,12 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             } catch (InternalCommandException e) {
                 return exceptionHandler.handleInternalException(e);
             } catch (Throwable t) {
-                return exceptionHandler.handleInternalException(new InternalCommandException(sender, command, alias, toExecute, args, t));
+                return exceptionHandler.handleInternalException(new InternalCommandException(this, sender, command, alias, toExecute, args, t));
             }
         }
 
         if (!isAnySubCommandExecutable(sender, currentMap)) {
-            return exceptionHandler.handleNoPermissionForPath(new NoPermissionForPathException(sender, command, alias, args));
+            return exceptionHandler.handleNoPermissionForPath(new NoPermissionForPathException(this, sender, command, alias, args));
         }
         // show valid cmds
         showHelp(sender, alias, currentMap);
@@ -164,6 +164,12 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             prefixBuilder.append(hierarchy.get(i).name).append(' ');
         }
         return prefixBuilder.toString();
+    }
+
+    public void showHelp(CommandSender sender, String alias, String[] args) {
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(sender, args);
+        CommandMap currentMap = commandMapAndArg.first;
+        showHelp(sender, alias, currentMap);
     }
 
     private void showHelp(CommandSender sender, String alias, CommandMap currentMap) {

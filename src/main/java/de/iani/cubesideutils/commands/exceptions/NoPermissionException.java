@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.commands.exceptions;
 
+import de.iani.cubesideutils.commands.CommandRouter;
 import de.iani.cubesideutils.commands.SubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,18 +11,18 @@ public class NoPermissionException extends SubCommandException {
 
     private String permission;
 
-    public NoPermissionException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, String permission, String message) {
-        super(sender, command, alias, subCommand, args, message);
+    public NoPermissionException(CommandRouter router, CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, String permission, String message) {
+        super(router, sender, command, alias, subCommand, args, message);
 
         this.permission = permission;
     }
 
-    public NoPermissionException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, String permission) {
-        this(sender, command, alias, subCommand, args, permission, "No permission!");
+    public NoPermissionException(CommandRouter router, CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args, String permission) {
+        this(router, sender, command, alias, subCommand, args, permission, "No permission!");
     }
 
-    public NoPermissionException(CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args) {
-        this(sender, command, alias, subCommand, args, null, "No permission!");
+    public NoPermissionException(CommandRouter router, CommandSender sender, Command command, String alias, SubCommand subCommand, String[] args) {
+        this(router, sender, command, alias, subCommand, args, null, "No permission!");
     }
 
     public String getPermission() {

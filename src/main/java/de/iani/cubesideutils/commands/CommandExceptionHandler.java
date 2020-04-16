@@ -39,9 +39,11 @@ public interface CommandExceptionHandler {
     }
 
     public default boolean handleIllegalSyntax(IllegalSyntaxException thrown) {
+        CommandRouter router = thrown.getRouter();
         CommandSender sender = thrown.getSender();
-        SubCommand subCommand = thrown.getSubCommand();
-        sender.sendMessage(subCommand.getUsage(sender));
+        String alias = thrown.getAlias();
+        String[] args = thrown.getArgs();
+        router.showHelp(sender, alias, args);
         return true;
     }
 
