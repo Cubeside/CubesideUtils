@@ -43,6 +43,23 @@ public class ArgsParser implements Iterable<String>, Iterator<String> {
         return Math.max(args.length - 1 - current, 0);
     }
 
+    public String seeAll(String def) {
+        int i = current + 1;
+        if (args.length <= i) {
+            return def;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (args.length > i) {
+            sb.append(args[i]);
+            sb.append(' ');
+            ++i;
+        }
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+
     public String getAll(String def) {
         ++current;
         if (args.length <= current) {

@@ -57,6 +57,8 @@ public abstract class HybridCommand extends SubCommand implements CommandExecuto
             return handler.handleNoPermission(e);
         } catch (IllegalSyntaxException e) {
             return handler.handleIllegalSyntax(e);
+        } catch (InternalCommandException e) {
+            return handler.handleInternalException(e);
         } catch (Throwable t) {
             return handler.handleInternalException(new InternalCommandException(sender, command, alias, this, args, t));
         }

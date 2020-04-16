@@ -2,6 +2,7 @@ package de.iani.cubesideutils.commands;
 
 import de.iani.cubesideutils.commands.exceptions.DisallowsCommandBlockException;
 import de.iani.cubesideutils.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.commands.exceptions.InternalCommandException;
 import de.iani.cubesideutils.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.commands.exceptions.RequiresPlayerException;
 import java.util.Collection;
@@ -37,7 +38,7 @@ public abstract class SubCommand implements PermissionRequirer {
         return true;
     }
 
-    public abstract boolean onCommand(CommandSender sender, Command command, String alias, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException;
+    public abstract boolean onCommand(CommandSender sender, Command command, String alias, String commandString, ArgsParser args) throws DisallowsCommandBlockException, RequiresPlayerException, NoPermissionException, IllegalSyntaxException, InternalCommandException;
 
     public Collection<String> onTabComplete(CommandSender sender, Command command, String alias, ArgsParser args) {
         return isDisplayable(sender) ? null : Collections.emptyList();
