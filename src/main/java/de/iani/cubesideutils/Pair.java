@@ -26,6 +26,14 @@ public class Pair<T, S> implements ConfigurationSerializable {
         this.second = (S) serialized.get("second");
     }
 
+    public Pair<T, S> setFirst(T first) {
+        return new Pair<>(first, this.second);
+    }
+
+    public Pair<T, S> setSecond(S second) {
+        return new Pair<>(this.first, second);
+    }
+
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<>(2);
