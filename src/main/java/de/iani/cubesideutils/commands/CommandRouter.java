@@ -38,6 +38,10 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         this(command, caseInsensitive, CommandExceptionHandler.DEFAULT_HANDLER);
     }
 
+    public CommandRouter(PluginCommand command, CommandExceptionHandler exceptionHandler) {
+        this(command, true, exceptionHandler);
+    }
+
     public CommandRouter(PluginCommand command, boolean caseInsensitive, CommandExceptionHandler exceptionHandler) {
         super(caseInsensitive);
         command.setExecutor(this);
