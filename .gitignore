@@ -1,4 +1,11 @@
+### Eclipse files ###
 /.classpath
 /.project
 /.settings
+*/.classpath
+*/.project
+*/.settings
+
+### target ###
 /target
+*/target

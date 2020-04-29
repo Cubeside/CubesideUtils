@@ -38,6 +38,10 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         this(command, caseInsensitive, CommandExceptionHandler.DEFAULT_HANDLER);
     }
 
+    public CommandRouter(PluginCommand command, CommandExceptionHandler exceptionHandler) {
+        this(command, true, exceptionHandler);
+    }
+
     public CommandRouter(PluginCommand command, boolean caseInsensitive, CommandExceptionHandler exceptionHandler) {
         super(caseInsensitive);
         command.setExecutor(this);
@@ -180,12 +184,12 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
                     if (isAnySubCommandDisplayable(sender, subcmd)) {
-                        sender.sendMessage(prefix + key + " ...");
+                        sender.sendMessage(exceptionHandler.getHelpMessagePrefix() + prefix + key + " ...");
                     }
                 } else {
                     if (subcmd.executor.hasRequiredPermission(sender) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
-                            sender.sendMessage(prefix + key + " " + subcmd.executor.getUsage(sender));
+                            sender.sendMessage(exceptionHandler.getHelpMessagePrefix() + prefix + key + " " + subcmd.executor.getUsage(sender));
                         }
                     }
                 }
@@ -195,7 +199,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             if (executor.hasRequiredPermission(sender) && executor.isAvailable(sender)) {
                 String prefix = getCommandString(alias, currentMap);
                 if (sender instanceof Player || !executor.requiresPlayer()) {
-                    sender.sendMessage(prefix + executor.getUsage(sender));
+                    sender.sendMessage(exceptionHandler.getHelpMessagePrefix() + prefix + executor.getUsage(sender));
                 }
             }
         }
