@@ -1,9 +1,0 @@
-database:
-  host: localhost
-  user: CHANGETHIS
-  password: CHANGETHIS
-  database: CHANGETHIS
-  tableprefix: cubesideutils
-defaultDisplayName: CHANGETHIS
-worldDisplayNames:
-   some_world_name: CHANGETHIS
