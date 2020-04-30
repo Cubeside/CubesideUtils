@@ -16,25 +16,25 @@ public interface CommandExceptionHandler {
 
     public default boolean handleDisallowsCommandBlock(DisallowsCommandBlockException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(ChatColor.RED + thrown.getMessage());
+        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
         return true;
     }
 
     public default boolean handleRequiresPlayer(RequiresPlayerException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(ChatColor.RED + thrown.getMessage());
+        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
         return true;
     }
 
     public default boolean handleNoPermission(NoPermissionException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(ChatColor.RED + thrown.getMessage());
+        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
         return true;
     }
 
     public default boolean handleNoPermissionForPath(NoPermissionForPathException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(ChatColor.RED + thrown.getMessage());
+        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
         return true;
     }
 
@@ -50,7 +50,7 @@ public interface CommandExceptionHandler {
     public default boolean handleInternalException(InternalCommandException thrown) {
         if (thrown.getMessage() != null) {
             CommandSender sender = thrown.getSender();
-            sender.sendMessage(ChatColor.RED + thrown.getMessage());
+            sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
         }
 
         Throwable cause = thrown.getCause();
@@ -63,4 +63,11 @@ public interface CommandExceptionHandler {
         }
     }
 
+    public default String getErrorMessagePrefix() {
+        return ChatColor.RED.toString();
+    }
+
+    public default String getHelpMessagePrefix() {
+        return "";
+    }
 }
