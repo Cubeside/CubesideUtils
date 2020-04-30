@@ -527,6 +527,12 @@ public class StringUtil {
     }
 
     public static String toRomanNumber(int arg) {
+        if (arg == 0) {
+            return "0";
+        }
+        if (arg < 0) {
+            return "-" + toRomanNumber(-arg);
+        }
         int i = ROMAN_NUMBER_MAP.floorKey(arg);
         if (arg == i) {
             return ROMAN_NUMBER_MAP.get(arg);
