@@ -1,6 +1,5 @@
 package de.iani.cubesideutils.bukkit.plugin.api;
 
-import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
@@ -26,7 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDataHelperImpl<T> implements PlayerMessageAPI, PlayerPropertiesAPI, Listener {
 
-    private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
     private PlayerPropertiesAPI playerPropertiesApi;
 
@@ -41,7 +39,7 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
     }
 
     public GlobalPlayer getPlayer(OfflinePlayer player) {
-        return this.connectionApi.getPlayer(player.getUniqueId());
+        return getPlayer(player.getUniqueId());
     }
 
     public void sendMessage(OfflinePlayer player, String message) {
