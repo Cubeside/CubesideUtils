@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public interface UtilsPluginApi {
+public interface UtilsApi {
 
-    public static UtilsPluginApi getInstance() {
+    public static UtilsApi getInstance() {
         return CubesideUtils.getInstance();
     }
 

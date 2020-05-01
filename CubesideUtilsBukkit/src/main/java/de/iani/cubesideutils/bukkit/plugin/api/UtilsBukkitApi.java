@@ -1,7 +1,7 @@
 package de.iani.cubesideutils.bukkit.plugin.api;
 
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
-import de.iani.cubesideutils.plugin.api.UtilsPluginApi;
+import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.OfflinePlayer;
@@ -9,9 +9,9 @@ import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public interface UtilsPluginBukkitApi extends UtilsPluginApi {
+public interface UtilsBukkitApi extends UtilsApi {
 
-    public static UtilsPluginBukkitApi getInstance() {
+    public static UtilsBukkitApi getInstance() {
         return CubesideUtilsBukkit.getInstance();
     }
 

@@ -3,7 +3,7 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.ConnectionAPI;
 import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
-import de.iani.cubesideutils.plugin.api.UtilsPluginApi;
+import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class CubesideUtils implements UtilsPluginApi {
+public abstract class CubesideUtils implements UtilsApi {
 
     private static volatile CubesideUtils instance = null;
 
