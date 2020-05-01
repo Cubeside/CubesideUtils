@@ -1,7 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import de.iani.cubesideutils.StringUtil;
-import de.iani.cubesideutils.bukkit.BukkitStringUtil;
+import de.iani.cubesideutils.bukkit.StringUtilBukkit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -112,7 +112,7 @@ public class ItemsAndStrings {
             Color color = armorMeta.getColor();
             // ignore "default" color:
             if (color.asRGB() != 0xA06540) {
-                builder.append(BukkitStringUtil.toNiceString(color)).append(" ");
+                builder.append(StringUtilBukkit.toNiceString(color)).append(" ");
             }
         }
 

@@ -11,15 +11,15 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-class ChangeRankInformationCommand extends SubCommand {
+public class ChangeRankInformationCommand extends SubCommand {
 
-    static final String PERMISSION = "cubesideutils.changerankinformation";
-    static final String SET_COMMAND_PATH = "set";
-    static final String REMOVE_COMMAND_PATH = "remove";
+    public static final String PERMISSION = "cubesideutils.changerankinformation";
+    public static final String SET_COMMAND_PATH = "set";
+    public static final String REMOVE_COMMAND_PATH = "remove";
 
     private final boolean set;
 
-    ChangeRankInformationCommand(boolean set) {
+    public ChangeRankInformationCommand(boolean set) {
         this.set = set;
     }
 

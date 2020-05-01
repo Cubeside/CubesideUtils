@@ -38,7 +38,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
         Bukkit.getPluginManager().registerEvents(this, CubesideUtilsBukkit.getInstance().getPlugin());
     }
 
-    Player getCurrentlyLoggingInPlayer() {
+    public Player getCurrentlyLoggingInPlayer() {
         return this.currentlyLoggingInPlayer;
     }
 
@@ -211,7 +211,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
         return size() >= MAX_SIZE;
     }
 
-    Iterable<PlayerDataImplBukkit> loadedData() {
+    public Iterable<PlayerDataImplBukkit> loadedData() {
         return IteratorUtil.concatUnmodifiable(this.onlinePlayers.values(), values());
     }
 

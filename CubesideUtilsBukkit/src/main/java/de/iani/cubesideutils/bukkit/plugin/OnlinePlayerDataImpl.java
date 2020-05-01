@@ -50,7 +50,7 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         return this.lastLocalAction;
     }
 
-    synchronized void madeAction() {
+    public synchronized void madeAction() {
         this.lastLocalAction = System.currentTimeMillis();
         this.manuallySetAfk = false;
         checkAfk(true);

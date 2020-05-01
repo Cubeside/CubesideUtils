@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-class AfkManager implements Listener {
+public class AfkManager implements Listener {
 
     private static final int AFK_CHECK_BINS = 50;
 
@@ -19,7 +19,7 @@ class AfkManager implements Listener {
     private Set<Player>[] onlinePlayers;
     private int currentTick;
 
-    static final long AFK_THRESHOLD = 2L * 60L * 1000L;
+    public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
 
     @SuppressWarnings("unchecked")
     public AfkManager() {

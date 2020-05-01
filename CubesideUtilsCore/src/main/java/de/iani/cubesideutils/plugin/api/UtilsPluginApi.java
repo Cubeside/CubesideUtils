@@ -1,10 +1,15 @@
 package de.iani.cubesideutils.plugin.api;
 
+import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 public interface UtilsPluginApi {
+
+    public static UtilsPluginApi getInstance() {
+        return CubesideUtils.getInstance();
+    }
 
     public String getGeneralData(String key) throws SQLException;
 

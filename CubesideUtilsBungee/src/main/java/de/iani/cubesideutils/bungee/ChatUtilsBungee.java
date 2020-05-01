@@ -10,8 +10,8 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public class BungeeChatUtils {
-    private BungeeChatUtils() {
+public class ChatUtilsBungee {
+    private ChatUtilsBungee() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }

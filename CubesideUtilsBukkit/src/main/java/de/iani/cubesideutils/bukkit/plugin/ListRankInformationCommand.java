@@ -1,9 +1,9 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
 import de.iani.cubesideutils.StringUtil;
-import de.iani.cubesideutils.bukkit.BukkitChatUtil;
-import de.iani.cubesideutils.bukkit.BukkitChatUtil.BukkitSendable;
-import de.iani.cubesideutils.bukkit.BukkitChatUtil.StringMsg;
+import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
+import de.iani.cubesideutils.bukkit.ChatUtilBukkit.BukkitSendable;
+import de.iani.cubesideutils.bukkit.ChatUtilBukkit.StringMsg;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.List;
@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-class ListRankInformationCommand extends SubCommand {
+public class ListRankInformationCommand extends SubCommand {
 
-    final static String COMMAND_PATH = "list";
-    final static String FULL_COMMAND = CubesideUtilsBukkit.RANKS_COMMAND + " " + COMMAND_PATH;
+    public static final String COMMAND_PATH = "list";
+    public static final String FULL_COMMAND = CubesideUtilsBukkit.RANKS_COMMAND + " " + COMMAND_PATH;
 
-    ListRankInformationCommand() {
+    public ListRankInformationCommand() {
 
     }
 
@@ -39,7 +39,7 @@ class ListRankInformationCommand extends SubCommand {
 
             return new StringMsg(info.toString());
         }).collect(Collectors.toList());
-        BukkitChatUtil.sendMessagesPaged(sender, msgs, page, "Rank Information", FULL_COMMAND);
+        ChatUtilBukkit.sendMessagesPaged(sender, msgs, page, "Rank Information", FULL_COMMAND);
         return true;
     }
 

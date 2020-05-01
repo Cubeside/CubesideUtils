@@ -4,12 +4,12 @@ import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
-import de.iani.cubesideutils.bukkit.BukkitChatUtil;
+import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.UtilsPluginBukkitApi;
-import de.iani.cubesideutils.bukkit.sql.BukkitSQLConfig;
+import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import java.util.HashSet;
@@ -29,8 +29,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class CubesideUtilsBukkit extends CubesideUtils implements UtilsPluginBukkitApi {
 
-    static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
-    static final String RANKS_COMMAND = "ranks";
+    public static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
+    public static final String RANKS_COMMAND = "ranks";
 
     private static volatile CubesideUtilsBukkit instance = null;
 
@@ -73,7 +73,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsPluginBuk
             this.worldDisplayNames.put(worldName, displayNamesSection.getString(worldName));
         }
 
-        this.database = new UtilsDatabaseBukkit(new BukkitSQLConfig(config.getConfigurationSection("database")));
+        this.database = new UtilsDatabaseBukkit(new SQLConfigBukkit(config.getConfigurationSection("database")));
         this.playerDataCache = new PlayerDataCache();
         new EventListener();
         new AfkManager();
@@ -188,7 +188,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsPluginBuk
 
     @Override
     public void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
-        BukkitChatUtil.sendMessageToPlayers(seeMsgPermission, message);
+        ChatUtilBukkit.sendMessageToPlayers(seeMsgPermission, message);
         sendMessageToPlayersAllServers(seeMsgPermission, message);
     }
 

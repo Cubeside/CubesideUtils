@@ -10,8 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BukkitChatUtil extends ChatUtil {
-    private BukkitChatUtil() {
+public class ChatUtilBukkit extends ChatUtil {
+    private ChatUtilBukkit() {
         super(); // guaranteed to fail
     }
 

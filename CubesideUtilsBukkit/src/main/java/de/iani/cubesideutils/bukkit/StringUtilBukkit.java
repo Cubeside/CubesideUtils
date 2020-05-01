@@ -10,8 +10,8 @@ import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
-public class BukkitStringUtil {
-    private BukkitStringUtil() {
+public class StringUtilBukkit {
+    private StringUtilBukkit() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }

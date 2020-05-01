@@ -24,13 +24,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class BukkitGlobalDataHelper<T extends Enum<T>> extends GlobalDataHelperImpl<T> implements PlayerMessageAPI, PlayerPropertiesAPI, Listener {
+public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDataHelperImpl<T> implements PlayerMessageAPI, PlayerPropertiesAPI, Listener {
 
     private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
     private PlayerPropertiesAPI playerPropertiesApi;
 
-    public BukkitGlobalDataHelper(Class<T> messageTypeClass, String channel, JavaPlugin plugin) {
+    public GlobalDataHelperBukkit(Class<T> messageTypeClass, String channel, JavaPlugin plugin) {
         super(messageTypeClass, channel);
 
         GlobalClientPlugin globalClientPlugin = CubesideUtilsBukkit.getInstance().getGlobalClientPlugin();

@@ -24,7 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
-class EventListener implements Listener {
+public class EventListener implements Listener {
 
     private CubesideUtilsBukkit core;
 

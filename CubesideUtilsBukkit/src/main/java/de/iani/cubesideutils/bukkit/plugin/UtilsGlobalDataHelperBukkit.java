@@ -1,13 +1,13 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
-import de.iani.cubesideutils.bukkit.BukkitChatUtil;
-import de.iani.cubesideutils.bukkit.plugin.api.BukkitGlobalDataHelper;
+import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
+import de.iani.cubesideutils.bukkit.plugin.api.GlobalDataHelperBukkit;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class UtilsGlobalDataHelperBukkit extends BukkitGlobalDataHelper<MessageType> implements UtilsGlobalDataHelper {
+public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageType> implements UtilsGlobalDataHelper {
 
     public UtilsGlobalDataHelperBukkit(UtilsPluginBukkit plugin) {
         super(MessageType.class, GLOBAL_DATA_CHANNEL, plugin);
@@ -28,7 +28,7 @@ public class UtilsGlobalDataHelperBukkit extends BukkitGlobalDataHelper<MessageT
             case SEND_MESSAGE:
                 String permission = data.readUTF();
                 String message = data.readUTF();
-                BukkitChatUtil.sendMessageToPlayers(permission, message);
+                ChatUtilBukkit.sendMessageToPlayers(permission, message);
                 break;
             default:
                 break;
