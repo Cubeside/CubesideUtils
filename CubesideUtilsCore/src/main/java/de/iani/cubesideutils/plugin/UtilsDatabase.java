@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-class Database {
+public abstract class UtilsDatabase<T extends PlayerDataImpl> {
 
     private SQLConnection connection;
     private String tablePrefix;
@@ -48,12 +48,10 @@ class Database {
     private String setRankInformationQuery;
     private String removeRankInformationQuery;
 
-    Database() throws SQLException {
-        UtilsPlugin plugin = UtilsPlugin.getInstance();
-        SQLConfig sqlconf = plugin.getSQLConfig();
+    public UtilsDatabase(SQLConfig sqlConfig) throws SQLException {
 
-        this.tablePrefix = sqlconf.getTablePrefix();
-        this.connection = new MySQLConnection(sqlconf.getHost(), sqlconf.getDatabase(), sqlconf.getUser(), sqlconf.getPassword());
+        this.tablePrefix = sqlConfig.getTablePrefix();
+        this.connection = new MySQLConnection(sqlConfig.getHost(), sqlConfig.getDatabase(), sqlConfig.getUser(), sqlConfig.getPassword());
 
         this.generalDataTableName = this.tablePrefix + "_generalData";
         this.realServersTableName = this.tablePrefix + "_realServers";
@@ -146,7 +144,7 @@ class Database {
     public void registerRealServer() throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.addRealServerQuery);
-            smt.setString(1, UtilsPlugin.getInstance().getGlobalDataHelper().getThisServerName());
+            smt.setString(1, CubesideUtils.getInstance().getGlobalDataHelper().getThisServerName());
             smt.executeUpdate();
             return null;
         });
@@ -155,7 +153,7 @@ class Database {
     public void removeRealServer() throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.removeRealServerQuery);
-            smt.setString(1, UtilsPlugin.getInstance().getGlobalDataHelper().getThisServerName());
+            smt.setString(1, CubesideUtils.getInstance().getGlobalDataHelper().getThisServerName());
             smt.executeUpdate();
             return null;
         });
@@ -176,15 +174,13 @@ class Database {
         });
     }
 
-    public PlayerData getPlayerData(UUID playerId, boolean insertIfMissing) throws SQLException {
+    public T getPlayerData(UUID playerId, boolean insertIfMissing) throws SQLException {
         return getPlayerData(playerId, false, insertIfMissing, 0, false);
     }
 
-    public OnlinePlayerData getOnlinePlayerData(UUID playerId, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
-        return (OnlinePlayerData) getPlayerData(playerId, true, insertIfMissing, lastAction, manuallySetAfk);
-    }
+    public abstract T getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException;
 
-    private PlayerData getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
+    protected Triple<Triple<Long, Long, Long>, Boolean, String> getPlayerDataData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerDataQuery);
             smt.setString(1, playerId.toString());
@@ -199,7 +195,7 @@ class Database {
                 PreparedStatement insertSmt = sqlConnection.getOrCreateStatement(this.addPlayerDataQuery);
                 insertSmt.setString(1, playerId.toString());
                 insertSmt.executeUpdate();
-                return getPlayerData(playerId, isOnline, insertIfMissing, lastAction, manuallySetAfk);
+                return getPlayerDataData(playerId, isOnline, insertIfMissing, lastAction, manuallySetAfk);
             }
 
             long firstJoin = rs.getLong(1);
@@ -207,7 +203,7 @@ class Database {
             long lastSeen = rs.getLong(3);
             boolean afk = rs.getBoolean(4);
             String rank = rs.getString(5);
-            PlayerData result = isOnline ? new OnlinePlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, lastAction, manuallySetAfk, rank) : new PlayerData(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
+            Triple<Triple<Long, Long, Long>, Boolean, String> result = new Triple<>(new Triple<>(firstJoin, lastJoin, lastSeen), afk, rank);
 
             rs.close();
             return result;
@@ -285,7 +281,7 @@ class Database {
         this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.addAfkServerQuery);
             smt.setString(1, playerId.toString());
-            smt.setString(2, UtilsPlugin.getInstance().getGlobalDataHelper().getThisServer().getName());
+            smt.setString(2, CubesideUtils.getInstance().getGlobalDataHelper().getThisServer().getName());
             smt.executeUpdate();
             return null;
         });
@@ -295,7 +291,7 @@ class Database {
         this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.removeAfkServerQuery);
             smt.setString(1, playerId.toString());
-            smt.setString(2, UtilsPlugin.getInstance().getGlobalDataHelper().getThisServer().getName());
+            smt.setString(2, CubesideUtils.getInstance().getGlobalDataHelper().getThisServer().getName());
             smt.executeUpdate();
             return null;
         });

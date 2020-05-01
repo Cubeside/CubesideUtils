@@ -1,5 +1,6 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
+import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.bukkit.Bukkit;
@@ -13,7 +14,7 @@ class AfkManager implements Listener {
 
     private static final int AFK_CHECK_BINS = 50;
 
-    private UtilsPlugin plugin;
+    private CubesideUtilsBukkit core;
 
     private Set<Player>[] onlinePlayers;
     private int currentTick;
@@ -22,22 +23,22 @@ class AfkManager implements Listener {
 
     @SuppressWarnings("unchecked")
     public AfkManager() {
-        this.plugin = UtilsPlugin.getInstance();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        this.core = CubesideUtilsBukkit.getInstance();
+        Bukkit.getPluginManager().registerEvents(this, this.core.getPlugin());
 
         this.onlinePlayers = new Set[AFK_CHECK_BINS];
         for (int i = 0; i < AFK_CHECK_BINS; i++) {
             onlinePlayers[i] = new LinkedHashSet<>();
         }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 10, 1);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this.core.getPlugin(), this::tick, 10, 1);
     }
 
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         onlinePlayers[Math.floorMod(event.getPlayer().getUniqueId().hashCode(), AFK_CHECK_BINS)].add(player);
-        plugin.getPlayerData(player).checkAfk(false);
+        core.getPlayerData(player).checkAfk(false);
     }
 
     @EventHandler
@@ -47,7 +48,7 @@ class AfkManager implements Listener {
 
     private void tick() {
         for (Player player : onlinePlayers[currentTick % AFK_CHECK_BINS]) {
-            OnlinePlayerData data = plugin.getPlayerData(player);
+            OnlinePlayerData data = core.getPlayerData(player);
             data.checkAfk(true);
         }
 

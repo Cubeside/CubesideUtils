@@ -1,14 +1,15 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
 import de.iani.cubesideutils.bukkit.BukkitChatUtil;
+import de.iani.cubesideutils.bukkit.plugin.api.BukkitGlobalDataHelper;
+import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper;
+import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-class UtilsGlobalDataHelper extends GlobalDataHelper<MessageType> {
+public class UtilsGlobalDataHelperBukkit extends BukkitGlobalDataHelper<MessageType> implements UtilsGlobalDataHelper {
 
-    public static final String GLOBAL_DATA_CHANNEL = "UtilsPlugin";
-
-    UtilsGlobalDataHelper(UtilsPlugin plugin) {
+    public UtilsGlobalDataHelperBukkit(UtilsPluginBukkit plugin) {
         super(MessageType.class, GLOBAL_DATA_CHANNEL, plugin);
     }
 
@@ -16,13 +17,13 @@ class UtilsGlobalDataHelper extends GlobalDataHelper<MessageType> {
     protected void handleMessage(MessageType messageType, DataInputStream data) throws IOException {
         switch (messageType) {
             case RANK_INFORMATION_CHANGED:
-                UtilsPlugin.getInstance().updateRankInformation();
+                CubesideUtilsBukkit.getInstance().updateRankInformation();
                 break;
             case GENERAL_DATA_CHANGED:
-                UtilsPlugin.getInstance().getGeneralDataCache().invalidate(data.readUTF());
+                CubesideUtilsBukkit.getInstance().getGeneralDataCache().invalidate(data.readUTF());
                 break;
             case PLAYER_DATA_CHANGED:
-                UtilsPlugin.getInstance().getPlayerDataCache().invalidate(readUUID(data));
+                CubesideUtilsBukkit.getInstance().getPlayerDataCache().invalidate(readUUID(data));
                 break;
             case SEND_MESSAGE:
                 String permission = data.readUTF();

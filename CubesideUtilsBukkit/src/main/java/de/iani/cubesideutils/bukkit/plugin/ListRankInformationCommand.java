@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.BukkitChatUtil;
@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 class ListRankInformationCommand extends SubCommand {
 
     final static String COMMAND_PATH = "list";
-    final static String FULL_COMMAND = UtilsPlugin.RANKS_COMMAND + " " + COMMAND_PATH;
+    final static String FULL_COMMAND = CubesideUtilsBukkit.RANKS_COMMAND + " " + COMMAND_PATH;
 
     ListRankInformationCommand() {
 
@@ -27,10 +27,10 @@ class ListRankInformationCommand extends SubCommand {
             page = args.getNext(0) - 1;
         }
 
-        List<BukkitSendable> msgs = UtilsPlugin.getInstance().getRanks().stream().map(rank -> {
-            int priority = UtilsPlugin.getInstance().getPriority(rank);
-            String permission = UtilsPlugin.getInstance().getPermission(rank);
-            String prefix = UtilsPlugin.getInstance().getPrefix(rank);
+        List<BukkitSendable> msgs = CubesideUtilsBukkit.getInstance().getRanks().stream().map(rank -> {
+            int priority = CubesideUtilsBukkit.getInstance().getPriority(rank);
+            String permission = CubesideUtilsBukkit.getInstance().getPermission(rank);
+            String prefix = CubesideUtilsBukkit.getInstance().getPrefix(rank);
 
             StringBuilder info = new StringBuilder(rank).append(": ");
             info.append("priority ").append(priority).append(", ");

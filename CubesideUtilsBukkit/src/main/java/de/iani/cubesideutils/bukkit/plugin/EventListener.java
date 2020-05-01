@@ -1,6 +1,7 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
 import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
+import de.iani.cubesideutils.plugin.api.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,16 +26,16 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 class EventListener implements Listener {
 
-    private UtilsPlugin plugin;
+    private CubesideUtilsBukkit core;
 
     public EventListener() {
-        this.plugin = UtilsPlugin.getInstance();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        this.core = CubesideUtilsBukkit.getInstance();
+        Bukkit.getPluginManager().registerEvents(this, this.core.getPlugin());
     }
 
     private void madeAction(Player player) {
-        PlayerData data = plugin.getPlayerDataCache().get(player.getUniqueId());
-        data.getOnlineData().madeAction();
+        PlayerDataImplBukkit data = core.getPlayerDataCache().get(player.getUniqueId());
+        ((OnlinePlayerDataImpl) data.getOnlineData()).madeAction();
     }
 
     // First/last join
@@ -45,7 +46,7 @@ class EventListener implements Listener {
             return;
         }
 
-        PlayerData data = plugin.getPlayerDataCache().get(event.getPlayer().getUniqueId(), true);
+        PlayerData data = core.getPlayerDataCache().get(event.getPlayer().getUniqueId(), true);
         if (data.getFirstJoin() == 0) {
             data.setFirstJoinAndLastJoinAndSeen(System.currentTimeMillis());
         } else {
@@ -57,21 +58,21 @@ class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        UtilsGlobalDataHelper globalData = plugin.getGlobalDataHelper();
-        globalData.setPropertyValue(event.getPlayer(), UtilsPlugin.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), plugin.getWorldDisplayName(event.getPlayer()));
+        UtilsGlobalDataHelperBukkit globalData = core.getGlobalDataHelper();
+        globalData.setPropertyValue(event.getPlayer(), CubesideUtilsBukkit.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), core.getWorldDisplayName(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChangedWorldEvent(PlayerChangedWorldEvent event) {
-        UtilsGlobalDataHelper globalData = plugin.getGlobalDataHelper();
-        globalData.setPropertyValue(event.getPlayer(), UtilsPlugin.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), plugin.getWorldDisplayName(event.getPlayer()));
+        UtilsGlobalDataHelperBukkit globalData = core.getGlobalDataHelper();
+        globalData.setPropertyValue(event.getPlayer(), CubesideUtilsBukkit.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), core.getWorldDisplayName(event.getPlayer()));
     }
 
     // On monitor, GlobalPlayer may no longer be available.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        UtilsGlobalDataHelper globalData = plugin.getGlobalDataHelper();
-        globalData.setPropertyValue(event.getPlayer(), UtilsPlugin.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), null);
+        UtilsGlobalDataHelperBukkit globalData = core.getGlobalDataHelper();
+        globalData.setPropertyValue(event.getPlayer(), CubesideUtilsBukkit.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), null);
     }
 
     // AFK

@@ -1,24 +1,25 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-class GeneralDataCache {
+public class GeneralDataCache {
 
-    private UtilsPlugin plugin;
+    private CubesideUtils core;
     private Map<String, String> cache;
 
-    GeneralDataCache() {
-        this.plugin = UtilsPlugin.getInstance();
+    public GeneralDataCache() {
+        this.core = CubesideUtils.getInstance();
         this.cache = new HashMap<>();
     }
 
-    synchronized String get(String key) throws SQLException {
+    public synchronized String get(String key) throws SQLException {
         try {
             return cache.computeIfAbsent(key, k -> {
                 try {
-                    return plugin.getDatabase().getGeneralData(k);
+                    return core.getDatabase().getGeneralData(k);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -32,13 +33,13 @@ class GeneralDataCache {
         }
     }
 
-    synchronized void set(String key, String value) throws SQLException {
-        plugin.getDatabase().setGeneralData(key, value);
-        plugin.getGlobalDataHelper().sendData(MessageType.GENERAL_DATA_CHANGED, key);
+    public synchronized void set(String key, String value) throws SQLException {
+        core.getDatabase().setGeneralData(key, value);
+        core.getGlobalDataHelper().sendData(MessageType.GENERAL_DATA_CHANGED, key);
         cache.put(key, value);
     }
 
-    synchronized void invalidate(String key) {
+    public synchronized void invalidate(String key) {
         cache.remove(key);
     }
 

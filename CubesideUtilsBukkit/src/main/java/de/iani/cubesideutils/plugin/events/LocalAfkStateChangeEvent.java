@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.plugin.events;
 
-import de.iani.cubesideutils.plugin.OnlinePlayerData;
+import de.iani.cubesideutils.bukkit.plugin.OnlinePlayerDataImpl;
 import org.bukkit.event.Cancellable;
 
 public class LocalAfkStateChangeEvent extends OnlinePlayerDataEvent implements Cancellable {
@@ -8,7 +8,7 @@ public class LocalAfkStateChangeEvent extends OnlinePlayerDataEvent implements C
     private boolean nowAfk;
     private boolean cancelled;
 
-    public LocalAfkStateChangeEvent(OnlinePlayerData data, boolean nowAfk) {
+    public LocalAfkStateChangeEvent(OnlinePlayerDataImpl data, boolean nowAfk) {
         super(data);
 
         this.nowAfk = nowAfk;

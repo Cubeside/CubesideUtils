@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.plugin.events;
 
-import de.iani.cubesideutils.plugin.OnlinePlayerData;
+import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import org.bukkit.entity.Player;
 
 public abstract class OnlinePlayerDataEvent extends PlayerDataEvent {

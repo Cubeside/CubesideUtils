@@ -1,23 +1,26 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
 import de.cubeside.connection.GlobalServer;
+import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
+import de.iani.cubesideutils.plugin.events.GlobalAfkStateChangeEvent;
 import de.iani.cubesideutils.plugin.events.LocalAfkStateChangeEvent;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class OnlinePlayerData extends PlayerData {
+public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements OnlinePlayerData {
 
     private long lastLocalAction;
     private boolean manuallySetAfk;
     private boolean locallyAfk;
 
-    OnlinePlayerData(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String rank) {
+    public OnlinePlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String rank) {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
 
         this.lastLocalAction = lastAction;
@@ -25,15 +28,16 @@ public class OnlinePlayerData extends PlayerData {
         this.locallyAfk = afk;
     }
 
-    synchronized void quit() {
+    public synchronized void quit() {
         this.setLocallyAfk(false, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(UtilsPlugin.getInstance(), this::notifyChanges);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CubesideUtilsBukkit.getInstance().getPlugin(), this::notifyChanges);
     }
 
+    @Override
     public Player getPlayer() {
         Player result = Bukkit.getPlayer(getPlayerId());
         if (result == null) {
-            result = UtilsPlugin.getInstance().getPlayerDataCache().getCurrentlyLoggingInPlayer();
+            result = CubesideUtilsBukkit.getInstance().getPlayerDataCache().getCurrentlyLoggingInPlayer(); // TODO: hä?
             if (result == null || !result.getUniqueId().equals(getPlayerId())) {
                 return null;
             }
@@ -41,6 +45,7 @@ public class OnlinePlayerData extends PlayerData {
         return result;
     }
 
+    @Override
     public synchronized long getLastAction() {
         return this.lastLocalAction;
     }
@@ -51,6 +56,7 @@ public class OnlinePlayerData extends PlayerData {
         checkAfk(true);
     }
 
+    @Override
     public synchronized void checkAfk(boolean messagePlayer) {
         boolean afk = System.currentTimeMillis() >= this.lastLocalAction + AfkManager.AFK_THRESHOLD;
         if (afk == isLocallyAfk() || (!afk && manuallySetAfk)) {
@@ -60,23 +66,27 @@ public class OnlinePlayerData extends PlayerData {
         if (Bukkit.isPrimaryThread()) {
             setLocallyAfk(afk, messagePlayer);
         } else {
-            Bukkit.getScheduler().runTask(UtilsPlugin.getInstance(), () -> setLocallyAfk(afk, messagePlayer));
+            Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> setLocallyAfk(afk, messagePlayer));
         }
     }
 
+    @Override
     public synchronized boolean isLocallyAfk() {
         return this.locallyAfk;
     }
 
+    @Override
     public synchronized boolean isManuallySetAfk() {
         return this.manuallySetAfk;
     }
 
+    @Override
     public synchronized void manuallySetAfk(boolean messagePlayer) {
         this.manuallySetAfk = true;
         setLocallyAfk(true, messagePlayer);
     }
 
+    @Override
     public synchronized void setLocallyAfk(boolean afk, boolean messagePlayer) {
         if (!Bukkit.isPrimaryThread()) {
             throw new IllegalStateException("May only be invoked on the bukkit primary thread.");
@@ -98,9 +108,9 @@ public class OnlinePlayerData extends PlayerData {
         }
 
         try {
-            UtilsPlugin.getInstance().getDatabase().setLocallyAfk(this.getPlayerId(), afk);
+            CubesideUtilsBukkit.getInstance().getDatabase().setLocallyAfk(this.getPlayerId(), afk);
         } catch (SQLException e) {
-            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not save AFK-status in database.", e);
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Could not save AFK-status in database.", e);
         }
         checkGloballyAfk();
 
@@ -123,7 +133,7 @@ public class OnlinePlayerData extends PlayerData {
             return;
         }
 
-        UtilsGlobalDataHelper globalHelper = UtilsPlugin.getInstance().getGlobalDataHelper();
+        UtilsGlobalDataHelperBukkit globalHelper = CubesideUtilsBukkit.getInstance().getGlobalDataHelper();
         Collection<GlobalServer> servers = globalHelper.getServers(getPlayerId());
         assert servers.contains(globalHelper.getThisServer());
 
@@ -134,9 +144,9 @@ public class OnlinePlayerData extends PlayerData {
 
         Set<String> afkServers;
         try {
-            afkServers = UtilsPlugin.getInstance().getDatabase().getAfkServers(getPlayerId());
+            afkServers = CubesideUtilsBukkit.getInstance().getDatabase().getAfkServers(getPlayerId());
         } catch (SQLException e) {
-            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Could not load AFK-status from database.", e);
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Could not load AFK-status from database.", e);
             return;
         }
         for (GlobalServer server : servers) {
@@ -149,11 +159,39 @@ public class OnlinePlayerData extends PlayerData {
         return;
     }
 
+    private void setGloballyAfkInternal(boolean afk) {
+        if (afk == isGloballyAfk()) {
+            return;
+        }
+
+        GlobalAfkStateChangeEvent event = new GlobalAfkStateChangeEvent(this, afk);
+        if (Bukkit.isPrimaryThread()) {
+            Bukkit.getPluginManager().callEvent(event);
+        } else {
+            try {
+                Bukkit.getScheduler().callSyncMethod(CubesideUtilsBukkit.getInstance().getPlugin(), () -> event.callEvent()).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        setGloballyAfk(afk);
+
+        try {
+            CubesideUtilsBukkit.getInstance().getDatabase().setGloballyAfk(getPlayerId(), afk);
+        } catch (SQLException e) {
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save afk value for player " + getPlayerId() + " in database.", e);
+            return;
+        }
+
+        notifyChanges();
+    }
+
     @Override
     public void checkRank() {
         String rank = null;
-        for (String possible : UtilsPlugin.getInstance().getRanks()) {
-            String permission = UtilsPlugin.getInstance().getPermission(possible);
+        for (String possible : CubesideUtilsBukkit.getInstance().getRanks()) {
+            String permission = CubesideUtilsBukkit.getInstance().getPermission(possible);
             if (permission == null || getPlayer().hasPermission(permission)) {
                 rank = possible;
                 break;

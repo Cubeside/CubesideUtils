@@ -1,6 +1,7 @@
-package de.iani.cubesideutils.serialization;
+package de.iani.cubesideutils.bukkit.serialization;
 
 import de.cubeside.connection.util.GlobalLocation;
+import de.iani.cubesideutils.serialization.StringSerializable;
 import java.util.regex.Pattern;
 
 public class GlobalLocationWrapper implements StringSerializable {

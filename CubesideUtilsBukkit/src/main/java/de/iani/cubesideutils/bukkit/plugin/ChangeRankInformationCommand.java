@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
@@ -32,7 +32,7 @@ class ChangeRankInformationCommand extends SubCommand {
 
         if (!set) {
             try {
-                if (UtilsPlugin.getInstance().removeRankInformation(rank)) {
+                if (CubesideUtilsBukkit.getInstance().removeRankInformation(rank)) {
                     sender.sendMessage(ChatColor.GREEN + "Rank removed.");
                     return true;
                 } else {
@@ -40,7 +40,7 @@ class ChangeRankInformationCommand extends SubCommand {
                     return true;
                 }
             } catch (SQLException e) {
-                UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to remove rank information for rank " + rank + ".", e);
+                CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to remove rank information for rank " + rank + ".", e);
                 sender.sendMessage(ChatColor.RED + "Ein interner Fehler ist aufgetreten.");
                 return true;
             }
@@ -67,9 +67,9 @@ class ChangeRankInformationCommand extends SubCommand {
         permission = permission.equals("-") ? null : permission;
 
         try {
-            UtilsPlugin.getInstance().setRankInformation(rank, priority, permission, prefix);
+            CubesideUtilsBukkit.getInstance().setRankInformation(rank, priority, permission, prefix);
         } catch (SQLException e) {
-            UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to set rank information for rank " + rank + ".", e);
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to set rank information for rank " + rank + ".", e);
             sender.sendMessage(ChatColor.RED + "Ein interner Fehler ist aufgetreten.");
             return true;
         }
@@ -82,7 +82,7 @@ class ChangeRankInformationCommand extends SubCommand {
     public Collection<String> onTabComplete(CommandSender sender, Command command, String alias, ArgsParser args) {
         args.getNext(null);
         if (!args.hasNext()) {
-            return UtilsPlugin.getInstance().getRanks();
+            return CubesideUtilsBukkit.getInstance().getRanks();
         }
         return Collections.emptyList();
     }

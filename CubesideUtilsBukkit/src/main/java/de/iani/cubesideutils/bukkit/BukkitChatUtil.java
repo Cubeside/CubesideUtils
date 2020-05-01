@@ -1,7 +1,6 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.iani.cubesideutils.ChatUtil;
-import de.iani.cubesideutils.plugin.UtilsPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,11 +107,6 @@ public class BukkitChatUtil extends ChatUtil {
 
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
-    }
-
-    public static void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
-        sendMessageToPlayers(seeMsgPermission, message);
-        UtilsPlugin.getInstance().sendMessageToPlayersAllServers(seeMsgPermission, message); // TODO
     }
 
     public static void sendMessageToPlayers(String seeMsgPermission, String message) {

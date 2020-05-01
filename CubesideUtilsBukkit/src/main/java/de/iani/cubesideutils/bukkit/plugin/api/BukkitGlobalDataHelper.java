@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin.api;
 
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
@@ -6,69 +6,42 @@ import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
 import de.cubeside.connection.PlayerMessageAPI;
 import de.cubeside.connection.PlayerPropertiesAPI;
-import de.iani.cubesideutils.FunctionUtil;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import de.cubeside.connection.event.GlobalDataEvent;
+import de.cubeside.connection.util.GlobalLocation;
+import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
+import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
+import de.iani.cubesideutils.plugin.GlobalDataHelperImpl;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class GlobalDataBundle implements ConnectionAPI, PlayerMessageAPI, PlayerPropertiesAPI {
+public abstract class BukkitGlobalDataHelper<T extends Enum<T>> extends GlobalDataHelperImpl<T> implements PlayerMessageAPI, PlayerPropertiesAPI, Listener {
 
     private ConnectionAPI connectionApi;
     private PlayerMessageAPI playerMsgApi;
     private PlayerPropertiesAPI playerPropertiesApi;
 
-    public GlobalDataBundle() {
-        GlobalClientPlugin globalClientPlugin = UtilsPlugin.getInstance().getGlobalClientPlugin();
-        this.connectionApi = globalClientPlugin.getConnectionAPI();
+    public BukkitGlobalDataHelper(Class<T> messageTypeClass, String channel, JavaPlugin plugin) {
+        super(messageTypeClass, channel);
+
+        GlobalClientPlugin globalClientPlugin = CubesideUtilsBukkit.getInstance().getGlobalClientPlugin();
         this.playerMsgApi = globalClientPlugin.getMessageAPI();
         this.playerPropertiesApi = globalClientPlugin.getPlayerPropertiesAPI();
+
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     public GlobalPlayer getPlayer(OfflinePlayer player) {
         return this.connectionApi.getPlayer(player.getUniqueId());
-    }
-
-    @Override
-    public GlobalPlayer getPlayer(UUID playerId) {
-        return this.connectionApi.getPlayer(playerId);
-    }
-
-    @Override
-    public GlobalPlayer getPlayer(String name) {
-        return this.connectionApi.getPlayer(name);
-    }
-
-    @Override
-    public Collection<GlobalPlayer> getPlayers() {
-        return this.connectionApi.getPlayers();
-    }
-
-    @Override
-    public Collection<GlobalServer> getServers() {
-        return this.connectionApi.getServers();
-    }
-
-    @Override
-    public GlobalServer getServer(String serverName) {
-        return this.connectionApi.getServer(serverName);
-    }
-
-    @Override
-    public GlobalServer getThisServer() {
-        return this.connectionApi.getThisServer();
-    }
-
-    public String getThisServerName() {
-        return this.connectionApi.getThisServer().getName();
     }
 
     public void sendMessage(OfflinePlayer player, String message) {
@@ -207,76 +180,12 @@ public class GlobalDataBundle implements ConnectionAPI, PlayerMessageAPI, Player
         playerPropertiesApi.setPropertyValue(player, property, value);
     }
 
-    public boolean isReal(GlobalServer server) {
-        return isReal(server.getName());
-    }
-
-    public boolean isReal(String serverName) {
-        Map<String, Boolean> cached = UtilsPlugin.getInstance().getCachedRealServers();
-        Boolean result = cached.get(serverName);
-        if (result != null) {
-            return result;
-        }
-
-        cached.values().removeIf(Boolean::booleanValue);
-        Set<String> realServers;
-        try {
-            realServers = UtilsPlugin.getInstance().getDatabase().getRealServers();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        for (String real : realServers) {
-            cached.put(real, true);
-        }
-
-        return cached.computeIfAbsent(serverName, name -> false);
-    }
-
     public List<GlobalServer> getServers(OfflinePlayer player) {
         return getServers(player, false);
     }
 
     public List<GlobalServer> getServers(OfflinePlayer player, boolean includeNonReals) {
         return getServers(getPlayer(player), includeNonReals);
-    }
-
-    public List<GlobalServer> getServers(UUID playerId) {
-        return getServers(playerId, false);
-    }
-
-    public List<GlobalServer> getServers(UUID playerId, boolean includeNonReals) {
-        return getServers(getPlayer(playerId), includeNonReals);
-    }
-
-    public List<GlobalServer> getServers(String playerName) {
-        return getServers(playerName, false);
-    }
-
-    public List<GlobalServer> getServers(String playerName, boolean includeNonReals) {
-        return getServers(getPlayer(playerName), includeNonReals);
-    }
-
-    public List<GlobalServer> getServers(GlobalPlayer gPlayer) {
-        return getServers(gPlayer, false);
-    }
-
-    public List<GlobalServer> getServers(GlobalPlayer gPlayer, boolean includeNonReals) {
-        if (gPlayer == null) {
-            return Collections.emptyList();
-        }
-
-        List<GlobalServer> result = gPlayer.getCurrentServers();
-        if (includeNonReals) {
-            return result;
-        }
-
-        try {
-            result.removeIf(FunctionUtil.negate(this::isReal));
-        } catch (UnsupportedOperationException e) {
-            result = new ArrayList<>(result);
-            result.removeIf(FunctionUtil.negate(this::isReal));
-        }
-        return result;
     }
 
     public boolean isOnAnyServer(OfflinePlayer player) {
@@ -287,68 +196,31 @@ public class GlobalDataBundle implements ConnectionAPI, PlayerMessageAPI, Player
         return isOnAnyServer(getPlayer(player), includeNonReals);
     }
 
-    public boolean isOnAnyServer(UUID playerId) {
-        return isOnAnyServer(playerId, false);
-    }
-
-    public boolean isOnAnyServer(UUID playerId, boolean includeNonReals) {
-        return isOnAnyServer(getPlayer(playerId), includeNonReals);
-    }
-
-    public boolean isOnAnyServer(String playerName) {
-        return isOnAnyServer(playerName, false);
-    }
-
-    public boolean isOnAnyServer(String playerName, boolean includeNonReals) {
-        return isOnAnyServer(getPlayer(playerName), includeNonReals);
-    }
-
-    public boolean isOnAnyServer(GlobalPlayer gPlayer) {
-        return isOnAnyServer(gPlayer, false);
-    }
-
-    public boolean isOnAnyServer(GlobalPlayer gPlayer, boolean includeNonReals) {
-        if (gPlayer == null) {
-            return false;
-        }
-        if (includeNonReals) {
-            return gPlayer.isOnAnyServer();
-        }
-        return gPlayer.getCurrentServers().stream().anyMatch(this::isReal);
-    }
-
-    public Collection<GlobalPlayer> getOnlinePlayers() {
-        return getOnlinePlayers(false);
-    }
-
-    public Collection<GlobalPlayer> getOnlinePlayers(boolean includeNonReals) {
-        Collection<GlobalPlayer> result = getPlayers();
-        if (!includeNonReals) {
-            result = result.stream().filter(this::isOnAnyServer).collect(Collectors.toList());
-        }
-        return result;
-    }
-
-    public Set<String> getOnlinePlayerNames() {
-        return getOnlinePlayerNames(false);
-    }
-
-    public Set<String> getOnlinePlayerNames(boolean includeNonReals) {
-        Stream<GlobalPlayer> stream = getPlayers().stream();
-        if (!includeNonReals) {
-            stream = stream.filter(this::isOnAnyServer);
-        }
-        return stream.map(GlobalPlayer::getName).collect(Collectors.toSet());
-    }
-
     @Override
-    public void sendData(String channel, byte[] data) {
-        this.connectionApi.sendData(channel, data);
+    protected void sendMsgPart(DataOutputStream msgout, Object msg) throws IOException {
+        if (msg instanceof GlobalLocation) {
+            GlobalLocationWrapper wrapper = new GlobalLocationWrapper((GlobalLocation) msg);
+            sendMsgPart(msgout, wrapper);
+            return;
+        }
+
+        super.sendMsgPart(msgout, msg);
     }
 
-    @Override
-    public void sendData(String channel, byte[] data, boolean sendToRestriced) {
-        this.connectionApi.sendData(channel, data, sendToRestriced);
+    protected GlobalLocation readGlobalLocation(DataInputStream msgin) throws IOException {
+        GlobalLocationWrapper wrapper = readStringSerializable(msgin);
+        return wrapper.original;
+    }
+
+    @EventHandler
+    public void onGlobalDataEvent(GlobalDataEvent event) throws IOException {
+        if (!event.getChannel().equals(getChannel())) {
+            return;
+        }
+
+        DataInputStream data = new DataInputStream(event.getData());
+        T messageType = fromOrdinal(data.readInt());
+        handleMessage(messageType, data);
     }
 
 }

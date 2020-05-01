@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.plugin.events;
 
-import de.iani.cubesideutils.plugin.PlayerData;
+import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -12,13 +12,13 @@ public abstract class PlayerDataEvent extends Event {
         return handlers;
     }
 
-    private PlayerData data;
+    private PlayerDataBukkit data;
 
-    public PlayerDataEvent(PlayerData data) {
+    public PlayerDataEvent(PlayerDataBukkit data) {
         this.data = data;
     }
 
-    public PlayerData getPlayerData() {
+    public PlayerDataBukkit getPlayerData() {
         return data;
     }
 

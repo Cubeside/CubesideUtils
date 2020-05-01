@@ -1,6 +1,8 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.bukkit.plugin;
 
+import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.collections.IteratorUtil;
+import de.iani.cubesideutils.plugin.api.PlayerData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,12 +19,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listener {
+public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> implements Listener {
 
     private static final long serialVersionUID = 2279901989917386890L;
     private static final int MAX_SIZE = 16;
 
-    private Map<UUID, OnlinePlayerData> onlinePlayers;
+    private Map<UUID, OnlinePlayerDataImpl> onlinePlayers;
 
     private ReadWriteLock lock;
 
@@ -33,7 +35,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
         this.lock = new ReentrantReadWriteLock();
         this.onlinePlayers = new HashMap<>();
 
-        Bukkit.getPluginManager().registerEvents(this, UtilsPlugin.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, CubesideUtilsBukkit.getInstance().getPlugin());
     }
 
     Player getCurrentlyLoggingInPlayer() {
@@ -47,7 +49,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
             boolean isOnline = false;
             long lastAction = 0;
             boolean manuallySetAfk = false;
-            PlayerData data = this.onlinePlayers.remove(playerId);
+            PlayerDataImplBukkit data = this.onlinePlayers.remove(playerId);
             if (data != null) {
                 isOnline = true;
                 lastAction = data.getOnlineData().getLastAction();
@@ -58,12 +60,12 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
             if (isOnline) {
                 try {
-                    data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, lastAction, manuallySetAfk);
+                    data = CubesideUtilsBukkit.getInstance().getDatabase().getOnlinePlayerData(playerId, true, lastAction, manuallySetAfk);
                 } catch (SQLException e) {
-                    UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
+                    CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                     return;
                 }
-                this.onlinePlayers.put(playerId, (OnlinePlayerData) data);
+                this.onlinePlayers.put(playerId, (OnlinePlayerDataImpl) data);
                 data.getOnlineData().checkAfk(false);
             }
         } finally {
@@ -73,7 +75,7 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
     private void left(UUID playerId) {
         this.lock.writeLock().lock();
-        OnlinePlayerData data = this.onlinePlayers.remove(playerId);
+        OnlinePlayerDataImpl data = this.onlinePlayers.remove(playerId);
         data.quit();
         this.lock.writeLock().unlock();
     }
@@ -85,11 +87,11 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
         this.lock.writeLock().lock();
         try {
             invalidate(playerId);
-            OnlinePlayerData data;
+            OnlinePlayerDataImpl data;
             try {
-                data = UtilsPlugin.getInstance().getDatabase().getOnlinePlayerData(playerId, true, System.currentTimeMillis(), false);
+                data = CubesideUtilsBukkit.getInstance().getDatabase().getOnlinePlayerData(playerId, true, System.currentTimeMillis(), false);
             } catch (SQLException e) {
-                UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
+                CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
                 // TODO: disallow?
                 return;
             }
@@ -120,19 +122,19 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
 
     // May be accessed asynchronously.
     @Override
-    public PlayerData get(Object key) {
+    public PlayerDataImplBukkit get(Object key) {
         return get(key, false);
     }
 
     // May be accessed asynchronously.
-    public PlayerData get(Object key, boolean createIfMissing) {
+    public PlayerDataImplBukkit get(Object key, boolean createIfMissing) {
         if (!(key instanceof UUID)) {
             return null;
         }
 
         this.lock.readLock().lock();
         try {
-            PlayerData result = this.onlinePlayers.get(key);
+            PlayerDataImplBukkit result = this.onlinePlayers.get(key);
             if (result != null) {
                 return result;
             }
@@ -157,11 +159,11 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
                 }
 
                 return super.computeIfAbsent((UUID) key, k -> {
-                    PlayerData data;
+                    PlayerDataImplBukkit data;
                     try {
-                        data = UtilsPlugin.getInstance().getDatabase().getPlayerData(k, createIfMissing);
+                        data = CubesideUtilsBukkit.getInstance().getDatabase().getPlayerData(k, createIfMissing);
                     } catch (SQLException e) {
-                        UtilsPlugin.getInstance().getLogger().log(Level.SEVERE, "Exception trying to query database for PlayerData.", e);
+                        CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to query database for PlayerData.", e);
                         return null;
                     }
                     return data;
@@ -190,12 +192,12 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
     }
 
     @Override
-    public PlayerData put(UUID key, PlayerData value) {
+    public PlayerDataImplBukkit put(UUID key, PlayerDataImplBukkit value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public PlayerData remove(Object key) {
+    public PlayerDataImplBukkit remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
@@ -205,11 +207,11 @@ class PlayerDataCache extends LinkedHashMap<UUID, PlayerData> implements Listene
     }
 
     @Override
-    protected boolean removeEldestEntry(java.util.Map.Entry<UUID, PlayerData> eldest) {
+    protected boolean removeEldestEntry(java.util.Map.Entry<UUID, PlayerDataImplBukkit> eldest) {
         return size() >= MAX_SIZE;
     }
 
-    Iterable<PlayerData> loadedData() {
+    Iterable<PlayerDataImplBukkit> loadedData() {
         return IteratorUtil.concatUnmodifiable(this.onlinePlayers.values(), values());
     }
 
