@@ -120,4 +120,8 @@ public class ChatUtilBukkit extends ChatUtil {
         }
     }
 
+    public static void sendMessage(CommandSender receiver, String pluginPrefix, String colors, Object message, Object... messageParts) {
+        ChatUtil.sendMessage(new CommandSenderWrapper(receiver), pluginPrefix, colors, message, messageParts);
+    }
+
 }

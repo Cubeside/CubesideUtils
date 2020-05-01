@@ -195,7 +195,7 @@ public abstract class ChatUtil {
         }
     }
 
-    protected static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object message, Object... messageParts) {
+    public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object message, Object... messageParts) {
         if (messageParts.length == 0) {
             receiver.sendMessage(pluginPrefix + " " + (colors == null ? "" : colors) + message);
         } else {
