@@ -8,7 +8,7 @@ import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
-import de.iani.cubesideutils.bukkit.plugin.api.UtilsBukkitApi;
+import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
@@ -27,7 +27,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CubesideUtilsBukkit extends CubesideUtils implements UtilsBukkitApi {
+public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit {
 
     public static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
     public static final String RANKS_COMMAND = "ranks";

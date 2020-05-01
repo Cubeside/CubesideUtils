@@ -12,18 +12,6 @@ public interface GlobalDataHelper<T extends Enum<T>> extends ConnectionAPI {
 
     public String getChannel();
 
-    public GlobalPlayer getPlayer(String name);
-
-    public GlobalPlayer getPlayer(UUID uuid);
-
-    public Collection<GlobalPlayer> getPlayers();
-
-    public GlobalServer getServer(String name);
-
-    public Collection<GlobalServer> getServers();
-
-    public GlobalServer getThisServer();
-
     public String getThisServerName();
 
     public boolean isReal(GlobalServer server);
@@ -62,8 +50,10 @@ public interface GlobalDataHelper<T extends Enum<T>> extends ConnectionAPI {
 
     public Set<String> getOnlinePlayerNames(boolean includeNonReals);
 
+    @Override
     public void sendData(String channel, byte[] data, boolean sendToRestricted);
 
+    @Override
     public void sendData(String channel, byte[] data);
 
     // TODO FIX SEND TO RESTRICTED

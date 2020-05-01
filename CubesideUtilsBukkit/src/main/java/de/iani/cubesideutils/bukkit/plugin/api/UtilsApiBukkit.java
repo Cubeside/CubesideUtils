@@ -9,9 +9,9 @@ import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public interface UtilsBukkitApi extends UtilsApi {
+public interface UtilsApiBukkit extends UtilsApi {
 
-    public static UtilsBukkitApi getInstance() {
+    public static UtilsApiBukkit getInstance() {
         return CubesideUtilsBukkit.getInstance();
     }
 
