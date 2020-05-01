@@ -50,17 +50,10 @@ public interface GlobalDataHelper<T extends Enum<T>> extends ConnectionAPI {
 
     public Set<String> getOnlinePlayerNames(boolean includeNonReals);
 
-    @Override
-    public void sendData(String channel, byte[] data, boolean sendToRestricted);
-
-    @Override
-    public void sendData(String channel, byte[] data);
-
-    // TODO FIX SEND TO RESTRICTED
-    public void broadcastData(boolean sendToRestricted, T messageType, Object... data);
-
-    // Equivalent to broadcastData(false, messageType, data);
+    // Equivalent to broadcastData(true, messageType, data);
     public void sendData(T messageType, Object... data);
+
+    public void sendData(boolean sendToRestricted, T messageType, Object... data);
 
     public void sendData(GlobalServer server, T messageType, Object... data);
 

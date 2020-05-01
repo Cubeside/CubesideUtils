@@ -222,16 +222,15 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
         this.connectionAPI.sendData(channel, data);
     }
 
-    // TODO FIX SEND TO RESTRICTED
-    @Override
-    public void broadcastData(boolean sendToRestricted, T messageType, Object... data) {
-        sendData(sendToRestricted ? getServers() : null, messageType, data);
-    }
-
-    // Equivalent to broadcastData(false, messageType, data);
+    // Equivalent to broadcastData(true, messageType, data);
     @Override
     public void sendData(T messageType, Object... data) {
-        sendData((GlobalServer) null, messageType, data);
+        sendData(true, messageType, data);
+    }
+
+    @Override
+    public void sendData(boolean sendToRestricted, T messageType, Object... data) {
+        sendData(sendToRestricted ? getServers() : null, messageType, data);
     }
 
     @Override
@@ -252,7 +251,7 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
 
             byte[] msgarry = msgbytes.toByteArray();
             if (servers == null) {
-                sendData(channel, msgarry, true);
+                sendData(channel, msgarry, false);
             } else {
                 for (GlobalServer server : servers) {
                     server.sendData(channel, msgarry);
