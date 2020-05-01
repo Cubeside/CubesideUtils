@@ -13,6 +13,7 @@ import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
+import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.serialization.StringSerialization;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -195,7 +196,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     @Override
     public void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgPermission, message);
-        sendMessageToPlayersAllServers(seeMsgPermission, message);
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgPermission, message);
     }
 
 }
