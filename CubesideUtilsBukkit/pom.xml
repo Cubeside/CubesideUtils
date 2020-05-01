@@ -2,12 +2,15 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>CubesideUtilsBukkit</artifactId>
-	<parent>
-		<groupId>de.iani.cubeside</groupId>
-		<artifactId>CubesideUtils</artifactId>
-		<version>1.14-split-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <properties>
+        <mainClass>de.iani.cubesideutils.bukkit.plugin.UtilsPluginBukkit</mainClass>
+    </properties>
+    <parent>
+        <groupId>de.iani.cubeside</groupId>
+        <artifactId>CubesideUtils</artifactId>
+        <version>1.14-split-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <dependencies>
         <dependency>
             <groupId>de.iani.cubeside</groupId>
