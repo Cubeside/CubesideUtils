@@ -6,6 +6,8 @@
 */.project
 */.settings
 
-### target ###
+### Maven ###
 /target
 */target
+dependency-reduced-pom.xml
+*/dependency-reduced-pom.xml
