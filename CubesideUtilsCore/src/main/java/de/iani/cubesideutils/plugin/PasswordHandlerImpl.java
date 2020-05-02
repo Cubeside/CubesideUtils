@@ -14,15 +14,15 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class PasswordHandlerImpl implements PasswordHandler {
 
-    public static final int SALT_LENGTH = 32;
-    public static final int ITERATION_COUNT = 65536;
-    public static final int HASH_LENGTH = 128;
+    public static final int SALT_LENGTH = 16;
+    public static final int ITERATION_COUNT = 10000;
+    public static final int HASH_LENGTH = 256;
 
     private static final SecretKeyFactory FACTORY;
 
     static {
         try {
-            FACTORY = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            FACTORY = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
