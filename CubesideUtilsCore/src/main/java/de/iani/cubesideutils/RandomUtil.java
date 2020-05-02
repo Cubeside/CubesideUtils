@@ -51,6 +51,7 @@ public class RandomUtil {
      *            the amount of chars
      * @return the random password
      */
+    @Deprecated
     public static String generateRandomPassword(int chars) {
         char[] charArray = new char[chars];
         for (int i = 0; i < chars; i++) {
@@ -59,6 +60,28 @@ public class RandomUtil {
                 charArray[i] = (char) ('0' + v);
             } else {
                 charArray[i] = (char) ('a' + (v - 10));
+            }
+        }
+        return new String(charArray);
+    }
+
+    /**
+     * Creates a random string consisting of the characters 0-9, a-z and A-Z.
+     *
+     * @param chars
+     *            the amount of chars
+     * @return the random string
+     */
+    public static String generateRandomAlphaNumericalString(int chars) {
+        char[] charArray = new char[chars];
+        for (int i = 0; i < chars; i++) {
+            int v = SHARED_SECURE_RANDOM.nextInt(62);
+            if (v < 10) {
+                charArray[i] = (char) ('0' + v);
+            } else if (v - 10 < 26) {
+                charArray[i] = (char) ('a' + (v - 10));
+            } else {
+                charArray[i] = (char) ('A' + (v - 26));
             }
         }
         return new String(charArray);
