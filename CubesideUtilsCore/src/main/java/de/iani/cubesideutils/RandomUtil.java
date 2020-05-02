@@ -81,7 +81,7 @@ public class RandomUtil {
             } else if (v - 10 < 26) {
                 charArray[i] = (char) ('a' + (v - 10));
             } else {
-                charArray[i] = (char) ('A' + (v - 26));
+                charArray[i] = (char) ('A' + (v - 10 - 26));
             }
         }
         return new String(charArray);
