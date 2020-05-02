@@ -16,7 +16,7 @@ public class PasswordHandlerImpl implements PasswordHandler {
 
     public static final int SALT_LENGTH = 16;
     public static final int ITERATION_COUNT = 10000;
-    public static final int HASH_LENGTH = 256;
+    public static final int HASH_LENGTH = 64;
 
     private static final SecretKeyFactory FACTORY;
 
@@ -63,7 +63,7 @@ public class PasswordHandlerImpl implements PasswordHandler {
     }
 
     private byte[] hash(String password, byte[] salt) {
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, HASH_LENGTH);
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, 8 * HASH_LENGTH);
         try {
             return FACTORY.generateSecret(spec).getEncoded();
         } catch (InvalidKeySpecException e) {
