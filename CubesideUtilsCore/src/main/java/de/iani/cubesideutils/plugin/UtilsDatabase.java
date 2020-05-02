@@ -181,6 +181,8 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             smt.setString(2, holderId.toString());
             smt.setBytes(3, salt);
             smt.setBytes(4, hash);
+            smt.setBytes(5, salt);
+            smt.setBytes(6, hash);
             smt.executeUpdate();
             return null;
         });
