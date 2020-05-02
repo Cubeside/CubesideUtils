@@ -199,7 +199,12 @@ public abstract class ChatUtil {
         if (messageParts.length == 0) {
             receiver.sendMessage(pluginPrefix + " " + (colors == null ? "" : colors) + message);
         } else {
-            StringBuilder builder = new StringBuilder(pluginPrefix).append(" ").append(colors == null ? "" : colors).append(message);
+            StringBuilder builder = new StringBuilder(pluginPrefix);
+            if (!pluginPrefix.isEmpty()) {
+                builder.append(" ");
+            }
+
+            builder.append(colors == null ? "" : colors).append(message);
             for (Object s : messageParts) {
                 if (colors != null) {
                     builder.append(ChatColor.RESET).append(colors);
