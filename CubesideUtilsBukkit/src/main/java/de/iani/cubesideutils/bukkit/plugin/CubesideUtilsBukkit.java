@@ -68,8 +68,6 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     @Override
     protected void onEnableInternal() throws Throwable {
-        super.onEnableInternal();
-
         this.plugin.saveDefaultConfig();
         FileConfiguration config = this.plugin.getConfig();
 

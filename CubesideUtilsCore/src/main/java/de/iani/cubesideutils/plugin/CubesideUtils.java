@@ -2,7 +2,9 @@ package de.iani.cubesideutils.plugin;
 
 import de.cubeside.connection.ConnectionAPI;
 import de.iani.cubesideutils.Triple;
+import de.iani.cubesideutils.collections.SimpleCacheMap;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
+import de.iani.cubesideutils.plugin.api.PasswordHandler;
 import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ public abstract class CubesideUtils implements UtilsApi {
 
     private GeneralDataCache generalDataCache;
 
+    private Map<String, PasswordHandlerImpl> passwordHandlers;
+
     private ReadWriteLock rankLock;
     private List<String> ranks;
     private Map<String, Triple<Integer, String, String>> rankPermissionsAndPrefixes;
@@ -39,6 +43,8 @@ public abstract class CubesideUtils implements UtilsApi {
             instance = this;
         }
 
+        this.passwordHandlers = new SimpleCacheMap<>(16);
+
         this.rankLock = new ReentrantReadWriteLock();
         this.ranks = Collections.emptyList();
         this.rankPermissionsAndPrefixes = Collections.emptyMap();
@@ -48,6 +54,8 @@ public abstract class CubesideUtils implements UtilsApi {
 
     public void onEnable() {
         try {
+            this.generalDataCache = new GeneralDataCache();
+
             onEnableInternal();
         } catch (Throwable e) {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
@@ -56,7 +64,6 @@ public abstract class CubesideUtils implements UtilsApi {
     }
 
     protected void onEnableInternal() throws Throwable {
-        this.generalDataCache = new GeneralDataCache();
     }
 
     protected abstract void shutdownServer();
@@ -81,6 +88,17 @@ public abstract class CubesideUtils implements UtilsApi {
     @Override
     public void setGeneralData(String key, String value) throws SQLException {
         this.generalDataCache.set(key, value);
+    }
+
+    @Override
+    public PasswordHandler getPasswordHandler(String key) {
+        return this.passwordHandlers.computeIfAbsent(key, k -> new PasswordHandlerImpl(k));
+    }
+
+    @Override
+    public boolean removePasswordKey(String key) throws SQLException {
+        this.passwordHandlers.remove(key);
+        return getDatabase().removePasswordKey(key);
     }
 
     @Override

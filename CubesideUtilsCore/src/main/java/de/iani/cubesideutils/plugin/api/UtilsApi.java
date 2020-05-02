@@ -15,6 +15,10 @@ public interface UtilsApi {
 
     public void setGeneralData(String key, String value) throws SQLException;
 
+    public PasswordHandler getPasswordHandler(String key);
+
+    public boolean removePasswordKey(String key) throws SQLException;
+
     public List<String> getRanks();
 
     public String getDefaultRank();

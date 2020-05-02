@@ -1,6 +1,8 @@
 package de.iani.cubesideutils.plugin;
 
+import de.iani.cubesideutils.Pair;
 import de.iani.cubesideutils.Triple;
+import de.iani.cubesideutils.plugin.api.PasswordHandler;
 import de.iani.cubesideutils.sql.MySQLConnection;
 import de.iani.cubesideutils.sql.SQLConfig;
 import de.iani.cubesideutils.sql.SQLConnection;
@@ -24,9 +26,15 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
     private String playerDataTableName;
     private String afkPlayersTableName;
     private String ranksTableName;
+    private String passwordsTableName;
 
     private String getGeneralDataQuery;
     private String setGeneralDataQuery;
+
+    private String getPasswordHashQuery;
+    private String setPasswordHashQuery;
+    private String removePasswordHashQuery;
+    private String removePasswordKeyQuery;
 
     private String addRealServerQuery;
     private String removeRealServerQuery;
@@ -49,7 +57,6 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
     private String removeRankInformationQuery;
 
     public UtilsDatabase(SQLConfig sqlConfig) throws SQLException {
-
         this.tablePrefix = sqlConfig.getTablePrefix();
         this.connection = new MySQLConnection(sqlConfig.getHost(), sqlConfig.getDatabase(), sqlConfig.getUser(), sqlConfig.getPassword());
 
@@ -58,9 +65,15 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.playerDataTableName = this.tablePrefix + "_playerData";
         this.afkPlayersTableName = this.tablePrefix + "_afkPlayers";
         this.ranksTableName = this.tablePrefix + "_ranks";
+        this.passwordsTableName = this.tablePrefix + "_passwords";
 
         this.getGeneralDataQuery = "SELECT value FROM `" + this.generalDataTableName + "` WHERE `key` = ?";
         this.setGeneralDataQuery = "INSERT INTO `" + this.generalDataTableName + "` (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = ?";
+
+        this.getPasswordHashQuery = "SELECT salt, hash FROM `" + this.passwordsTableName + "` WHERE `key` = ? AND holderId = ?";
+        this.setPasswordHashQuery = "INSERT INTO `" + this.passwordsTableName + "` (`key`, holderId, salt, hash) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE salt = ?, hash = ?";
+        this.removePasswordHashQuery = "REMOVE FROM `" + this.passwordsTableName + "` WHERE `key` = ? AND holderId = ?";
+        this.removePasswordKeyQuery = "REMOVE FROM `" + this.passwordsTableName + "` WHERE `key` = ?";
 
         this.addRealServerQuery = "INSERT IGNORE INTO `" + this.realServersTableName + "` (server) VALUES (?)";
         this.removeRealServerQuery = "DELETE FROM `" + this.realServersTableName + "` WHERE server = ?";
@@ -90,6 +103,12 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             if (!sqlConnection.hasTable(this.generalDataTableName)) {
                 Statement smt = connection.createStatement();
                 smt.executeUpdate("CREATE TABLE `" + this.generalDataTableName + "` (" + "`key` VARCHAR(128), " + "value MEDIUMTEXT, " + "PRIMARY KEY (`key`)) " + "ENGINE = innodb");
+                smt.close();
+            }
+            if (!sqlConnection.hasTable(this.passwordsTableName)) {
+                Statement smt = connection.createStatement();
+                smt.executeUpdate("CREATE TABLE `" + this.passwordsTableName + "` (" + "`key` VARCHAR(" + PasswordHandler.MAX_KEY_LENGTH + "), " + "holderId CHAR(36), " + "salt BINARY(" + PasswordHandlerImpl.SALT_LENGTH + "), " + "hash BINARY(" + PasswordHandlerImpl.HASH_LENGTH + "), "
+                        + "PRIMARY KEY (`key`, holderId)" + ") ENGINE = innodb");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.realServersTableName)) {
@@ -138,6 +157,49 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             smt.setString(3, value);
             smt.executeUpdate();
             return null;
+        });
+    }
+
+    public Pair<byte[], byte[]> getPasswordEntry(String key, UUID holderId) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPasswordHashQuery);
+            smt.setString(1, key);
+            smt.setString(2, holderId.toString());
+            ResultSet rs = smt.executeQuery();
+
+            Pair<byte[], byte[]> result = rs.first() ? new Pair<>(rs.getBytes(1), rs.getBytes(2)) : null;
+
+            rs.close();
+            return result;
+        });
+    }
+
+    public void setPasswordHash(String key, UUID holderId, byte[] salt, byte[] hash) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPasswordHashQuery);
+            smt.setString(1, key);
+            smt.setString(2, holderId.toString());
+            smt.setBytes(3, salt);
+            smt.setBytes(4, hash);
+            smt.executeUpdate();
+            return null;
+        });
+    }
+
+    public boolean removePassword(String key, UUID holderId) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.removePasswordHashQuery);
+            smt.setString(1, key);
+            smt.setString(2, holderId.toString());
+            return smt.executeUpdate() > 0;
+        });
+    }
+
+    public boolean removePasswordKey(String key) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.removePasswordKeyQuery);
+            smt.setString(1, key);
+            return smt.executeUpdate() > 0;
         });
     }
 
