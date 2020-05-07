@@ -128,6 +128,9 @@ public class ItemGroups {
     private static final EnumSet<Material> MUSIC_DISCS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> MUSIC_DISCS = Collections.unmodifiableSet(MUSIC_DISCS_INTERNAL);
 
+    private static final EnumSet<Material> SKULLS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> SKULLS = Collections.unmodifiableSet(SKULLS_INTERNAL);
+
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
@@ -307,6 +310,8 @@ public class ItemGroups {
                     POTTED_PLANTS_INTERNAL.add(m);
                 } else if (name.startsWith("MUSIC_DISC_")) {
                     MUSIC_DISCS_INTERNAL.add(m);
+                } else if (name.endsWith("_SKULL") || name.endsWith("_HEAD")) {
+                    SKULLS_INTERNAL.add(m);
                 }
             }
         }
@@ -755,6 +760,10 @@ public class ItemGroups {
 
     public static boolean isMusicDisc(Material type) {
         return MUSIC_DISCS_INTERNAL.contains(type);
+    }
+
+    public static boolean isSkull(Material type) {
+        return SKULLS_INTERNAL.contains(type);
     }
 
     public static boolean isSign(Material m) {
