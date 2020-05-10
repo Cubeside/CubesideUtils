@@ -196,7 +196,8 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                     }
                 }
             }
-        } else if (currentMap.executor != null) {
+        }
+        if (currentMap.executor != null) {
             SubCommand executor = currentMap.executor;
             if (executor.hasRequiredPermission(sender) && executor.isAvailable(sender)) {
                 String prefix = getCommandString(alias, currentMap);
