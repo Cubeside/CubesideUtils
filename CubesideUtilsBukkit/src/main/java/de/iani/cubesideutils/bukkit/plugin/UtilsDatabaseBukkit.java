@@ -19,6 +19,10 @@ public class UtilsDatabaseBukkit extends UtilsDatabase<PlayerDataImplBukkit> {
     @Override
     public PlayerDataImplBukkit getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
         Triple<Triple<Long, Long, Long>, Boolean, String> data = getPlayerDataData(playerId, isOnline, insertIfMissing, lastAction, manuallySetAfk);
+        if (data == null) {
+            return null;
+        }
+
         long firstJoin = data.first.first;
         long lastJoin = data.first.second;
         long lastSeen = data.first.third;
