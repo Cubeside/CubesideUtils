@@ -2,7 +2,10 @@ package de.iani.cubesideutils;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
@@ -17,6 +20,29 @@ public class ChatUtil {
     private ChatUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
+    }
+
+    public static final Map<org.bukkit.ChatColor, Integer> CHATCOLOR_TO_RGB;
+    static {
+        EnumMap<org.bukkit.ChatColor, Integer> chatcolorToColor = new EnumMap<>(org.bukkit.ChatColor.class);
+        chatcolorToColor.put(org.bukkit.ChatColor.BLACK, 0x000000);
+        chatcolorToColor.put(org.bukkit.ChatColor.DARK_BLUE, 0x0000AA);
+        chatcolorToColor.put(org.bukkit.ChatColor.DARK_GREEN, 0x00AA00);
+        chatcolorToColor.put(org.bukkit.ChatColor.DARK_AQUA, 0x00AAAA);
+        chatcolorToColor.put(org.bukkit.ChatColor.DARK_RED, 0xAA0000);
+        chatcolorToColor.put(org.bukkit.ChatColor.DARK_PURPLE, 0xAA00AA);
+        chatcolorToColor.put(org.bukkit.ChatColor.GOLD, 0xFFAA00);
+        chatcolorToColor.put(org.bukkit.ChatColor.GRAY, 0xAAAAAA);
+        chatcolorToColor.put(org.bukkit.ChatColor.DARK_GRAY, 0x555555);
+        chatcolorToColor.put(org.bukkit.ChatColor.BLUE, 0x5555FF);
+        chatcolorToColor.put(org.bukkit.ChatColor.GREEN, 0x55FF55);
+        chatcolorToColor.put(org.bukkit.ChatColor.AQUA, 0x55FFFF);
+        chatcolorToColor.put(org.bukkit.ChatColor.RED, 0xFF5555);
+        chatcolorToColor.put(org.bukkit.ChatColor.LIGHT_PURPLE, 0xFF55FF);
+        chatcolorToColor.put(org.bukkit.ChatColor.YELLOW, 0xFFFF55);
+        chatcolorToColor.put(org.bukkit.ChatColor.WHITE, 0xFFFFFF);
+
+        CHATCOLOR_TO_RGB = Collections.unmodifiableMap(chatcolorToColor);
     }
 
     public static interface Sendable {
@@ -204,4 +230,7 @@ public class ChatUtil {
         }
     }
 
+    public static Integer toRGB(org.bukkit.ChatColor color) {
+        return CHATCOLOR_TO_RGB.get(color);
+    }
 }
