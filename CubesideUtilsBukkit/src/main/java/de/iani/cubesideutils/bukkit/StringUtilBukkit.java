@@ -34,7 +34,7 @@ public class StringUtilBukkit {
         registerColor(constantColorNames, constantColorsByNames, Color.BLUE, "blue");
         registerColor(constantColorNames, constantColorsByNames, Color.FUCHSIA, "fuchsia");
         registerColor(constantColorNames, constantColorsByNames, Color.GRAY, "gray");
-        registerColor(constantColorNames, constantColorsByNames, Color.GREEN, "greeen");
+        registerColor(constantColorNames, constantColorsByNames, Color.GREEN, "green");
         registerColor(constantColorNames, constantColorsByNames, Color.LIME, "lime");
         registerColor(constantColorNames, constantColorsByNames, Color.MAROON, "maroon");
         registerColor(constantColorNames, constantColorsByNames, Color.NAVY, "navy");
