@@ -6,12 +6,15 @@ import de.iani.cubesideutils.plugin.api.PasswordHandler;
 import de.iani.cubesideutils.sql.MySQLConnection;
 import de.iani.cubesideutils.sql.SQLConfig;
 import de.iani.cubesideutils.sql.SQLConnection;
+import de.iani.cubesideutils.sql.SQLUtil;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -42,11 +45,13 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
 
     private String getPlayerDataQuery;
     private String addPlayerDataQuery;
-    private String setPlayerFirstJoinAndLastJoinAndSeenQuery;
-    private String setPlayerLastJoinAndSeenQuery;
+    private String setPlayerNameAndFirstJoinAndLastJoinAndSeenQuery;
+    private String setPlayerNameAndLastJoinAndSeenQuery;
     private String setPlayerLastSeenQuery;
     private String setPlayerAfkQuery;
     private String setPlayerRankQuery;
+
+    private String getPlayerIdsByPartialNameQuery;
 
     private String getAfkServersQuery;
     private String addAfkServerQuery;
@@ -80,12 +85,14 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.getRealServersQuery = "SELECT (server) FROM `" + this.realServersTableName + "`";
 
         this.getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, `rank` FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
-        this.addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, afk, `rank`) VALUES (?, 0, NULL)";
-        this.setPlayerFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
-        this.setPlayerLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastJoin = ?, lastSeen = ? WHERE playerId = ?";
-        this.setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
+        this.addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, name, afk, `rank`) VALUES (?, 0, NULL)";
+        this.setPlayerNameAndFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET name = ?, firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
+        this.setPlayerNameAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET name = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
+        this.setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET name = ?, lastSeen = ? WHERE playerId = ?";
         this.setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` SET afk = ? WHERE playerId = ?";
         this.setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` SET `rank` = ? WHERE playerId = ?";
+
+        this.getPlayerIdsByPartialNameQuery = "SELECT playerId, name FROM `" + this.playerDataTableName + "` WHERE name LIKE ? ORDER BY lastSeen DESC";
 
         this.getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
         this.addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
@@ -118,8 +125,12 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             }
             if (!sqlConnection.hasTable(this.playerDataTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "playerId CHAR(36), " + "firstJoin BIGINT NOT NULL DEFAULT 0, " + "lastJoin BIGINT NOT NULL DEFAULT 0, " + "lastSeen BIGINT NOT NULL DEFAULT 0, " + "afk BIT NOT NULL, " + "`rank` VARCHAR(64), "
-                        + "PRIMARY KEY (playerId)) " + "ENGINE = innodb");
+                smt.executeUpdate("CREATE TABLE `" + this.playerDataTableName + "` (" + "playerId CHAR(36), " + "name VARCHAR(16) NOT NULL, " + "firstJoin BIGINT NOT NULL DEFAULT 0, " + "lastJoin BIGINT NOT NULL DEFAULT 0, " + "lastSeen BIGINT NOT NULL DEFAULT 0, " + "afk BIT NOT NULL, "
+                        + "`rank` VARCHAR(64), " + "PRIMARY KEY (playerId), " + "INDEX (name)" + ") ENGINE = innodb");
+                smt.close();
+            } else if (!sqlConnection.hasColumn(this.playerDataTableName, "name")) {
+                Statement smt = connection.createStatement();
+                smt.executeUpdate("ALTER TABLE `" + this.playerDataTableName + "` ADD name VARCHAR(16) NOT NULL");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.afkPlayersTableName)) {
@@ -274,24 +285,26 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         });
     }
 
-    public void setPlayerFirstJoinAndLastJoinAndSeen(UUID playerId, long value) throws SQLException {
+    public void setPlayerNameAndFirstJoinAndLastJoinAndSeen(UUID playerId, long value, String name) throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
-            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerFirstJoinAndLastJoinAndSeenQuery);
-            smt.setLong(1, value);
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerNameAndFirstJoinAndLastJoinAndSeenQuery);
+            smt.setString(1, name);
             smt.setLong(2, value);
             smt.setLong(3, value);
-            smt.setString(4, playerId.toString());
+            smt.setLong(4, value);
+            smt.setString(5, playerId.toString());
             smt.executeUpdate();
             return null;
         });
     }
 
-    public void setPlayerLastJoinAndSeen(UUID playerId, long value) throws SQLException {
+    public void setPlayerNameAndLastJoinAndSeen(UUID playerId, long value, String name) throws SQLException {
         this.connection.runCommands((connection, sqlConnection) -> {
-            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerLastJoinAndSeenQuery);
-            smt.setLong(1, value);
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerNameAndLastJoinAndSeenQuery);
+            smt.setString(1, name);
             smt.setLong(2, value);
-            smt.setString(3, playerId.toString());
+            smt.setLong(3, value);
+            smt.setString(4, playerId.toString());
             smt.executeUpdate();
             return null;
         });
@@ -304,6 +317,23 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             smt.setString(2, playerId.toString());
             smt.executeUpdate();
             return null;
+        });
+    }
+
+    protected List<Pair<UUID, String>> getPlayerIdsByPartialName(String partialName) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerIdsByPartialNameQuery);
+            smt.setString(1, "%" + SQLUtil.escapeLike(partialName) + "%");
+            ResultSet rs = smt.executeQuery();
+
+            List<Pair<UUID, String>> result = new ArrayList<>();
+            while (rs.next()) {
+                UUID playerId = UUID.fromString(rs.getString(1));
+                String name = rs.getString(2);
+                result.add(new Pair<>(playerId, name));
+            }
+            rs.close();
+            return result;
         });
     }
 

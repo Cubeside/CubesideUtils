@@ -15,11 +15,15 @@ import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.serialization.StringSerialization;
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -156,6 +160,16 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     @Override
     protected Iterable<? extends PlayerDataImpl> getLoadedPlayerData() {
         return this.playerDataCache.loadedData();
+    }
+
+    @Override
+    public List<OfflinePlayer> searchPlayersByPartialName(String partialName) {
+        try {
+            return getDatabase().searchPlayersByPartialName(partialName);
+        } catch (SQLException e) {
+            getLogger().log(Level.SEVERE, "Exception while trying to query database.", e);
+            return Collections.emptyList();
+        }
     }
 
     @Override

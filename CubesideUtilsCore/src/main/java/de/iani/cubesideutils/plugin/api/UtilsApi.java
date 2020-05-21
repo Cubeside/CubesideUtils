@@ -11,32 +11,32 @@ public interface UtilsApi {
         return CubesideUtils.getInstance();
     }
 
-    public String getGeneralData(String key) throws SQLException;
+    public abstract String getGeneralData(String key) throws SQLException;
 
-    public void setGeneralData(String key, String value) throws SQLException;
+    public abstract void setGeneralData(String key, String value) throws SQLException;
 
-    public PasswordHandler getPasswordHandler(String key);
+    public abstract PasswordHandler getPasswordHandler(String key);
 
-    public boolean removePasswordKey(String key) throws SQLException;
+    public abstract boolean removePasswordKey(String key) throws SQLException;
 
-    public List<String> getRanks();
+    public abstract List<String> getRanks();
 
-    public String getDefaultRank();
+    public abstract String getDefaultRank();
 
-    public int getPriority(String rank);
+    public abstract int getPriority(String rank);
 
-    public String getPermission(String rank);
+    public abstract String getPermission(String rank);
 
-    public String getPrefix(String rank);
+    public abstract String getPrefix(String rank);
 
-    public void setRankInformation(String rank, int priority, String permission, String prefix) throws SQLException;
+    public abstract void setRankInformation(String rank, int priority, String permission, String prefix) throws SQLException;
 
-    public boolean removeRankInformation(String rank) throws SQLException;
+    public abstract boolean removeRankInformation(String rank) throws SQLException;
 
-    public void updateRankInformation();
+    public abstract void updateRankInformation();
 
-    public Map<String, Boolean> getCachedRealServers();
+    public abstract Map<String, Boolean> getCachedRealServers();
 
-    public void sendMessageToPlayersAllServers(String seeMsgPermission, String message);
+    public abstract void sendMessageToPlayersAllServers(String seeMsgPermission, String message);
 
 }
