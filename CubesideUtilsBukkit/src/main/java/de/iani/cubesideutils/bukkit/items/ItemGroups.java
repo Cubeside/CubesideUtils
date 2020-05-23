@@ -11,6 +11,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemGroups {
+
     private ItemGroups() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // really prevents instances
@@ -156,6 +157,9 @@ public class ItemGroups {
     public static final Set<Material> WALL_SIGNS = Collections.unmodifiableSet(WALL_SIGNS_INTERNAL);
     private static final EnumSet<Material> ALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> ALL_SIGNS = Collections.unmodifiableSet(ALL_SIGNS_INTERNAL);
+
+    private static final EnumSet<Material> CONTAINER_BLOCKS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> CONTAINER_BLOCKS = Collections.unmodifiableSet(CONTAINER_BLOCKS_INTERNAL);
 
     static {
         AIRS_INTERNAL.add(Material.AIR);
@@ -572,6 +576,18 @@ public class ItemGroups {
 
         ALL_SIGNS_INTERNAL.addAll(SIGNS_INTERNAL);
         ALL_SIGNS_INTERNAL.addAll(WALL_SIGNS_INTERNAL);
+
+        CONTAINER_BLOCKS_INTERNAL.add(Material.CHEST);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.TRAPPED_CHEST);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.DISPENSER);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.DROPPER);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.HOPPER);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.BREWING_STAND);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.FURNACE);
+        CONTAINER_BLOCKS_INTERNAL.addAll(SHULKER_BOX_INTERNAL);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.BARREL);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.BLAST_FURNACE);
+        CONTAINER_BLOCKS_INTERNAL.add(Material.SMOKER);
     }
 
     public static boolean isEmpty(ItemStack item) {
@@ -780,6 +796,10 @@ public class ItemGroups {
 
     public static boolean isDye(Material m) {
         return DYES_INTERNAL.contains(m);
+    }
+
+    public static boolean isContainer(Material m) {
+        return CONTAINER_BLOCKS_INTERNAL.contains(m);
     }
 
     public static Material getDyeForDyeColor(DyeColor color) {
