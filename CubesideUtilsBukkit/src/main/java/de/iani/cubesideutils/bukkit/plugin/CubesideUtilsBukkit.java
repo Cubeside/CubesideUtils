@@ -9,6 +9,8 @@ import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
+import de.iani.cubesideutils.bukkit.plugin.commands.ChangeRankInformationCommand;
+import de.iani.cubesideutils.bukkit.plugin.commands.ListRankInformationCommand;
 import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.plugin.CubesideUtils;

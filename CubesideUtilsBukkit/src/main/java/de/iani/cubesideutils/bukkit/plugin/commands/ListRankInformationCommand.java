@@ -1,10 +1,11 @@
-package de.iani.cubesideutils.bukkit.plugin;
+package de.iani.cubesideutils.bukkit.plugin.commands;
 
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit.BukkitSendable;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit.StringMsg;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
+import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.List;
 import java.util.stream.Collectors;

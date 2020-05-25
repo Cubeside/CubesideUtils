@@ -1,7 +1,8 @@
-package de.iani.cubesideutils.bukkit.plugin;
+package de.iani.cubesideutils.bukkit.plugin.commands;
 
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
+import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -62,9 +63,9 @@ public class ChangeRankInformationCommand extends SubCommand {
             return false;
         }
 
-        String prefix = StringUtil.convertColors(args.getNext(""));
         String permission = args.next();
         permission = permission.equals("-") ? null : permission;
+        String prefix = StringUtil.convertColors(args.getNext(""));
 
         try {
             CubesideUtilsBukkit.getInstance().setRankInformation(rank, priority, permission, prefix);
