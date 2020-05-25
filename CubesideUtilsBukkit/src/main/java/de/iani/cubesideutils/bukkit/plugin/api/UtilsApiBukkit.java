@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bukkit.plugin.api;
 
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.plugin.api.UtilsApi;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.OfflinePlayer;
@@ -15,20 +16,22 @@ public interface UtilsApiBukkit extends UtilsApi {
         return CubesideUtilsBukkit.getInstance();
     }
 
-    public OnlinePlayerData getPlayerData(Player player);
+    public abstract OnlinePlayerData getPlayerData(Player player);
 
-    public PlayerDataBukkit getPlayerData(OfflinePlayer player);
+    public abstract PlayerDataBukkit getPlayerData(OfflinePlayer player);
 
-    public PlayerDataBukkit getPlayerData(UUID playerId);
+    public abstract PlayerDataBukkit getPlayerData(UUID playerId);
 
-    public String getWorldDisplayName(LivingEntity entity);
+    public abstract List<OfflinePlayer> searchPlayersByPartialName(String partialName);
 
-    public String getWorldDisplayName(World world);
+    public abstract String getWorldDisplayName(LivingEntity entity);
 
-    public String getWorldDisplayName(String worldName);
+    public abstract String getWorldDisplayName(World world);
 
-    public Set<String> getWorldDisplayNames(OfflinePlayer player);
+    public abstract String getWorldDisplayName(String worldName);
 
-    public Set<String> getWorldDisplayNames(UUID playerId);
+    public abstract Set<String> getWorldDisplayNames(OfflinePlayer player);
+
+    public abstract Set<String> getWorldDisplayNames(UUID playerId);
 
 }

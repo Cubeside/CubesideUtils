@@ -10,15 +10,9 @@ public interface PlayerData {
 
     public long getFirstJoin();
 
-    public void setFirstJoinAndLastJoinAndSeen(long value);
-
     public long getLastJoin();
 
-    public void setLastJoinAndSeen(long value);
-
     public long getLastSeen();
-
-    public void setLastSeen(long lastSeen);
 
     public boolean isGloballyAfk();
 

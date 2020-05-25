@@ -40,8 +40,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         return this.firstJoin;
     }
 
-    @Override
-    public synchronized void setFirstJoinAndLastJoinAndSeen(long value) {
+    public synchronized void setNameAndFirstJoinAndLastJoinAndSeen(long value, String name) {
         if (this.firstJoin != 0) {
             throw new IllegalStateException("player already had a first join");
         }
@@ -51,7 +50,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         this.lastSeen = value;
 
         try {
-            CubesideUtils.getInstance().getDatabase().setPlayerFirstJoinAndLastJoinAndSeen(this.playerId, value);
+            CubesideUtils.getInstance().getDatabase().setPlayerNameAndFirstJoinAndLastJoinAndSeen(this.playerId, value, name);
         } catch (SQLException e) {
             CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save firstJoin, lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
             return;
@@ -64,8 +63,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         return this.lastJoin;
     }
 
-    @Override
-    public synchronized void setLastJoinAndSeen(long value) {
+    public synchronized void setNameAndLastJoinAndSeen(long value, String name) {
         if (this.firstJoin == 0) {
             throw new IllegalStateException("player had no first join yet");
         }
@@ -73,7 +71,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         this.lastJoin = value;
         this.lastSeen = value;
         try {
-            CubesideUtils.getInstance().getDatabase().setPlayerLastJoinAndSeen(this.playerId, value);
+            CubesideUtils.getInstance().getDatabase().setPlayerNameAndLastJoinAndSeen(this.playerId, value, name);
         } catch (SQLException e) {
             CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
             return;
@@ -86,7 +84,6 @@ public abstract class PlayerDataImpl implements PlayerData {
         return this.lastSeen;
     }
 
-    @Override
     public synchronized void setLastSeen(long lastSeen) {
         if (this.firstJoin == 0) {
             throw new IllegalStateException("player had no first join yet");

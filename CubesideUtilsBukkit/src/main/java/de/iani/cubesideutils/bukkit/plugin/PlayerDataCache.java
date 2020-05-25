@@ -2,7 +2,7 @@ package de.iani.cubesideutils.bukkit.plugin;
 
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.collections.IteratorUtil;
-import de.iani.cubesideutils.plugin.api.PlayerData;
+import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -113,7 +113,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void lateOnPlayerQuitEvent(PlayerQuitEvent event) {
-        PlayerData data = get(event.getPlayer().getUniqueId());
+        PlayerDataImpl data = get(event.getPlayer().getUniqueId());
         data.setLastSeen(System.currentTimeMillis());
 
         // Other plugins may need the data on quit.

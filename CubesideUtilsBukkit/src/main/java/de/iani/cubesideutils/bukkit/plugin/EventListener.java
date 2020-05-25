@@ -1,7 +1,8 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
+import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
-import de.iani.cubesideutils.plugin.api.PlayerData;
+import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,11 +47,12 @@ public class EventListener implements Listener {
             return;
         }
 
-        PlayerData data = core.getPlayerDataCache().get(event.getPlayer().getUniqueId(), true);
+        GlobalPlayer player = event.getPlayer();
+        PlayerDataImpl data = core.getPlayerDataCache().get(player.getUniqueId(), true);
         if (data.getFirstJoin() == 0) {
-            data.setFirstJoinAndLastJoinAndSeen(System.currentTimeMillis());
+            data.setNameAndFirstJoinAndLastJoinAndSeen(System.currentTimeMillis(), player.getName());
         } else {
-            data.setLastJoinAndSeen(System.currentTimeMillis());
+            data.setNameAndLastJoinAndSeen(System.currentTimeMillis(), player.getName());
         }
     }
 
