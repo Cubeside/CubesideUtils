@@ -36,7 +36,11 @@ public class EventListener implements Listener {
 
     private void madeAction(Player player) {
         PlayerDataImplBukkit data = core.getPlayerDataCache().get(player.getUniqueId());
-        ((OnlinePlayerDataImpl) data.getOnlineData()).madeAction();
+        OnlinePlayerDataImpl onlineData = ((OnlinePlayerDataImpl) data.getOnlineData());
+        if (onlineData == null) {
+            return; // events can occure after PlayerQuitEvent
+        }
+        onlineData.madeAction();
     }
 
     // First/last join
