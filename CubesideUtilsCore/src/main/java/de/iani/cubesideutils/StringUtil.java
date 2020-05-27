@@ -29,7 +29,7 @@ public class StringUtil {
         // prevents instances
     }
 
-    public static final String MC_INDENTION = ChatColor.RESET + " " + ChatColor.RESET;
+    public static final String MC_INDENTION = " ";
     public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
     public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "[" + Arrays.stream(ChatColor.values()).map(Object::toString).map(s -> s.substring(1)).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
 
@@ -146,6 +146,7 @@ public class StringUtil {
         return builder.toString();
     }
 
+    @Deprecated
     public static String mcIndent(int indention) {
         return repeat(MC_INDENTION, indention);
     }
