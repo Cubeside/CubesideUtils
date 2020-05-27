@@ -122,6 +122,11 @@ public abstract class PlayerDataImpl implements PlayerData {
         return this.rank == null ? null : CubesideUtils.getInstance().getPrefix(this.rank);
     }
 
+    @Override
+    public synchronized int getRankPriority() {
+        return this.rank == null ? 0 : CubesideUtils.getInstance().getPriority(this.rank);
+    }
+
     public synchronized void setRank(String rank) {
         if (Objects.equals(this.rank, rank)) {
             return;

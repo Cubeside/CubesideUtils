@@ -20,4 +20,6 @@ public interface PlayerData {
 
     public String getRankPrefix();
 
+    public int getRankPriority();
+
 }
