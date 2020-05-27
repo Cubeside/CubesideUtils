@@ -3,9 +3,9 @@ package de.iani.cubesideutils.bungee;
 import de.iani.cubesideutils.ChatUtil;
 import de.iani.cubesideutils.ChatUtil.MessageReceiver;
 import de.iani.cubesideutils.ChatUtil.Sendable;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -97,7 +97,19 @@ public class ChatUtilsBungee {
     }
 
     private static List<Sendable<MessageReceiver>> convertSendableList(List<? extends BungeeSendable> messages) {
-        return messages.stream().map(BungeeSendable::toGenericSendable).collect(Collectors.toCollection(ArrayList::new));
+        return new AbstractList<>() {
+
+            @Override
+            public Sendable<MessageReceiver> get(int index) {
+                return messages.get(index).toGenericSendable();
+            }
+
+            @Override
+            public int size() {
+                return messages.size();
+            }
+
+        };
     }
 
     protected static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix) {
