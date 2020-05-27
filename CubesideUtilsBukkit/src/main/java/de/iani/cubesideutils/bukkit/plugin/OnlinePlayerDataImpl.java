@@ -28,6 +28,11 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         this.locallyAfk = afk;
     }
 
+    @Override
+    protected void postConstruction() {
+        // no checkRank, done later in playerLoginEvent
+    }
+
     public synchronized void quit() {
         this.setLocallyAfk(false, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(CubesideUtilsBukkit.getInstance().getPlugin(), this::notifyChanges);

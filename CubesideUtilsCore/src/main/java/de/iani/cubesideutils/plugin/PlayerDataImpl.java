@@ -27,6 +27,10 @@ public abstract class PlayerDataImpl implements PlayerData {
         this.afk = afk;
         this.rank = rank;
 
+        postConstruction();
+    }
+
+    protected void postConstruction() {
         checkRank();
     }
 
