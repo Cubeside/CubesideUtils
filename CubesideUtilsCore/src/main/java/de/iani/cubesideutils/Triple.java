@@ -14,6 +14,18 @@ public class Triple<T, S, U> {
         this.third = third;
     }
 
+    public T first() {
+        return this.first;
+    }
+
+    public S second() {
+        return this.second;
+    }
+
+    public U third() {
+        return this.third;
+    }
+
     @Override
     public String toString() {
         return "(" + this.first + ";" + this.second + ";" + this.third + ")";

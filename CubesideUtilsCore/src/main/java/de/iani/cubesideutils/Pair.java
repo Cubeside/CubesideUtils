@@ -27,6 +27,14 @@ public class Pair<T, S> {
         return new Pair<>(this.first, second);
     }
 
+    public T first() {
+        return this.first;
+    }
+
+    public S second() {
+        return this.second;
+    }
+
     @Override
     public String toString() {
         return "(" + this.first + ";" + this.second + ")";
