@@ -57,6 +57,8 @@ public abstract class CubesideUtils implements UtilsApi {
             this.generalDataCache = new GeneralDataCache();
 
             onEnableInternal();
+
+            updateRankInformation();
         } catch (Throwable e) {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
             shutdownServer();

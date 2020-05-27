@@ -21,6 +21,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -41,6 +43,16 @@ public class EventListener implements Listener {
             return; // events can occure after PlayerQuitEvent
         }
         onlineData.madeAction();
+    }
+
+    // Update rank
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerLoginEvent(PlayerLoginEvent event) {
+        if (event.getResult() != Result.ALLOWED) {
+            return;
+        }
+        core.getPlayerData(event.getPlayer()).checkRank();
     }
 
     // First/last join
