@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.iani.cubesideutils.ChatUtil;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -120,7 +121,23 @@ public class ChatUtilBukkit extends ChatUtil {
     }
 
     private static List<Sendable<MessageReceiver>> convertSendableList(List<? extends BukkitSendable> messages) {
-        return messages.stream().map(BukkitSendable::toGenericSendable).collect(Collectors.toCollection(ArrayList::new));
+        if (!(messages instanceof CachedSendableList<?, ?>)) {
+            return messages.stream().map(BukkitSendable::toGenericSendable).collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        return new AbstractList<>() {
+
+            @Override
+            public Sendable<MessageReceiver> get(int index) {
+                return messages.get(index).toGenericSendable();
+            }
+
+            @Override
+            public int size() {
+                return messages.size();
+            }
+
+        };
     }
 
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, String name, String openPageCommandPrefix) {
