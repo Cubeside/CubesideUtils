@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -121,10 +120,6 @@ public class ChatUtilBukkit extends ChatUtil {
     }
 
     private static List<Sendable<MessageReceiver>> convertSendableList(List<? extends BukkitSendable> messages) {
-        if (!(messages instanceof CachedSendableList<?, ?>)) {
-            return messages.stream().map(BukkitSendable::toGenericSendable).collect(Collectors.toCollection(ArrayList::new));
-        }
-
         return new AbstractList<>() {
 
             @Override
