@@ -3,6 +3,7 @@ package de.iani.cubesideutils.plugin;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.plugin.api.PlayerData;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -10,6 +11,8 @@ import java.util.logging.Level;
 public abstract class PlayerDataImpl implements PlayerData {
 
     private UUID playerId;
+
+    private Map<String, String> customData;
 
     private long firstJoin;
     private long lastJoin;
@@ -40,6 +43,63 @@ public abstract class PlayerDataImpl implements PlayerData {
     }
 
     @Override
+    public synchronized String getCustomData(String key) {
+        ensureCustomDataPresent();
+        return this.customData.get(key);
+    }
+
+    @Override
+    public synchronized String setCustomData(String key, String value) {
+        if (key.length() > PlayerData.MAX_CUSTOM_DATA_KEY_LENGTH) {
+            throw new IllegalArgumentException("key is too long");
+        }
+
+        ensureCustomDataPresent();
+        String result = this.customData.put(key, value);
+        try {
+            CubesideUtils.getInstance().getDatabase().setCustomPlayerData(this.playerId, key, value);
+        } catch (SQLException e) {
+            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save customData for player " + this.playerId + " in database.", e);
+            return result;
+        }
+        notifyCustomDataChanged();
+        return result;
+    }
+
+    @Override
+    public synchronized String removeCustomData(String key) {
+        ensureCustomDataPresent();
+        String result = this.customData.remove(key);
+        try {
+            CubesideUtils.getInstance().getDatabase().removeCustomPlayerData(this.playerId, key);
+        } catch (SQLException e) {
+            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save customData for player " + this.playerId + " in database.", e);
+            return result;
+        }
+        notifyCustomDataChanged();
+        return result;
+    }
+
+    private void ensureCustomDataPresent() {
+        if (this.customData == null) {
+            try {
+                this.customData = CubesideUtils.getInstance().getDatabase().getCustomPlayerData(this.playerId);
+            } catch (SQLException e) {
+                CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to get customData for player " + this.playerId + " from database.", e);
+                return; // NPE incoming...
+            }
+        }
+    }
+
+    private void notifyCustomDataChanged() {
+        CubesideUtils.getInstance().getGlobalDataHelper().sendData(MessageType.CUSTOM_PLAYER_DATA_CHANGED, this.playerId);
+    }
+
+    public synchronized void customDataChanged() {
+        this.customData = null;
+    }
+
+    @Override
     public synchronized long getFirstJoin() {
         return this.firstJoin;
     }
@@ -56,7 +116,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         try {
             CubesideUtils.getInstance().getDatabase().setPlayerNameAndFirstJoinAndLastJoinAndSeen(this.playerId, value, name);
         } catch (SQLException e) {
-            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save firstJoin, lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
+            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save name, firstJoin, lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
             return;
         }
         notifyChanges();
@@ -77,7 +137,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         try {
             CubesideUtils.getInstance().getDatabase().setPlayerNameAndLastJoinAndSeen(this.playerId, value, name);
         } catch (SQLException e) {
-            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
+            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Exception trying to save name, lastJoin and lastSeen values for player " + this.playerId + " in database.", e);
             return;
         }
         notifyChanges();

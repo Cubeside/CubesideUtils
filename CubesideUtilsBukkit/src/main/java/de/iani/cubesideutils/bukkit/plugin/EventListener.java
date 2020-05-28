@@ -64,7 +64,7 @@ public class EventListener implements Listener {
         }
 
         GlobalPlayer player = event.getPlayer();
-        PlayerDataImpl data = core.getPlayerDataCache().get(player.getUniqueId(), true);
+        PlayerDataImpl data = core.getPlayerDataCache().get(player.getUniqueId(), true, true);
         if (data.getFirstJoin() == 0) {
             data.setNameAndFirstJoinAndLastJoinAndSeen(System.currentTimeMillis(), player.getName());
         } else {

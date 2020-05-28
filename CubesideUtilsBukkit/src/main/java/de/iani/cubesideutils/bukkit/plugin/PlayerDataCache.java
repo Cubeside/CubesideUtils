@@ -123,11 +123,15 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
     // May be accessed asynchronously.
     @Override
     public PlayerDataImplBukkit get(Object key) {
-        return get(key, false);
+        return get(key, true, false);
     }
 
     // May be accessed asynchronously.
-    public PlayerDataImplBukkit get(Object key, boolean createIfMissing) {
+    public PlayerDataImplBukkit get(Object key, boolean queryDatabase, boolean createIfMissing) {
+        if (!queryDatabase && createIfMissing) {
+            throw new IllegalArgumentException("can only createIfMissing if queryDatabase");
+        }
+
         if (!(key instanceof UUID)) {
             return null;
         }
@@ -140,7 +144,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
             }
 
             result = super.get(key);
-            if (result != null) {
+            if (result != null || !queryDatabase) {
                 return result;
             }
 

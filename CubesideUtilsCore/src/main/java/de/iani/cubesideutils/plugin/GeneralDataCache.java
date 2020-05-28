@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.plugin;
 
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
+import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,9 @@ public class GeneralDataCache {
     }
 
     public synchronized void set(String key, String value) throws SQLException {
+        if (key.length() > UtilsApi.MAX_GENERAL_DATA_KEY_LENGTH) {
+            throw new IllegalArgumentException("key is too long");
+        }
         core.getDatabase().setGeneralData(key, value);
         core.getGlobalDataHelper().sendData(MessageType.GENERAL_DATA_CHANGED, key);
         cache.put(key, value);

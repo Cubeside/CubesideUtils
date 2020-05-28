@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bukkit.plugin;
 
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.GlobalDataHelperBukkit;
+import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import java.io.DataInputStream;
@@ -24,6 +25,12 @@ public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageT
                 break;
             case PLAYER_DATA_CHANGED:
                 CubesideUtilsBukkit.getInstance().getPlayerDataCache().invalidate(readUUID(data));
+                break;
+            case CUSTOM_PLAYER_DATA_CHANGED:
+                PlayerDataImpl pData = CubesideUtilsBukkit.getInstance().getPlayerDataCache().get(readUUID(data), false, false);
+                if (pData != null) {
+                    pData.customDataChanged();
+                }
                 break;
             case SEND_MESSAGE:
                 String permission = data.readUTF();

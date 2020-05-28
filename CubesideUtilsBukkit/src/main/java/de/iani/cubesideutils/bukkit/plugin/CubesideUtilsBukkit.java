@@ -156,7 +156,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     @Deprecated
     public PlayerDataBukkit getPlayerDataTemp(UUID playerId, boolean insertIfMissing) {
-        return this.playerDataCache.get(playerId, true);
+        return this.playerDataCache.get(playerId, true, true);
     }
 
     @Override

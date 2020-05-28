@@ -11,6 +11,8 @@ public interface UtilsApi {
         return CubesideUtils.getInstance();
     }
 
+    public static final int MAX_GENERAL_DATA_KEY_LENGTH = 127;
+
     public abstract String getGeneralData(String key) throws SQLException;
 
     public abstract void setGeneralData(String key, String value) throws SQLException;

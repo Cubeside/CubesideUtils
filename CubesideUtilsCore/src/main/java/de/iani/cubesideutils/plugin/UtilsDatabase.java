@@ -3,6 +3,8 @@ package de.iani.cubesideutils.plugin;
 import de.iani.cubesideutils.Pair;
 import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.plugin.api.PasswordHandler;
+import de.iani.cubesideutils.plugin.api.PlayerData;
+import de.iani.cubesideutils.plugin.api.UtilsApi;
 import de.iani.cubesideutils.sql.MySQLConnection;
 import de.iani.cubesideutils.sql.SQLConfig;
 import de.iani.cubesideutils.sql.SQLConnection;
@@ -12,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +30,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
     private String generalDataTableName;
     private String realServersTableName;
     private String playerDataTableName;
+    private String customPlayerDataTableName;
     private String afkPlayersTableName;
     private String ranksTableName;
     private String passwordsTableName;
@@ -51,6 +55,10 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
     private String setPlayerAfkQuery;
     private String setPlayerRankQuery;
 
+    private String getCustomPlayerDataQuery;
+    private String setCustomPlayerDataQuery;
+    private String removeCustomPlayerDataQuery;
+
     private String getPlayerIdsByPartialNameQuery;
 
     private String getAfkServersQuery;
@@ -68,6 +76,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.generalDataTableName = this.tablePrefix + "_generalData";
         this.realServersTableName = this.tablePrefix + "_realServers";
         this.playerDataTableName = this.tablePrefix + "_playerData";
+        this.customPlayerDataTableName = this.tablePrefix + "_customPlayerData";
         this.afkPlayersTableName = this.tablePrefix + "_afkPlayers";
         this.ranksTableName = this.tablePrefix + "_ranks";
         this.passwordsTableName = this.tablePrefix + "_passwords";
@@ -92,6 +101,10 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` SET afk = ? WHERE playerId = ?";
         this.setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` SET `rank` = ? WHERE playerId = ?";
 
+        this.getCustomPlayerDataQuery = "SELECT `key`, `value` FROM `" + this.customPlayerDataTableName + "` WHERE playerId = ?";
+        this.setCustomPlayerDataQuery = "INSERT INTO `" + this.customPlayerDataTableName + "` (playerId, `key`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?";
+        this.removeCustomPlayerDataQuery = "DELETE FROM `" + this.customPlayerDataTableName + "` WHERE playerId = ? AND `key` = ?";
+
         this.getPlayerIdsByPartialNameQuery = "SELECT playerId, name FROM `" + this.playerDataTableName + "` WHERE name LIKE ? ORDER BY lastSeen DESC";
 
         this.getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
@@ -109,7 +122,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.connection.runCommands((connection, sqlConnection) -> {
             if (!sqlConnection.hasTable(this.generalDataTableName)) {
                 Statement smt = connection.createStatement();
-                smt.executeUpdate("CREATE TABLE `" + this.generalDataTableName + "` (" + "`key` VARCHAR(128), " + "value MEDIUMTEXT, " + "PRIMARY KEY (`key`)) " + "ENGINE = innodb");
+                smt.executeUpdate("CREATE TABLE `" + this.generalDataTableName + "` (" + "`key` VARCHAR(" + UtilsApi.MAX_GENERAL_DATA_KEY_LENGTH + "), " + "value MEDIUMTEXT, " + "PRIMARY KEY (`key`)) " + "ENGINE = innodb");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.passwordsTableName)) {
@@ -131,6 +144,11 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             } else if (!sqlConnection.hasColumn(this.playerDataTableName, "name")) {
                 Statement smt = connection.createStatement();
                 smt.executeUpdate("ALTER TABLE `" + this.playerDataTableName + "` ADD name VARCHAR(16)");
+                smt.close();
+            }
+            if (!sqlConnection.hasTable(this.customPlayerDataTableName)) {
+                Statement smt = connection.createStatement();
+                smt.executeUpdate("CREATE TABLE `" + this.customPlayerDataTableName + "` (" + "playerId CHAR(36), " + "`key` VARCHAR(" + PlayerData.MAX_CUSTOM_DATA_KEY_LENGTH + "), " + "value MEDIUMTEXT, " + "PRIMARY KEY (playerId, `key`), " + "INDEX (playerId)" + ") ENGINE = innodb");
                 smt.close();
             }
             if (!sqlConnection.hasTable(this.afkPlayersTableName)) {
@@ -315,6 +333,45 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setPlayerLastSeenQuery);
             smt.setLong(1, lastSeen);
             smt.setString(2, playerId.toString());
+            smt.executeUpdate();
+            return null;
+        });
+    }
+
+    public Map<String, String> getCustomPlayerData(UUID playerId) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getCustomPlayerDataQuery);
+            smt.setString(1, playerId.toString());
+            ResultSet rs = smt.executeQuery();
+
+            Map<String, String> result = new HashMap<>();
+            while (rs.next()) {
+                String key = rs.getString(1);
+                String value = rs.getString(2);
+                result.put(key, value);
+            }
+            rs.close();
+            return result;
+        });
+    }
+
+    public void setCustomPlayerData(UUID playerId, String key, String value) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.setCustomPlayerDataQuery);
+            smt.setString(1, playerId.toString());
+            smt.setString(2, key);
+            smt.setString(3, value);
+            smt.setString(4, value);
+            smt.executeUpdate();
+            return null;
+        });
+    }
+
+    public void removeCustomPlayerData(UUID playerId, String key) throws SQLException {
+        this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.removeCustomPlayerDataQuery);
+            smt.setString(1, playerId.toString());
+            smt.setString(2, key);
             smt.executeUpdate();
             return null;
         });
