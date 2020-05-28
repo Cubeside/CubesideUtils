@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class GlobalLocationWrapper implements StringSerializable {
 
-    // registered in StringSerialization
+    // registered in CubesideUtilsBukkit#onEnable
     public static final String SERIALIZATION_TYPE = "GlobalLocation";
 
     public static GlobalLocationWrapper deserialize(String serialized) {
