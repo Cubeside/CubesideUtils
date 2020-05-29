@@ -61,7 +61,6 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         checkAfk(true);
     }
 
-    @Override
     public synchronized void checkAfk(boolean messagePlayer) {
         boolean afk = System.currentTimeMillis() >= this.lastLocalAction + AfkManager.AFK_THRESHOLD;
         if (afk == isLocallyAfk() || (!afk && manuallySetAfk)) {
@@ -91,7 +90,6 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         setLocallyAfk(true, messagePlayer);
     }
 
-    @Override
     public synchronized void setLocallyAfk(boolean afk, boolean messagePlayer) {
         if (!Bukkit.isPrimaryThread()) {
             throw new IllegalStateException("May only be invoked on the bukkit primary thread.");

@@ -66,7 +66,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
                     return;
                 }
                 this.onlinePlayers.put(playerId, (OnlinePlayerDataImpl) data);
-                data.getOnlineData().checkAfk(false);
+                ((OnlinePlayerDataImpl) data.getOnlineData()).checkAfk(false);
             }
         } finally {
             this.lock.writeLock().unlock();

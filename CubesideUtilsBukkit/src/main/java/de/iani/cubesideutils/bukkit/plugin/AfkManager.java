@@ -1,6 +1,5 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
-import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.bukkit.Bukkit;
@@ -38,7 +37,7 @@ public class AfkManager implements Listener {
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         onlinePlayers[Math.floorMod(event.getPlayer().getUniqueId().hashCode(), AFK_CHECK_BINS)].add(player);
-        core.getPlayerData(player).checkAfk(false);
+        ((OnlinePlayerDataImpl) core.getPlayerData(player)).checkAfk(false);
     }
 
     @EventHandler
@@ -48,7 +47,7 @@ public class AfkManager implements Listener {
 
     private void tick() {
         for (Player player : onlinePlayers[currentTick % AFK_CHECK_BINS]) {
-            OnlinePlayerData data = core.getPlayerData(player);
+            OnlinePlayerDataImpl data = ((OnlinePlayerDataImpl) core.getPlayerData(player));
             data.checkAfk(true);
         }
 
