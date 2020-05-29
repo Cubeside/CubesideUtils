@@ -1,13 +1,18 @@
 package de.iani.cubesideutils.bukkit;
 
+import de.cubeside.connection.GlobalPlayer;
 import de.iani.cubesideutils.ChatUtil;
+import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.conditions.Condition;
+import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -58,6 +63,32 @@ public class ChatUtilBukkit extends ChatUtil {
         public void sendMessage(BaseComponent[] message) {
             original.sendMessage(message);
         }
+    }
+
+    public static class GlobalPlayerWrapper implements MessageReceiver {
+        private GlobalPlayer gPlayer;
+
+        public GlobalPlayerWrapper(GlobalPlayer gPlayer) {
+            this.gPlayer = Objects.requireNonNull(gPlayer);
+        }
+
+        public GlobalPlayerWrapper(UUID playerId) {
+            this.gPlayer = CubesideUtils.getInstance().getGlobalDataHelper().getPlayer(playerId);
+            if (this.gPlayer == null) {
+                throw new IllegalArgumentException("player not found");
+            }
+        }
+
+        @Override
+        public void sendMessage(String message) {
+            CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
+        }
+
+        @Override
+        public void sendMessage(BaseComponent[] message) {
+            CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
+        }
+
     }
 
     public static interface BukkitSendable extends Sendable<CommandSender> {
@@ -159,6 +190,10 @@ public class ChatUtilBukkit extends ChatUtil {
 
     public static void sendMessage(CommandSender receiver, String pluginPrefix, String colors, Object message, Object... messageParts) {
         ChatUtil.sendMessage(new CommandSenderWrapper(receiver), pluginPrefix, colors, message, messageParts);
+    }
+
+    public static void sendMessage(UUID playerId, String pluginPrefix, String colors, Object message, Object... messageParts) {
+        ChatUtil.sendMessage(new GlobalPlayerWrapper(playerId), pluginPrefix, colors, message, messageParts);
     }
 
     public static Integer toRGB(org.bukkit.ChatColor color) {
