@@ -6,6 +6,8 @@ import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
+import de.iani.cubesideutils.bukkit.conditions.HasCustomPlayerDataValueCondition;
+import de.iani.cubesideutils.bukkit.conditions.HasPermissionCondition;
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
@@ -13,9 +15,11 @@ import de.iani.cubesideutils.bukkit.plugin.commands.ChangeRankInformationCommand
 import de.iani.cubesideutils.bukkit.plugin.commands.ListRankInformationCommand;
 import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
+import de.iani.cubesideutils.conditions.Condition;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
+import de.iani.cubesideutils.serialization.NullWrapper;
 import de.iani.cubesideutils.serialization.StringSerialization;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -49,6 +53,8 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     static {
         StringSerialization.register(GlobalLocationWrapper.SERIALIZATION_TYPE, GlobalLocationWrapper::deserialize);
+        StringSerialization.register(HasPermissionCondition.SERIALIZATION_TYPE, HasPermissionCondition::deserialize);
+        StringSerialization.register(HasCustomPlayerDataValueCondition.SERIALIZATION_TYPE, HasCustomPlayerDataValueCondition::deserialize);
     }
 
     private UtilsPluginBukkit plugin;
@@ -209,8 +215,13 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     @Override
     public void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
-        ChatUtilBukkit.sendMessageToPlayers(seeMsgPermission, message);
-        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgPermission, message);
+        sendMessageToPlayersAllServers(seeMsgPermission == null ? null : new HasPermissionCondition(seeMsgPermission), message);
+    }
+
+    @Override
+    public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message) {
+        ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.instance : seeMsgCondition, message);
     }
 
 }

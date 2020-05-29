@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.plugin.api;
 
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
+import de.iani.cubesideutils.conditions.Condition;
 import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.util.List;
 import java.util.Set;
@@ -33,5 +34,7 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract Set<String> getWorldDisplayNames(OfflinePlayer player);
 
     public abstract Set<String> getWorldDisplayNames(UUID playerId);
+
+    public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message);
 
 }

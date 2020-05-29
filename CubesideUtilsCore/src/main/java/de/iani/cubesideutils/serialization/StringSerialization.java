@@ -12,6 +12,8 @@ public class StringSerialization {
 
     static {
         serializationTypes = new GeneralHashMap<>(StringUtil.CASE_IGNORING_HASHER, StringUtil.CASE_IGNORING_EQUALITY);
+
+        register(NullWrapper.SERIALIZATION_TYPE, serialized -> null);
     }
 
     public static void register(String serializationType, Function<String, StringSerializable> deserializer) {

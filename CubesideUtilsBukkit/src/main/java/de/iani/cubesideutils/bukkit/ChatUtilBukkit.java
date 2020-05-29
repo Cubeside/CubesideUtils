@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.iani.cubesideutils.ChatUtil;
+import de.iani.cubesideutils.conditions.Condition;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -147,12 +148,10 @@ public class ChatUtilBukkit extends ChatUtil {
         ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
-    public static void sendMessageToPlayers(String seeMsgPermission, String message) {
-        if (seeMsgPermission.isEmpty() || Bukkit.getConsoleSender().hasPermission(seeMsgPermission)) {
-            Bukkit.getConsoleSender().sendMessage(message);
-        }
+    public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, String message) {
+        Bukkit.getConsoleSender().sendMessage(message);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (seeMsgPermission.isEmpty() || player.hasPermission(seeMsgPermission)) {
+            if (seeMsgCondition == null || seeMsgCondition.test(player)) {
                 player.sendMessage(message);
             }
         }
@@ -165,4 +164,5 @@ public class ChatUtilBukkit extends ChatUtil {
     public static Integer toRGB(org.bukkit.ChatColor color) {
         return CHATCOLOR_TO_RGB.get(color);
     }
+
 }
