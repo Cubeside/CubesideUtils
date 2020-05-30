@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -230,7 +231,14 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
 
     @Override
     public void sendData(boolean sendToRestricted, T messageType, Object... data) {
-        sendData(sendToRestricted ? getServers() : null, messageType, data);
+        Collection<GlobalServer> servers;
+        if (sendToRestricted) {
+            servers = new HashSet<>(getServers());
+            servers.remove(getThisServer());
+        } else {
+            servers = null;
+        }
+        sendData(servers, messageType, data);
     }
 
     @Override
