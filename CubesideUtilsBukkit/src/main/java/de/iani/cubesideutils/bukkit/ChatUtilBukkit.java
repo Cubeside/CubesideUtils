@@ -179,6 +179,18 @@ public class ChatUtilBukkit extends ChatUtil {
         ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
+    }
+
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
+    }
+
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
+        ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
+    }
+
     public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, String message) {
         Bukkit.getConsoleSender().sendMessage(message);
         for (Player player : Bukkit.getOnlinePlayers()) {

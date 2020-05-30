@@ -11,6 +11,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class ChatUtil {
     protected ChatUtil() {
@@ -122,15 +123,30 @@ public abstract class ChatUtil {
     }
 
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
+        sendMessagesPaged(recipient, messages, page, new ComponentBuilder(name).create(), openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         if (page < 0) {
             sendMessage(recipient, pluginPrefix, warningColor.toString(), "Bitte gib die Seitenzahl als positive ganze Zahl an.");
             return;
         }
 
+        TextComponent prefixComponent = new TextComponent(pluginPrefix.isEmpty() ? "" : (pluginPrefix + " "));
+        TextComponent nameComponent = new TextComponent(name);
+
         int listSize = messages.size();
         int numPages = (int) Math.ceil(listSize / (double) PAGE_LENGTH);
         if (page >= numPages && page > 0) {
-            sendMessage(recipient, pluginPrefix, warningColor.toString(), name, " hat keine Seite ", (page + 1));
+            sendMessage(recipient, pluginPrefix, warningColor.toString(), nameComponent.getText(), " hat keine Seite ", (page + 1));
             return;
         }
 
@@ -139,9 +155,13 @@ public abstract class ChatUtil {
         }
 
         if (numPages > 1) {
-            sendMessage(recipient, pluginPrefix, normalColor.toString(), name, " (Seite ", (page + 1), "/", numPages, "):");
+            ComponentBuilder builder = new ComponentBuilder(prefixComponent);
+            builder.append(nameComponent).color(normalColor).append(" (Seite ").append(String.valueOf(page + 1)).append("/").append(String.valueOf(numPages)).append("):");
+            recipient.sendMessage(builder.create());
         } else {
-            sendMessage(recipient, pluginPrefix, normalColor.toString(), name, ":");
+            ComponentBuilder builder = new ComponentBuilder(prefixComponent);
+            builder.append(nameComponent).color(normalColor).append(":");
+            recipient.sendMessage(builder.create());
         }
 
         if (listSize == 0) {
