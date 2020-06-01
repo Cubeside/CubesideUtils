@@ -2,7 +2,10 @@ package de.iani.cubesideutils;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
@@ -17,6 +20,29 @@ public abstract class ChatUtil {
     protected ChatUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
+    }
+
+    public static final Map<ChatColor, Integer> CHATCOLOR_TO_RGB;
+    static {
+        EnumMap<ChatColor, Integer> chatcolorToColor = new EnumMap<>(ChatColor.class);
+        chatcolorToColor.put(ChatColor.BLACK, 0x000000);
+        chatcolorToColor.put(ChatColor.DARK_BLUE, 0x0000AA);
+        chatcolorToColor.put(ChatColor.DARK_GREEN, 0x00AA00);
+        chatcolorToColor.put(ChatColor.DARK_AQUA, 0x00AAAA);
+        chatcolorToColor.put(ChatColor.DARK_RED, 0xAA0000);
+        chatcolorToColor.put(ChatColor.DARK_PURPLE, 0xAA00AA);
+        chatcolorToColor.put(ChatColor.GOLD, 0xFFAA00);
+        chatcolorToColor.put(ChatColor.GRAY, 0xAAAAAA);
+        chatcolorToColor.put(ChatColor.DARK_GRAY, 0x555555);
+        chatcolorToColor.put(ChatColor.BLUE, 0x5555FF);
+        chatcolorToColor.put(ChatColor.GREEN, 0x55FF55);
+        chatcolorToColor.put(ChatColor.AQUA, 0x55FFFF);
+        chatcolorToColor.put(ChatColor.RED, 0xFF5555);
+        chatcolorToColor.put(ChatColor.LIGHT_PURPLE, 0xFF55FF);
+        chatcolorToColor.put(ChatColor.YELLOW, 0xFFFF55);
+        chatcolorToColor.put(ChatColor.WHITE, 0xFFFFFF);
+
+        CHATCOLOR_TO_RGB = Collections.unmodifiableMap(chatcolorToColor);
     }
 
     public static interface MessageReceiver {
@@ -235,4 +261,7 @@ public abstract class ChatUtil {
         }
     }
 
+    public static Integer toRGB(ChatColor color) {
+        return CHATCOLOR_TO_RGB.get(color);
+    }
 }
