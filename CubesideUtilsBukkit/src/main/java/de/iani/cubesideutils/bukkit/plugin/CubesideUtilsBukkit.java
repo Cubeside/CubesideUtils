@@ -14,6 +14,7 @@ import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerOptionsRetrievedEvent;
 import de.iani.cubesideutils.bukkit.plugin.commands.ChangeRankInformationCommand;
 import de.iani.cubesideutils.bukkit.plugin.commands.ListRankInformationCommand;
+import de.iani.cubesideutils.bukkit.plugin.commands.PlayerOptionsCommand;
 import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.conditions.Condition;
@@ -48,6 +49,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     public static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
     public static final String RANKS_COMMAND = "ranks";
+    public static final String PLAYEROPTIONS_COMMAND = "playeroptions";
 
     private static volatile CubesideUtilsBukkit instance = null;
 
@@ -108,6 +110,9 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         ranksCommand.addCommandMapping(new ListRankInformationCommand(), ListRankInformationCommand.COMMAND_PATH);
         ranksCommand.addCommandMapping(new ChangeRankInformationCommand(true), ChangeRankInformationCommand.SET_COMMAND_PATH);
         ranksCommand.addCommandMapping(new ChangeRankInformationCommand(false), ChangeRankInformationCommand.REMOVE_COMMAND_PATH);
+
+        CommandRouter playeroptionsCommand = new CommandRouter(this.plugin.getCommand(PLAYEROPTIONS_COMMAND));
+        playeroptionsCommand.addCommandMapping(new PlayerOptionsCommand(this));
 
         updateRankInformation();
     }
