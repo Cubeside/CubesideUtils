@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -23,6 +24,7 @@ public class PlayerOptionsRetrievedEvent extends Event implements Cancellable {
 
     public static void sendOptions(CommandSender sender, OfflinePlayer player) {
         PlayerOptionsRetrievedEvent event = new PlayerOptionsRetrievedEvent(sender, player);
+        Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
