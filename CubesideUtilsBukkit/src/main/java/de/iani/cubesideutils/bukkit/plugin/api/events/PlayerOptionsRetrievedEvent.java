@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -54,7 +55,7 @@ public class PlayerOptionsRetrievedEvent extends Event implements Cancellable {
     }
 
     public void addOptions(int priority, BaseComponent... options) {
-        this.options.add(new Pair<>(priority, options));
+        this.options.add(new Pair<>(priority, new BaseComponent[] { new TextComponent(options), new TextComponent(" ") }));
     }
 
     public BaseComponent[] getOptions() {
