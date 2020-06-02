@@ -100,7 +100,6 @@ public class HtmlUtil {
                     stringBuilder.append("'>");
                 }
 
-                System.out.println(((TextComponent) component).getText());
                 escapeHtml(stringBuilder, ((TextComponent) component).getText());
                 if (component.getExtra() != null && !component.getExtra().isEmpty()) {
                     toHTML(stringBuilder, strikethrough != null ? strikethrough : parentStrikethrough, underlined != null ? underlined : parentUnderlined, component.getExtra());
