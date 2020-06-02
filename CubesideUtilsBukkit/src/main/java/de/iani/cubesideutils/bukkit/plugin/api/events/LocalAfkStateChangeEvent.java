@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.plugin.events;
+package de.iani.cubesideutils.bukkit.plugin.api.events;
 
 import de.iani.cubesideutils.bukkit.plugin.OnlinePlayerDataImpl;
 import org.bukkit.event.Cancellable;

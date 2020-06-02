@@ -2,8 +2,8 @@ package de.iani.cubesideutils.bukkit.plugin;
 
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
-import de.iani.cubesideutils.plugin.events.GlobalAfkStateChangeEvent;
-import de.iani.cubesideutils.plugin.events.LocalAfkStateChangeEvent;
+import de.iani.cubesideutils.bukkit.plugin.api.events.GlobalAfkStateChangeEvent;
+import de.iani.cubesideutils.bukkit.plugin.api.events.LocalAfkStateChangeEvent;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
