@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -36,5 +37,7 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract Set<String> getWorldDisplayNames(UUID playerId);
 
     public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message);
+
+    public abstract void sendPlayerOptions(CommandSender sender, OfflinePlayer player);
 
 }

@@ -11,6 +11,7 @@ import de.iani.cubesideutils.bukkit.conditions.HasPermissionCondition;
 import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
+import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerOptionsRetrievedEvent;
 import de.iani.cubesideutils.bukkit.plugin.commands.ChangeRankInformationCommand;
 import de.iani.cubesideutils.bukkit.plugin.commands.ListRankInformationCommand;
 import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
@@ -31,9 +32,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
@@ -217,6 +221,20 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
         this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.instance : seeMsgCondition, message);
+    }
+
+    @Override
+    public void sendPlayerOptions(CommandSender sender, OfflinePlayer player) {
+        PlayerOptionsRetrievedEvent event = new PlayerOptionsRetrievedEvent(sender, player);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+        BaseComponent[] options = event.getOptions();
+        if (options.length > 0) {
+            PlayerDataBukkit playerData = getPlayerData(player);
+            sender.sendMessage(new TextComponent("  "), new TextComponent(TextComponent.fromLegacyText(playerData.getRankPrefix() + player.getName())), new TextComponent(": "), new TextComponent(options));
+        }
     }
 
 }
