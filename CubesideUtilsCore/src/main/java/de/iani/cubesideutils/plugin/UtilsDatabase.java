@@ -495,4 +495,19 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         });
     }
 
+    @Deprecated
+    public Set<UUID> getUsedUUIDs() throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement("SELECT playerId FROM `" + this.playerDataTableName + "`");
+            ResultSet rs = smt.executeQuery();
+
+            Set<UUID> result = new HashSet<>();
+            while (rs.next()) {
+                result.add(UUID.fromString(rs.getString(1)));
+            }
+
+            return result;
+        });
+    }
+
 }
