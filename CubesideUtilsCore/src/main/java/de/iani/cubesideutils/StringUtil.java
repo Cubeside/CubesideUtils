@@ -131,6 +131,13 @@ public class StringUtil {
         return in.substring(0, index) + replacement + in.substring(index + sequence.length(), in.length());
     }
 
+    public static boolean startsWithIgnoreCase(String arg, String prefix) {
+        if (arg.length() < prefix.length()) {
+            return false;
+        }
+        return arg.regionMatches(true, 0, prefix, 0, prefix.length());
+    }
+
     public static String repeat(String arg, int times) {
         if (times <= 1) {
             if (times == 1) {
@@ -755,4 +762,5 @@ public class StringUtil {
         }
         return of + "s";
     }
+
 }
