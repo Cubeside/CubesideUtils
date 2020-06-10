@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bukkit.plugin;
 
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
+import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerPermissionsChangedEvent;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -53,6 +54,15 @@ public class EventListener implements Listener {
             return;
         }
         core.getPlayerData(event.getPlayer()).checkRank();
+    }
+
+    @EventHandler
+    public void onPlayerPermissionsChanged(PlayerPermissionsChangedEvent event) {
+        Player player = Bukkit.getPlayer(event.getPlayerId());
+        if (player == null) {
+            return;
+        }
+        core.getPlayerData(player).checkRank();
     }
 
     // First/last join
