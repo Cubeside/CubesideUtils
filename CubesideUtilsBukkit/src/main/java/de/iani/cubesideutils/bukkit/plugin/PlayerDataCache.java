@@ -1,6 +1,5 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
-import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.collections.IteratorUtil;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import java.sql.SQLException;
@@ -66,7 +65,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
                     return;
                 }
                 this.onlinePlayers.put(playerId, (OnlinePlayerDataImpl) data);
-                ((OnlinePlayerDataImpl) data.getOnlineData()).checkAfk(false);
+                data.getOnlineData().checkAfk(false);
             }
         } finally {
             this.lock.writeLock().unlock();
@@ -180,7 +179,7 @@ public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> i
         }
     }
 
-    public OnlinePlayerData getOnline(UUID key) {
+    public OnlinePlayerDataImpl getOnline(UUID key) {
         return onlinePlayers.get(key);
     }
 

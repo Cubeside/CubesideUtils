@@ -8,7 +8,6 @@ import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.conditions.HasCustomPlayerDataValueCondition;
 import de.iani.cubesideutils.bukkit.conditions.HasPermissionCondition;
-import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerOptionsRetrievedEvent;
@@ -155,17 +154,17 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     }
 
     @Override
-    public OnlinePlayerData getPlayerData(Player player) {
+    public OnlinePlayerDataImpl getPlayerData(Player player) {
         return getPlayerData(player.getUniqueId()).getOnlineData();
     }
 
     @Override
-    public PlayerDataBukkit getPlayerData(OfflinePlayer player) {
+    public PlayerDataImplBukkit getPlayerData(OfflinePlayer player) {
         return getPlayerData(player.getUniqueId());
     }
 
     @Override
-    public PlayerDataBukkit getPlayerData(UUID playerId) {
+    public PlayerDataImplBukkit getPlayerData(UUID playerId) {
         return this.playerDataCache.get(playerId);
     }
 

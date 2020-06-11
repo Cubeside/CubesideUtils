@@ -28,9 +28,9 @@ public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBu
     }
 
     @Override
-    public OnlinePlayerData getOnlineData() {
+    public OnlinePlayerDataImpl getOnlineData() {
         if (this instanceof OnlinePlayerData) {
-            return (OnlinePlayerData) this;
+            return (OnlinePlayerDataImpl) this;
         }
 
         if (!isOnlineHere()) {

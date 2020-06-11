@@ -37,7 +37,7 @@ public class AfkManager implements Listener {
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         onlinePlayers[Math.floorMod(event.getPlayer().getUniqueId().hashCode(), AFK_CHECK_BINS)].add(player);
-        ((OnlinePlayerDataImpl) core.getPlayerData(player)).checkAfk(false);
+        core.getPlayerData(player).checkAfk(false);
     }
 
     @EventHandler
@@ -47,7 +47,7 @@ public class AfkManager implements Listener {
 
     private void tick() {
         for (Player player : onlinePlayers[currentTick % AFK_CHECK_BINS]) {
-            OnlinePlayerDataImpl data = ((OnlinePlayerDataImpl) core.getPlayerData(player));
+            OnlinePlayerDataImpl data = (core.getPlayerData(player));
             data.checkAfk(true);
         }
 
