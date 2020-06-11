@@ -192,16 +192,7 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
 
     @Override
     public void checkRank() {
-        String rank = null;
-        for (String possible : CubesideUtilsBukkit.getInstance().getRanks()) {
-            String permission = CubesideUtilsBukkit.getInstance().getPermission(possible);
-            if (permission == null || getPlayer().hasPermission(permission)) {
-                rank = possible;
-                break;
-            }
-        }
-
-        setRank(rank);
+        checkRank(getPlayer());
     }
 
 }

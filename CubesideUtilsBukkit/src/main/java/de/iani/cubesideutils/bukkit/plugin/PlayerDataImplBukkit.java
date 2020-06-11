@@ -6,6 +6,7 @@ import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permissible;
 
 public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBukkit {
 
@@ -37,6 +38,19 @@ public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBu
         }
 
         return CubesideUtilsBukkit.getInstance().getPlayerDataCache().getOnline(getPlayerId());
+    }
+
+    public void checkRank(Permissible player) {
+        String rank = null;
+        for (String possible : CubesideUtilsBukkit.getInstance().getRanks()) {
+            String permission = CubesideUtilsBukkit.getInstance().getPermission(possible);
+            if (permission == null || player.hasPermission(permission)) {
+                rank = possible;
+                break;
+            }
+        }
+
+        setRank(rank);
     }
 
 }
