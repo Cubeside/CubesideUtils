@@ -42,7 +42,7 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
     public Player getPlayer() {
         Player result = Bukkit.getPlayer(getPlayerId());
         if (result == null) {
-            result = CubesideUtilsBukkit.getInstance().getPlayerDataCache().getCurrentlyLoggingInPlayer(); // TODO: hä?
+            result = CubesideUtilsBukkit.getInstance().getPlayerDataCache().getCurrentlyLoggingInPlayer(); // TODO: hä? | vlt: bei login noch nicht in bukkit?
             if (result == null || !result.getUniqueId().equals(getPlayerId())) {
                 return null;
             }

@@ -1,221 +1,127 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
-import de.iani.cubesideutils.collections.IteratorUtil;
-import de.iani.cubesideutils.plugin.PlayerDataImpl;
+import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.bukkit.plugin.api.PlayerCacheMap;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerDataCache extends LinkedHashMap<UUID, PlayerDataImplBukkit> implements Listener {
+public class PlayerDataCache extends PlayerCacheMap<PlayerDataImplBukkit, Pair<Boolean, Boolean>> implements Listener {
 
-    private static final long serialVersionUID = 2279901989917386890L;
-    private static final int MAX_SIZE = 16;
-
-    private Map<UUID, OnlinePlayerDataImpl> onlinePlayers;
-
-    private ReadWriteLock lock;
+    private static final long serialVersionUID = -8879364238741140063L;
+    private static final int MAX_SOFT_CACHE_SIZE = 16;
 
     private Player currentlyLoggingInPlayer;
 
     public PlayerDataCache() {
-        // Accesses may be asynchronous
-        this.lock = new ReentrantReadWriteLock();
-        this.onlinePlayers = new HashMap<>();
-
-        Bukkit.getPluginManager().registerEvents(this, CubesideUtilsBukkit.getInstance().getPlugin());
+        super(MAX_SOFT_CACHE_SIZE, new Pair<>(true, false), "PlayerData");
     }
 
     public Player getCurrentlyLoggingInPlayer() {
         return this.currentlyLoggingInPlayer;
     }
 
-    public void invalidate(UUID playerId) {
-        // MAY NOT HAVE READ LOCK
-        this.lock.writeLock().lock();
-        try {
-            boolean isOnline = false;
-            long lastAction = 0;
-            boolean manuallySetAfk = false;
-            PlayerDataImplBukkit data = this.onlinePlayers.remove(playerId);
-            if (data != null) {
-                isOnline = true;
-                lastAction = data.getOnlineData().getLastAction();
-                manuallySetAfk = data.getOnlineData().isManuallySetAfk();
-            } else {
-                data = super.remove(playerId);
-            }
-
-            if (isOnline) {
-                try {
-                    data = CubesideUtilsBukkit.getInstance().getDatabase().getOnlinePlayerData(playerId, true, lastAction, manuallySetAfk);
-                } catch (SQLException e) {
-                    CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
-                    return;
-                }
-                this.onlinePlayers.put(playerId, (OnlinePlayerDataImpl) data);
-                data.getOnlineData().checkAfk(false);
-            }
-        } finally {
-            this.lock.writeLock().unlock();
-        }
+    public OnlinePlayerDataImpl getOnline(UUID key) {
+        return (OnlinePlayerDataImpl) getFromHardCache(key);
     }
 
-    private void left(UUID playerId) {
-        this.lock.writeLock().lock();
-        OnlinePlayerDataImpl data = this.onlinePlayers.remove(playerId);
-        data.quit();
-        this.lock.writeLock().unlock();
+    public Collection<PlayerDataImplBukkit> loadedData() {
+        return Collections.unmodifiableCollection(new ArrayList<>(values()));
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void earlyOnPlayerLoginEvent(PlayerLoginEvent event) {
-        this.currentlyLoggingInPlayer = event.getPlayer();
-        UUID playerId = event.getPlayer().getUniqueId();
-        this.lock.writeLock().lock();
-        try {
-            invalidate(playerId);
-            OnlinePlayerDataImpl data;
-            try {
-                data = CubesideUtilsBukkit.getInstance().getDatabase().getOnlinePlayerData(playerId, true, System.currentTimeMillis(), false);
-            } catch (SQLException e) {
-                CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + playerId + " from database.");
-                // TODO: disallow?
-                return;
-            }
-            this.onlinePlayers.put(playerId, data);
-            data.setLocallyAfk(false, false);
-        } finally {
-            this.lock.writeLock().unlock();
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void lateOnPlayerLoginEvent(PlayerLoginEvent event) {
-        this.currentlyLoggingInPlayer = null;
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            left(event.getPlayer().getUniqueId());
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void lateOnPlayerQuitEvent(PlayerQuitEvent event) {
-        PlayerDataImpl data = get(event.getPlayer().getUniqueId());
-        data.setLastSeen(System.currentTimeMillis());
-
-        // Other plugins may need the data on quit.
-        left(event.getPlayer().getUniqueId());
-    }
-
-    // May be accessed asynchronously.
-    @Override
-    public PlayerDataImplBukkit get(Object key) {
-        return get(key, true, false);
-    }
-
-    // May be accessed asynchronously.
     public PlayerDataImplBukkit get(Object key, boolean queryDatabase, boolean createIfMissing) {
-        if (!queryDatabase && createIfMissing) {
+        return get(key, new Pair<>(queryDatabase, createIfMissing));
+    }
+
+    @Override
+    protected void checkData(Pair<Boolean, Boolean> data) {
+        if (data == null || data.first == null || data.second == null) {
+            throw new NullPointerException();
+        }
+        if (!data.first && data.second) {
             throw new IllegalArgumentException("can only createIfMissing if queryDatabase");
         }
+    }
 
-        if (!(key instanceof UUID)) {
+    @Override
+    protected boolean shouldLoadIntoCache(UUID key, Pair<Boolean, Boolean> data) {
+        return data.first;
+    }
+
+    @Override
+    protected PlayerDataImplBukkit load(UUID key, Pair<Boolean, Boolean> data) {
+        try {
+            return CubesideUtilsBukkit.getInstance().getDatabase().getPlayerData(key, data.second);
+        } catch (SQLException e) {
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to query database for PlayerData.", e);
             return null;
         }
-
-        this.lock.readLock().lock();
-        try {
-            PlayerDataImplBukkit result = this.onlinePlayers.get(key);
-            if (result != null) {
-                return result;
-            }
-
-            result = super.get(key);
-            if (result != null || !queryDatabase) {
-                return result;
-            }
-
-            // unlock read to be allowed to lock write
-            this.lock.readLock().unlock();
-            this.lock.writeLock().lock();
-
-            try {
-                // relock read to unlock in outer finally
-                this.lock.readLock().lock();
-
-                // might have changed during temporary unlock
-                result = this.onlinePlayers.get(key);
-                if (result != null) {
-                    return result;
-                }
-
-                return super.computeIfAbsent((UUID) key, k -> {
-                    PlayerDataImplBukkit data;
-                    try {
-                        data = CubesideUtilsBukkit.getInstance().getDatabase().getPlayerData(k, createIfMissing);
-                    } catch (SQLException e) {
-                        CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to query database for PlayerData.", e);
-                        return null;
-                    }
-                    return data;
-                });
-            } finally {
-                this.lock.writeLock().unlock();
-            }
-        } finally {
-            this.lock.readLock().unlock();
-        }
     }
 
-    public OnlinePlayerDataImpl getOnline(UUID key) {
-        return onlinePlayers.get(key);
-    }
-
-    // May be accessed asynchronously.
     @Override
-    public boolean containsKey(Object key) {
-        this.lock.readLock().lock();
+    public void invalidate(UUID key) {
+        super.invalidate(key);
+    }
+
+    @Override
+    protected PlayerDataImplBukkit getReplacement(UUID key, PlayerDataImplBukkit uncached) {
+        OnlinePlayerDataImpl online = (OnlinePlayerDataImpl) uncached;
+        long lastAction = online.getOnlineData().getLastAction();
+        boolean manuallySetAfk = online.getOnlineData().isManuallySetAfk();
         try {
-            return super.containsKey(key) || this.onlinePlayers.containsKey(key);
-        } finally {
-            this.lock.readLock().unlock();
+            return CubesideUtilsBukkit.getInstance().getDatabase().getOnlinePlayerData(key, true, lastAction, manuallySetAfk);
+        } catch (SQLException e) {
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + key + " from database.");
+            return null;
         }
     }
 
     @Override
-    public PlayerDataImplBukkit put(UUID key, PlayerDataImplBukkit value) {
-        throw new UnsupportedOperationException();
+    protected void replaced(UUID key, PlayerDataImplBukkit uncached, PlayerDataImplBukkit replacement) {
+        if (replacement != null) {
+            ((OnlinePlayerDataImpl) replacement).checkAfk(false);
+        }
     }
 
     @Override
-    public PlayerDataImplBukkit remove(Object key) {
-        throw new UnsupportedOperationException();
+    protected void playerStartsLoggingIn(Player player) {
+        this.currentlyLoggingInPlayer = player;
     }
 
     @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
+    protected PlayerDataImplBukkit loadOnLogin(Player player) throws LoadingPlayerDataFailedException {
+        try {
+            return CubesideUtilsBukkit.getInstance().getDatabase().getOnlinePlayerData(player.getUniqueId(), true, System.currentTimeMillis(), false);
+        } catch (SQLException e) {
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "Exception trying to load OnlinePlayerData for " + player.getUniqueId() + " from database.");
+            // TODO: disallow, i.e. LoadingPlayerDataFailedException?
+            return null;
+        }
     }
 
     @Override
-    protected boolean removeEldestEntry(java.util.Map.Entry<UUID, PlayerDataImplBukkit> eldest) {
-        return size() >= MAX_SIZE;
+    protected void playerDataLoadedOnLogin(Player player, PlayerDataImplBukkit value) {
+        ((OnlinePlayerDataImpl) value).setLocallyAfk(false, false);
     }
 
-    public Iterable<PlayerDataImplBukkit> loadedData() {
-        return IteratorUtil.concatUnmodifiable(this.onlinePlayers.values(), values());
+    @Override
+    protected void playerFinishsLoggingIn(Player player) {
+        this.currentlyLoggingInPlayer = null;
+    }
+
+    @Override
+    protected void playerDataUnloadedOnSuccesslessLogin(Player player, PlayerDataImplBukkit value) {
+        ((OnlinePlayerDataImpl) value).quit();
+    }
+
+    @Override
+    protected void playerDataUnloadedOnQuit(Player player, PlayerDataImplBukkit value) {
+        ((OnlinePlayerDataImpl) value).quit();
     }
 
 }

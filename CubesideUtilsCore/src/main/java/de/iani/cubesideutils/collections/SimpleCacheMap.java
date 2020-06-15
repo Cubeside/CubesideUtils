@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.collections;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SimpleCacheMap<K, V> extends LinkedHashMap<K, V> {
 
@@ -13,8 +14,17 @@ public class SimpleCacheMap<K, V> extends LinkedHashMap<K, V> {
     }
 
     @Override
-    protected boolean removeEldestEntry(java.util.Map.Entry<K, V> eldest) {
-        return size() > maxSize;
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        if (size() > maxSize) {
+            eldestUncached(eldest.getKey(), eldest.getValue());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected void eldestUncached(K key, V value) {
+
     }
 
 }

@@ -101,6 +101,8 @@ public class EventListener implements Listener {
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         UtilsGlobalDataHelperBukkit globalData = core.getGlobalDataHelper();
         globalData.setPropertyValue(event.getPlayer(), CubesideUtilsBukkit.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), null);
+
+        core.getPlayerData(event.getPlayer()).setLastSeen(System.currentTimeMillis());
     }
 
     // AFK
