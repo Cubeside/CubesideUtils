@@ -120,6 +120,15 @@ public class PlayerDataCache extends PlayerCacheMap<PlayerDataImplBukkit, Pair<B
     }
 
     @Override
+    protected void playerJoinedAfterTimeout(Player player) {
+        try {
+            addToHardCache(player.getUniqueId(), loadOnLogin(player));
+        } catch (LoadingPlayerDataFailedException e) {
+            player.kickPlayer(e.getKickMessage());
+        }
+    }
+
+    @Override
     protected void playerDataUnloadedOnQuit(Player player, PlayerDataImplBukkit value) {
         ((OnlinePlayerDataImpl) value).quit();
     }
