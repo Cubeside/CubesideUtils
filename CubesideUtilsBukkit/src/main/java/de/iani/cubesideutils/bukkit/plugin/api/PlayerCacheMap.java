@@ -21,7 +21,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> implements Listener {
 
-    public static final long BETWEEN_LOGIN_AND_JOIN_TIMEOUT = 10 * 20L; // 200 ticks = 10 seconds
+    public static final long BETWEEN_LOGIN_AND_JOIN_TIMEOUT = 5 * 60 * 20L; // 5 minutes in ticks
 
     private static final long serialVersionUID = 9162727527421482928L;
 
