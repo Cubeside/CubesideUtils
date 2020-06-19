@@ -5,6 +5,8 @@ import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
+import de.iani.cubesideutils.bukkit.SerializablePair;
+import de.iani.cubesideutils.bukkit.SerializableTriple;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.conditions.HasCustomPlayerDataValueCondition;
 import de.iani.cubesideutils.bukkit.conditions.HasPermissionCondition;
@@ -60,6 +62,10 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         StringSerialization.register(GlobalLocationWrapper.SERIALIZATION_TYPE, GlobalLocationWrapper::deserialize);
         StringSerialization.register(HasPermissionCondition.SERIALIZATION_TYPE, HasPermissionCondition::deserialize);
         StringSerialization.register(HasCustomPlayerDataValueCondition.SERIALIZATION_TYPE, HasCustomPlayerDataValueCondition::deserialize);
+
+        // trigger registration of serializable classes
+        new SerializablePair<>(null, null);
+        new SerializableTriple<>(null, null, null);
     }
 
     private UtilsPluginBukkit plugin;
