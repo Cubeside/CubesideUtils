@@ -6,12 +6,13 @@ import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.permissions.Permissible;
 
 public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBukkit {
 
-    public PlayerDataImplBukkit(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
-        super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
+    public PlayerDataImplBukkit(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String lastName, String rank) {
+        super(playerId, firstJoin, lastJoin, lastSeen, afk, lastName, rank);
     }
 
     @Override
@@ -38,6 +39,11 @@ public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBu
         }
 
         return CubesideUtilsBukkit.getInstance().getPlayerDataCache().getOnline(getPlayerId());
+    }
+
+    @Override
+    public OfflinePlayer getOfflinePlayer() {
+        return new CachedOfflinePlayer(getPlayerId(), getLastName());
     }
 
     public void checkRank(Permissible player) {

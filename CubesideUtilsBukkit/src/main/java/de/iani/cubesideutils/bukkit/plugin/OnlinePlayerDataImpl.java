@@ -20,8 +20,8 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
     private boolean manuallySetAfk;
     private boolean locallyAfk;
 
-    public OnlinePlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String rank) {
-        super(playerId, firstJoin, lastJoin, lastSeen, afk, rank);
+    public OnlinePlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String lastName, String rank) {
+        super(playerId, firstJoin, lastJoin, lastSeen, afk, lastName, rank);
 
         this.lastLocalAction = lastAction;
         this.manuallySetAfk = manuallySetAfk;

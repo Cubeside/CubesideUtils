@@ -24,6 +24,26 @@ import java.util.UUID;
 
 public abstract class UtilsDatabase<T extends PlayerDataImpl> {
 
+    protected static class PlayerDataStruct {
+
+        public final long firstJoin;
+        public final long lastJoin;
+        public final long lastSeen;
+        public final boolean afk;
+        public final String lastName;
+        public final String rank;
+
+        public PlayerDataStruct(long firstJoin, long lastJoin, long lastSeen, boolean afk, String lastName, String rank) {
+            this.firstJoin = firstJoin;
+            this.lastJoin = lastJoin;
+            this.lastSeen = lastSeen;
+            this.afk = afk;
+            this.lastName = lastName;
+            this.rank = rank;
+        }
+
+    }
+
     private SQLConnection connection;
     private String tablePrefix;
 
@@ -93,7 +113,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.removeRealServerQuery = "DELETE FROM `" + this.realServersTableName + "` WHERE server = ?";
         this.getRealServersQuery = "SELECT (server) FROM `" + this.realServersTableName + "`";
 
-        this.getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, `rank` FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
+        this.getPlayerDataQuery = "SELECT firstJoin, lastJoin, lastSeen, afk, name, `rank` FROM `" + this.playerDataTableName + "` WHERE playerId = ?";
         this.addPlayerDataQuery = "INSERT INTO `" + this.playerDataTableName + "` (playerId, name, afk, `rank`) VALUES (?, NULL, 0, NULL)";
         this.setPlayerNameAndFirstJoinAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET name = ?, firstJoin = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
         this.setPlayerNameAndLastJoinAndSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET name = ?, lastJoin = ?, lastSeen = ? WHERE playerId = ?";
@@ -273,7 +293,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
 
     public abstract T getPlayerData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException;
 
-    protected Triple<Triple<Long, Long, Long>, Boolean, String> getPlayerDataData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
+    protected PlayerDataStruct getPlayerDataData(UUID playerId, boolean isOnline, boolean insertIfMissing, long lastAction, boolean manuallySetAfk) throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerDataQuery);
             smt.setString(1, playerId.toString());
@@ -295,8 +315,9 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             long lastJoin = rs.getLong(2);
             long lastSeen = rs.getLong(3);
             boolean afk = rs.getBoolean(4);
-            String rank = rs.getString(5);
-            Triple<Triple<Long, Long, Long>, Boolean, String> result = new Triple<>(new Triple<>(firstJoin, lastJoin, lastSeen), afk, rank);
+            String lastName = rs.getString(5);
+            String rank = rs.getString(6);
+            PlayerDataStruct result = new PlayerDataStruct(firstJoin, lastJoin, lastSeen, afk, lastName, rank);
 
             rs.close();
             return result;

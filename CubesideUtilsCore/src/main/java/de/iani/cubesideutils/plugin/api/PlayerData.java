@@ -24,6 +24,8 @@ public interface PlayerData {
 
     public boolean isGloballyAfk();
 
+    public String getLastName();
+
     public String getRank();
 
     public String getRankPrefix();

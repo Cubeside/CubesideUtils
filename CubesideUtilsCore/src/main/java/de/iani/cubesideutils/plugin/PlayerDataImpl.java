@@ -20,14 +20,16 @@ public abstract class PlayerDataImpl implements PlayerData {
 
     private boolean afk;
 
+    private String lastName;
     private String rank;
 
-    protected PlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String rank) {
+    protected PlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, String lastName, String rank) {
         this.playerId = Objects.requireNonNull(playerId);
         this.firstJoin = firstJoin;
         this.lastJoin = lastJoin;
         this.lastSeen = lastSeen;
         this.afk = afk;
+        this.lastName = lastName;
         this.rank = rank;
 
         postConstruction();
@@ -112,6 +114,7 @@ public abstract class PlayerDataImpl implements PlayerData {
         this.firstJoin = value;
         this.lastJoin = value;
         this.lastSeen = value;
+        this.lastName = name;
 
         try {
             CubesideUtils.getInstance().getDatabase().setPlayerNameAndFirstJoinAndLastJoinAndSeen(this.playerId, value, name);
@@ -134,6 +137,8 @@ public abstract class PlayerDataImpl implements PlayerData {
 
         this.lastJoin = value;
         this.lastSeen = value;
+        this.lastName = name;
+
         try {
             CubesideUtils.getInstance().getDatabase().setPlayerNameAndLastJoinAndSeen(this.playerId, value, name);
         } catch (SQLException e) {
@@ -170,6 +175,11 @@ public abstract class PlayerDataImpl implements PlayerData {
 
     protected synchronized void setGloballyAfk(boolean afk) {
         this.afk = afk;
+    }
+
+    @Override
+    public synchronized String getLastName() {
+        return this.lastName;
     }
 
     @Override

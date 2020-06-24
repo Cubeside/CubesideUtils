@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bukkit.plugin.commands;
 
 import de.iani.cubesideutils.bukkit.commands.SubCommand;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
+import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.UUID;
 import org.bukkit.command.Command;
@@ -17,7 +18,7 @@ public class PlayerOptionsCommand extends SubCommand {
 
     @Override
     public String getUsage() {
-        return "<playerid>";
+        return "<playerId>";
     }
 
     @Override
@@ -25,14 +26,15 @@ public class PlayerOptionsCommand extends SubCommand {
         if (args.remaining() != 1) {
             return false;
         }
-        UUID playerid;
+        UUID playerId;
         try {
-            playerid = UUID.fromString(args.getNext());
+            playerId = UUID.fromString(args.getNext());
         } catch (IllegalArgumentException e) {
             sender.sendMessage("The playerid must be a valid UUID.");
             return true;
         }
-        cubesideUtilsBukkit.sendPlayerOptions(sender, cubesideUtilsBukkit.getPlugin().getServer().getOfflinePlayer(playerid));
+        PlayerDataBukkit data = cubesideUtilsBukkit.getPlayerData(playerId);
+        cubesideUtilsBukkit.sendPlayerOptions(sender, data.getOfflinePlayer());
         return true;
     }
 
