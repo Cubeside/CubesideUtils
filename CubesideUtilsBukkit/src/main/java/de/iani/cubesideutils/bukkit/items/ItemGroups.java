@@ -1,5 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -161,7 +163,19 @@ public class ItemGroups {
     private static final EnumSet<Material> CONTAINER_BLOCKS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> CONTAINER_BLOCKS = Collections.unmodifiableSet(CONTAINER_BLOCKS_INTERNAL);
 
+    private static final Collection<String> woodTypes;
+
     static {
+        woodTypes = new ArrayList<>();
+        woodTypes.add("OAK");
+        woodTypes.add("SPRUCE");
+        woodTypes.add("BIRCH");
+        woodTypes.add("JUNGLE");
+        woodTypes.add("DARK_OAK");
+        woodTypes.add("ACACIA");
+        woodTypes.add("CRIMSON");
+        woodTypes.add("WARPED");
+
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
         AIRS_INTERNAL.add(Material.VOID_AIR);
@@ -214,7 +228,7 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.WITHER_SKELETON_SPAWN_EGG, EntityType.WITHER_SKELETON);
         SPAWN_EGGS_INTERNAL.put(Material.WOLF_SPAWN_EGG, EntityType.WOLF);
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_HORSE_SPAWN_EGG, EntityType.ZOMBIE_HORSE);
-        SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_PIGMAN_SPAWN_EGG, EntityType.PIG_ZOMBIE);
+        // SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_PIGMAN_SPAWN_EGG, EntityType.PIG_ZOMBIE); - removed in 1.16
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_SPAWN_EGG, EntityType.ZOMBIE);
         SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_VILLAGER_SPAWN_EGG, EntityType.ZOMBIE_VILLAGER);
         // 1.14
@@ -227,6 +241,12 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.WANDERING_TRADER_SPAWN_EGG, EntityType.WANDERING_TRADER);
         // 1.15
         SPAWN_EGGS_INTERNAL.put(Material.BEE_SPAWN_EGG, EntityType.BEE);
+        // 1.16
+        SPAWN_EGGS_INTERNAL.put(Material.ZOMBIFIED_PIGLIN_SPAWN_EGG, EntityType.ZOMBIFIED_PIGLIN);
+        SPAWN_EGGS_INTERNAL.put(Material.PIGLIN_SPAWN_EGG, EntityType.PIGLIN);
+        SPAWN_EGGS_INTERNAL.put(Material.HOGLIN_SPAWN_EGG, EntityType.HOGLIN);
+        SPAWN_EGGS_INTERNAL.put(Material.ZOGLIN_SPAWN_EGG, EntityType.ZOGLIN);
+        SPAWN_EGGS_INTERNAL.put(Material.STRIDER_SPAWN_EGG, EntityType.STRIDER);
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -251,7 +271,7 @@ public class ItemGroups {
                     TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("_GLAZED_TERRACOTTA")) {
                     GLAZED_TERRACOTTA_INTERNAL.add(m);
-                } else if (name.endsWith("_LOG") || name.equals("_WOOD")) {
+                } else if (name.endsWith("_LOG") || name.endsWith("_WOOD") || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
                     LOGS_INTERNAL.add(m);
                 } else if (name.endsWith("_LEAVES")) {
                     LEAVES_INTERNAL.add(m);
@@ -259,34 +279,34 @@ public class ItemGroups {
                     PLANKS_INTERNAL.add(m);
                 } else if (name.endsWith("_SAPLINGS")) {
                     SAPLINGS_INTERNAL.add(m);
-                } else if (name.endsWith("OAK_SLAB") || name.equals("SPRUCE_SLAB") || name.equals("BIRCH_SLAB") || name.equals("JUNGLE_SLAB") || name.equals("ACACIA_SLAB")) {
+                } else if (name.endsWith("_SLAB") && isProbablyWood(m)) {
                     WOODEN_SLABS_INTERNAL.add(m);
-                } else if (name.endsWith("OAK_STAIRS") || name.equals("SPRUCE_STAIRS") || name.equals("BIRCH_STAIRS") || name.equals("JUNGLE_STAIRS") || name.equals("ACACIA_STAIRS")) {
+                } else if (name.endsWith("_STAIRS") && isProbablyWood(m)) {
                     WOODEN_STAIRS_INTERNAL.add(m);
-                } else if (name.endsWith("OAK_FENCE") || name.equals("SPRUCE_FENCE") || name.equals("BIRCH_FENCE") || name.equals("JUNGLE_FENCE") || name.equals("ACACIA_FENCE")) {
+                } else if (name.endsWith("_FENCE") && isProbablyWood(m)) {
                     WOODEN_FENCES_INTERNAL.add(m);
                 } else if (name.endsWith("_FENCE_GATE")) {
-                    if (name.endsWith("OAK_FENCE_GATE") || name.equals("SPRUCE_FENCE_GATE") || name.equals("BIRCH_FENCE_GATE") || name.equals("JUNGLE_FENCE_GATE") || name.equals("ACACIA_FENCE_GATE")) {
+                    if (isProbablyWood(m)) {
                         WOODEN_FENCE_GATES_INTERNAL.add(m);
                     }
                     FENCE_GATES_INTERNAL.add(m);
                 } else if (name.endsWith("_DOOR")) {
-                    if (name.endsWith("OAK_DOOR") || name.equals("SPRUCE_DOOR") || name.equals("BIRCH_DOOR") || name.equals("JUNGLE_DOOR") || name.equals("ACACIA_DOOR")) {
+                    if (isProbablyWood(m)) {
                         WOODEN_DOORS_INTERNAL.add(m);
                     }
                     DOORS_INTERNAL.add(m);
                 } else if (name.endsWith("_TRAPDOOR")) {
-                    if (name.endsWith("OAK_TRAPDOOR") || name.equals("SPRUCE_TRAPDOOR") || name.equals("BIRCH_TRAPDOOR") || name.equals("JUNGLE_TRAPDOOR") || name.equals("ACACIA_TRAPDOOR")) {
+                    if (isProbablyWood(m)) {
                         WOODEN_TRAPDOORS_INTERNAL.add(m);
                     }
                     TRAPDOORS_INTERNAL.add(m);
                 } else if (name.endsWith("_BUTTON")) {
-                    if (name.endsWith("OAK_BUTTON") || name.equals("SPRUCE_BUTTON") || name.equals("BIRCH_BUTTON") || name.equals("JUNGLE_BUTTON") || name.equals("ACACIA_BUTTON")) {
+                    if (isProbablyWood(m)) {
                         WOODEN_BUTTONS_INTERNAL.add(m);
                     }
                     BUTTONS_INTERNAL.add(m);
                 } else if (name.endsWith("_PRESSURE_PLATE")) {
-                    if (name.endsWith("OAK_PRESSURE_PLATE") || name.equals("SPRUCE_PRESSURE_PLATE") || name.equals("BIRCH_PRESSURE_PLATE") || name.equals("JUNGLE_PRESSURE_PLATE") || name.equals("ACACIA_PRESSURE_PLATE")) {
+                    if (isProbablyWood(m)) {
                         WOODEN_PRESSURE_PLATES_INTERNAL.add(m);
                     }
                     PRESSURE_PLATES_INTERNAL.add(m);
@@ -342,6 +362,10 @@ public class ItemGroups {
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BAMBOO_SAPLING);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.KELP_PLANT);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.KELP);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.TWISTING_VINES);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.TWISTING_VINES_PLANT);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.WEEPING_VINES);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.WEEPING_VINES_PLANT);
 
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.LARGE_FERN);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_GRASS);
@@ -376,7 +400,14 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.LILY_OF_THE_VALLEY);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CORNFLOWER);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.WITHER_ROSE);
-        DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SEAGRASS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SEAGRASS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.RED_MUSHROOM);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.BROWN_MUSHROOM);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CRIMSON_FUNGUS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.WARPED_FUNGUS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CRIMSON_ROOTS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.WARPED_ROOTS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.NETHER_SPROUTS);
         SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
@@ -588,6 +619,19 @@ public class ItemGroups {
         CONTAINER_BLOCKS_INTERNAL.add(Material.BARREL);
         CONTAINER_BLOCKS_INTERNAL.add(Material.BLAST_FURNACE);
         CONTAINER_BLOCKS_INTERNAL.add(Material.SMOKER);
+    }
+
+    /**
+     * Returns true for all wood material, but might return true for Materials that are not wood, like CRIMSON_ROOTS
+     */
+    private static boolean isProbablyWood(Material m) {
+        String name = m.name();
+        for (String e : woodTypes) {
+            if (name.startsWith(e)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isEmpty(ItemStack item) {
