@@ -93,7 +93,8 @@ public class StringUtil {
      * Capitalize the first letter of every word, lowercase everything else.
      *
      * @param s
-     * @param replaceUnderscores If underscores should be replaced by spaces
+     * @param replaceUnderscores
+     *            If underscores should be replaced by spaces
      * @return
      */
     public static String capitalizeFirstLetter(String s, boolean replaceUnderscores) {
@@ -190,7 +191,7 @@ public class StringUtil {
                             if (hex == null) {
                                 builder.append(current).append(next);
                             } else {
-                                builder.append(parseHexColor(text, i + 1));
+                                builder.append(hex);
                                 i += 6;
                             }
                         } else {
@@ -207,16 +208,19 @@ public class StringUtil {
         return builder == null ? text : builder.toString();
     }
 
-    private static ChatColor parseHexColor(String text, int nextIndex) {
-        try {
-            StringBuilder hexString = new StringBuilder("#");
-            for (int i = nextIndex; i < Math.min(text.length(), nextIndex + 6); i++) {
-                hexString.append(text.charAt(i));
-            }
-            return ChatColor.of(hexString.toString());
-        } catch (IllegalArgumentException e) {
+    private static ChatColor parseHexColor(String text, int startIndex) {
+        if (text.length() - startIndex < 6) {
             return null;
         }
+        StringBuilder hexString = new StringBuilder("#");
+        for (int i = 0; i < 6; i++) {
+            char c = Character.toLowerCase(text.charAt(i + startIndex));
+            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
+                return null;
+            }
+            hexString.append(c);
+        }
+        return ChatColor.of(hexString.toString());
     }
 
     private static final Pattern PIPE_PATTERN = Pattern.compile(" \\| ");
@@ -326,7 +330,7 @@ public class StringUtil {
         ChatColor color = null;
         int currentPrefixLength = 0;
 
-        for (; index < chars.length; ) {
+        for (; index < chars.length;) {
             char current = chars[index];
             if (current == '\n') {
                 index++;
@@ -450,7 +454,7 @@ public class StringUtil {
         for (char c = 0x00; c <= 0x1F; c++) {
             illegals.add(c);
         }
-        for (char c : new char[]{'|', '\\', '/', '?', '!', '*', '+', '%', '<', '>', '"', ':', ';', ',', '.', '=', '[', ']', '@', (char) 0x7F}) {
+        for (char c : new char[] { '|', '\\', '/', '?', '!', '*', '+', '%', '<', '>', '"', ':', ';', ',', '.', '=', '[', ']', '@', (char) 0x7F }) {
             illegals.add(c);
         }
         CHARS_ILLEGAL_IN_FILENAME = Collections.unmodifiableSet(illegals);
