@@ -3,7 +3,6 @@ package de.iani.cubesideutils;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,7 @@ public abstract class ChatUtil {
         // prevents instances
     }
 
-    public static final Map<ChatColor, Integer> CHATCOLOR_TO_RGB;
+    private static final Map<ChatColor, Integer> CHATCOLOR_TO_RGB;
     static {
         Map<ChatColor, Integer> chatcolorToColor = new HashMap<>();
         chatcolorToColor.put(ChatColor.BLACK, 0x000000);
@@ -263,6 +262,10 @@ public abstract class ChatUtil {
     }
 
     public static Integer toRGB(ChatColor color) {
+        String colorString = color.toString();
+        if (colorString != null && colorString.length() > 2 && colorString.charAt(1) == 'x') {
+            return Integer.parseInt(colorString.substring(2).replace(String.valueOf(ChatColor.COLOR_CHAR), ""), 16);
+        }
         return CHATCOLOR_TO_RGB.get(color);
     }
 }
