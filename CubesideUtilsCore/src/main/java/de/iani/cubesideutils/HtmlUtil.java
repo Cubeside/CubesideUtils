@@ -60,15 +60,16 @@ public class HtmlUtil {
         for (BaseComponent component : message) {
             if (component instanceof TextComponent) {
                 ChatColor color = component.getColorRaw();
+                Integer colorRGB = color == null ? null : ChatUtil.toRGB(color);
                 Boolean bold = component.isBoldRaw();
                 Boolean italic = component.isItalicRaw();
                 Boolean strikethrough = component.isStrikethroughRaw();
                 Boolean underlined = component.isUnderlinedRaw();
-                boolean anyFormat = color != null || bold != null || italic != null || strikethrough != null || underlined != null;
+                boolean anyFormat = colorRGB != null || bold != null || italic != null || strikethrough != null || underlined != null;
                 if (anyFormat) {
                     stringBuilder.append("<span style='");
-                    if (color != null) {
-                        stringBuilder.append("color:").append(colorToHex(ChatUtil.toRGB(color))).append(";");
+                    if (colorRGB != null) {
+                        stringBuilder.append("color:").append(colorToHex(colorRGB)).append(";");
                     }
                     if (bold != null) {
                         stringBuilder.append("font-weight:").append(bold ? "bold" : "normal").append(";");
