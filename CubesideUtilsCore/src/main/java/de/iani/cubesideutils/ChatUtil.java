@@ -4,6 +4,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,7 +25,7 @@ public abstract class ChatUtil {
 
     public static final Map<ChatColor, Integer> CHATCOLOR_TO_RGB;
     static {
-        EnumMap<ChatColor, Integer> chatcolorToColor = new EnumMap<>(ChatColor.class);
+        Map<ChatColor, Integer> chatcolorToColor = new HashMap<>();
         chatcolorToColor.put(ChatColor.BLACK, 0x000000);
         chatcolorToColor.put(ChatColor.DARK_BLUE, 0x0000AA);
         chatcolorToColor.put(ChatColor.DARK_GREEN, 0x00AA00);

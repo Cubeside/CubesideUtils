@@ -93,8 +93,7 @@ public class StringUtil {
      * Capitalize the first letter of every word, lowercase everything else.
      *
      * @param s
-     * @param replaceUnderscores
-     *            If underscores should be replaced by spaces
+     * @param replaceUnderscores If underscores should be replaced by spaces
      * @return
      */
     public static String capitalizeFirstLetter(String s, boolean replaceUnderscores) {
@@ -179,14 +178,24 @@ public class StringUtil {
                 char next = text.charAt(i + 1);
                 // if next is a "&" skip next char
                 // if its a color char replace the "&"
-                if (ChatColor.getByChar(next) != null || next == '&') {
+                if (ChatColor.getByChar(next) != null || next == '&' || next == 'x') {
                     if (builder == null) {
                         builder = new StringBuilder();
                         builder.append(text, 0, i);
                     }
                     i++;
                     if (next != '&') {
-                        builder.append(ChatColor.COLOR_CHAR).append(next);
+                        if (next == 'x') {
+                            ChatColor hex = parseHexColor(text, i + 1);
+                            if (hex == null) {
+                                builder.append(current).append(next);
+                            } else {
+                                builder.append(parseHexColor(text, i + 1));
+                                i += 6;
+                            }
+                        } else {
+                            builder.append(ChatColor.COLOR_CHAR).append(next);
+                        }
                         continue;
                     }
                 }
@@ -196,6 +205,18 @@ public class StringUtil {
             }
         }
         return builder == null ? text : builder.toString();
+    }
+
+    private static ChatColor parseHexColor(String text, int nextIndex) {
+        try {
+            StringBuilder hexString = new StringBuilder("#");
+            for (int i = nextIndex; i < Math.min(text.length(), nextIndex + 6); i++) {
+                hexString.append(text.charAt(i));
+            }
+            return ChatColor.of(hexString.toString());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     private static final Pattern PIPE_PATTERN = Pattern.compile(" \\| ");
@@ -305,7 +326,7 @@ public class StringUtil {
         ChatColor color = null;
         int currentPrefixLength = 0;
 
-        for (; index < chars.length;) {
+        for (; index < chars.length; ) {
             char current = chars[index];
             if (current == '\n') {
                 index++;
@@ -323,29 +344,23 @@ public class StringUtil {
                 char next = chars[index + 1];
                 ChatColor col = ChatColor.getByChar(next);
                 if (col != null) {
-                    switch (col) {
-                        case MAGIC:
-                            magic = true;
-                            break;
-                        case BOLD:
-                            bold = true;
-                            break;
-                        case STRIKETHROUGH:
-                            strikethrough = true;
-                            break;
-                        case UNDERLINE:
-                            underline = true;
-                            break;
-                        case ITALIC:
-                            italic = true;
-                            break;
-                        default:
-                            color = col == ChatColor.RESET ? null : col;
-                            magic = false;
-                            bold = false;
-                            strikethrough = false;
-                            underline = false;
-                            italic = false;
+                    if (col.equals(ChatColor.MAGIC)) {
+                        magic = true;
+                    } else if (col.equals(ChatColor.BOLD)) {
+                        bold = true;
+                    } else if (col.equals(ChatColor.STRIKETHROUGH)) {
+                        strikethrough = true;
+                    } else if (col.equals(ChatColor.UNDERLINE)) {
+                        underline = true;
+                    } else if (col.equals(ChatColor.ITALIC)) {
+                        italic = true;
+                    } else {
+                        color = col == ChatColor.RESET ? null : col;
+                        magic = false;
+                        bold = false;
+                        strikethrough = false;
+                        underline = false;
+                        italic = false;
                     }
                 }
             }
@@ -435,7 +450,7 @@ public class StringUtil {
         for (char c = 0x00; c <= 0x1F; c++) {
             illegals.add(c);
         }
-        for (char c : new char[] { '|', '\\', '/', '?', '!', '*', '+', '%', '<', '>', '"', ':', ';', ',', '.', '=', '[', ']', '@', (char) 0x7F }) {
+        for (char c : new char[]{'|', '\\', '/', '?', '!', '*', '+', '%', '<', '>', '"', ':', ';', ',', '.', '=', '[', ']', '@', (char) 0x7F}) {
             illegals.add(c);
         }
         CHARS_ILLEGAL_IN_FILENAME = Collections.unmodifiableSet(illegals);
