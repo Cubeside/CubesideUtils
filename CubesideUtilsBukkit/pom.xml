@@ -8,20 +8,20 @@
     <parent>
         <groupId>de.iani.cubeside</groupId>
         <artifactId>CubesideUtils</artifactId>
-        <version>1.14-split-SNAPSHOT</version>
+        <version>1.16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <dependencies>
         <dependency>
             <groupId>de.iani.cubeside</groupId>
             <artifactId>CubesideUtilsCore</artifactId>
-            <version>1.14-split-SNAPSHOT</version>
+            <version>1.16-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.iani.cubeside</groupId>
     <artifactId>CubesideUtils</artifactId>
-    <version>1.14-split-SNAPSHOT</version>
+    <version>1.16-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <build.number>DEV</build.number>
