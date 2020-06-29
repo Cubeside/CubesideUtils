@@ -20,7 +20,6 @@ import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 
 public class StringUtil {
@@ -30,7 +29,7 @@ public class StringUtil {
     }
 
     public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
-    public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "[" + Arrays.stream(ChatColor.values()).map(Object::toString).map(s -> s.substring(1)).collect(Collectors.joining()) + "]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "([0-9a-fk-or]|(x(" + ChatColor.COLOR_CHAR + "[0-9a-f]){6}))", Pattern.CASE_INSENSITIVE);
 
     public static final ToIntFunction<String> CASE_IGNORING_HASHER = s -> {
         if (s == null) {
@@ -328,6 +327,7 @@ public class StringUtil {
         boolean underline = false;
         boolean italic = false;
         ChatColor color = null;
+        int ignoreColorsUntil = 0;
         int currentPrefixLength = 0;
 
         for (; index < chars.length;) {
@@ -344,9 +344,18 @@ public class StringUtil {
                 continue;
             } else if (current == ' ') {
                 lastBlank = index;
-            } else if (preserveColorCodes && current == ChatColor.COLOR_CHAR && index + 1 < chars.length) {
+            } else if (preserveColorCodes && current == ChatColor.COLOR_CHAR && index + 1 < chars.length && index >= ignoreColorsUntil) {
                 char next = chars[index + 1];
-                ChatColor col = ChatColor.getByChar(next);
+                ChatColor col = null;
+
+                if (next == 'x') {
+                    col = parseHexColorSpigot(chars, index + 2);
+                    if (col != null) {
+                        ignoreColorsUntil = index + 2 + 12;
+                    }
+                } else {
+                    col = ChatColor.getByChar(next);
+                }
                 if (col != null) {
                     if (col.equals(ChatColor.MAGIC)) {
                         magic = true;
@@ -411,6 +420,24 @@ public class StringUtil {
         return result;
     }
 
+    private static ChatColor parseHexColorSpigot(char[] text, int startIndex) {
+        if (text.length - startIndex < 12) {
+            return null;
+        }
+        StringBuilder hexString = new StringBuilder("#");
+        for (int i = 0; i < 6; i++) {
+            if (text[(2 * i) + startIndex] != ChatColor.COLOR_CHAR) {
+                return null;
+            }
+            char c = Character.toLowerCase(text[(2 * i) + 1 + startIndex]);
+            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
+                return null;
+            }
+            hexString.append(c);
+        }
+        return ChatColor.of(hexString.toString());
+    }
+
     private static boolean tooLong(String string, int limit, Pattern ignoreForLength) {
         string = ignoreForLength == null ? string : ignoreForLength.matcher(string).replaceAll("");
         return string.length() > limit;
@@ -419,8 +446,9 @@ public class StringUtil {
     private static int addColorCodes(StringBuilder builder, boolean magic, boolean bold, boolean strikethrough, boolean underline, boolean italic, ChatColor color) {
         int length = 0;
         if (color != null) {
-            builder.append(color);
-            length += 2;
+            String colorString = color.toString();
+            builder.append(colorString);
+            length += colorString.length();
         }
         if (magic) {
             builder.append(ChatColor.MAGIC);
