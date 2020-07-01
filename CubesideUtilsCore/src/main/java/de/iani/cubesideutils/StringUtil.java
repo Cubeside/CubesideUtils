@@ -241,13 +241,38 @@ public class StringUtil {
         return new Pair<>(first, second);
     }
 
-    public static final Pattern AND_PATTERN = Pattern.compile("\\&");
-
     public static String revertColors(String converted) {
         if (converted == null) {
             return null;
         }
-        return COLOR_CHAR_PATTERN.matcher(AND_PATTERN.matcher(converted).replaceAll("&&")).replaceAll("&");
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < converted.length(); i++) {
+            char c = converted.charAt(i);
+            if (c == ChatColor.COLOR_CHAR) {
+                if (converted.charAt(i + 1) == 'x') {
+                    if (i + 14 > converted.length()) {
+                        builder.append("&");
+                        continue;
+                    }
+                    String hexString = converted.substring(i, i + 14);
+                    if (!COLOR_CODES_PATTERN.matcher(hexString).matches()) {
+                        builder.append("&");
+                        continue;
+                    }
+                    builder.append("&").append(COLOR_CHAR_PATTERN.matcher(hexString).replaceAll(""));
+                    i += 13;
+                    continue;
+                }
+                builder.append("&");
+            } else if (c == '&') {
+                builder.append("&&");
+            } else {
+                builder.append(c);
+            }
+        }
+
+        return builder.toString();
     }
 
     private static final Pattern ESCAPE_CHARACTER_PATTERN = Pattern.compile("\\\\.");
