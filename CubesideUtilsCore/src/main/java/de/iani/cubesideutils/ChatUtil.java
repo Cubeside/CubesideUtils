@@ -15,6 +15,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public abstract class ChatUtil {
     protected ChatUtil() {
@@ -208,14 +209,14 @@ public abstract class ChatUtil {
             if (page > 0) {
                 builder.color(ChatColor.BLUE);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Seite " + page + " anzeigen").create());
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + page + " anzeigen").create()));
                 ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + page);
 
                 builder.event(he).event(ce);
             } else {
                 builder.color(ChatColor.GRAY);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Bereits auf Seite 1").create());
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite 1").create()));
 
                 builder.event(he);
             }
@@ -225,14 +226,14 @@ public abstract class ChatUtil {
             if (page + 1 < numPages) {
                 builder.color(ChatColor.BLUE);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create());
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create()));
                 ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + (page + 2));
 
                 builder.event(he).event(ce);
             } else {
                 builder.color(ChatColor.GRAY);
 
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Bereits auf Seite " + numPages).create());
+                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite " + numPages).create()));
 
                 builder.event(he);
             }
