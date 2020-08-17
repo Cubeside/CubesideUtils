@@ -23,7 +23,7 @@ public class SerializableTriple<T, S, U> extends Triple<T, S, U> implements Conf
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> result = new LinkedHashMap<>(2);
+        Map<String, Object> result = new LinkedHashMap<>(3);
         result.put("first", this.first);
         result.put("second", this.second);
         result.put("third", this.third);
