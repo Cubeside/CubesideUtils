@@ -5,6 +5,7 @@ import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
+import de.iani.cubesideutils.bukkit.SerializableComponent;
 import de.iani.cubesideutils.bukkit.SerializablePair;
 import de.iani.cubesideutils.bukkit.SerializableTriple;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
@@ -66,6 +67,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         // trigger registration of serializable classes
         new SerializablePair<>(null, null);
         new SerializableTriple<>(null, null, null);
+        new SerializableComponent(new TextComponent());
     }
 
     private UtilsPluginBukkit plugin;
