@@ -281,7 +281,7 @@ public class ComponentUtil {
 
                         // TODO \l(ocalized) \s(coreboad) \e(ntity name) \k(eybind)
 
-                        break;
+                        throw new ParseException("unknown control sequence " + next, index);
 
                     // plain block
                     case '{':
