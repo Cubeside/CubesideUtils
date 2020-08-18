@@ -23,8 +23,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
-public class ComponentUtils {
-    private ComponentUtils() {
+public class ComponentUtil {
+    private ComponentUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
