@@ -365,9 +365,4 @@ public class ComponentUtils {
         }
     }
 
-    public static void main(String[] args) throws ParseException {
-        System.out.println(EscapedConverter.findMatchingRightBrace("01{34}6", 2, 7));
-        System.out.println(convertEscaped("&4test&5test\\cs{uiuiui}und so"));
-    }
-
 }
