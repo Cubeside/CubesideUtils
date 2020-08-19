@@ -205,7 +205,7 @@ public class ComponentUtil {
                         }
 
                         int contentStartIndex = index + 4;
-                        int contentEndIndex = findMatchingRightBrace(text, index + 3, to);
+                        int contentEndIndex = findMatchingRightBrace(index + 3, to);
 
                         HoverEvent.Action action;
                         Content[] content;
@@ -249,7 +249,7 @@ public class ComponentUtil {
                         }
 
                         int contentStartIndex = index + 4;
-                        int contentEndIndex = findMatchingRightBrace(text, index + 3, to);
+                        int contentEndIndex = findMatchingRightBrace(index + 3, to);
 
                         String value = convertEscapedString(contentStartIndex, contentEndIndex);
 
@@ -266,7 +266,7 @@ public class ComponentUtil {
                         }
 
                         int contentStartIndex = index + 3;
-                        int contentEndIndex = findMatchingRightBrace(text, index + 2, to);
+                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
 
                         int translationKeyEndIndex = text.substring(contentStartIndex, contentEndIndex).indexOf('{');
                         if (translationKeyEndIndex < 0) {
@@ -283,7 +283,7 @@ public class ComponentUtil {
                                 throw new ParseException("expected {", blockStartIndex);
                             }
 
-                            int blockEndIndex = findMatchingRightBrace(text, blockStartIndex, contentEndIndex);
+                            int blockEndIndex = findMatchingRightBrace(blockStartIndex, contentEndIndex);
                             assert blockEndIndex >= 0;
 
                             translationExtras.add(convertEscaped(text, blockStartIndex + 1, blockEndIndex));
@@ -302,7 +302,7 @@ public class ComponentUtil {
 
                     // plain block
                 } else if (current == '{') {
-                    int closingIndex = findMatchingRightBrace(text, index, to);
+                    int closingIndex = findMatchingRightBrace(index, to);
                     finishComponent();
 
                     BaseComponent subComponent = convertEscaped(text, index + 1, closingIndex);
@@ -350,7 +350,7 @@ public class ComponentUtil {
             currentBuilder = new StringBuilder();
         }
 
-        private static int findMatchingRightBrace(String text, int leftBraceIndex, int endIndex) throws ParseException {
+        private int findMatchingRightBrace(int leftBraceIndex, int endIndex) throws ParseException {
             int depth = 0;
             for (int i = leftBraceIndex; i < endIndex; i++) {
                 switch (text.charAt(i)) {
