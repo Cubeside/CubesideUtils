@@ -304,6 +304,23 @@ public class ComponentUtil {
                         continue;
                     }
 
+                    // insertion
+                    if (next == 'i') {
+                        if (charAtOrException(index + 2) != '{') {
+                            throw new ParseException("expected {", index + 2);
+                        }
+
+                        int contentStartIndex = index + 3;
+                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+
+                        String insertion = convertEscapedString(contentStartIndex, contentEndIndex);
+
+                        finishComponent();
+                        currentComponent.setInsertion(insertion);
+                        index = contentEndIndex;
+                        continue;
+                    }
+
                     // translated component
                     if (next == 't') {
                         if (charAtOrException(index + 2) != '{') {
