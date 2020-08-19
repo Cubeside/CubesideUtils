@@ -12,6 +12,9 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.ItemTag;
+import net.md_5.bungee.api.chat.KeybindComponent;
+import net.md_5.bungee.api.chat.ScoreComponent;
+import net.md_5.bungee.api.chat.SelectorComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
@@ -338,7 +341,66 @@ public class ComponentUtil {
                         continue;
                     }
 
-                    // TODO \s(coreboad) \e(ntity name) \k(eybind)
+                    // score component
+                    if (next == 's') {
+                        if (charAtOrException(index + 2) != '{') {
+                            throw new ParseException("expected {", index + 2);
+                        }
+
+                        int contentStartIndex = index + 3;
+                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+
+                        String[] scoreStrings = text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
+                        if (scoreStrings.length < 2) {
+                            throw new ParseException("missing objective name", contentEndIndex);
+                        }
+
+                        // TODO: escaping/conversion needed?
+                        String name = scoreStrings[0];
+                        String objective = scoreStrings[1];
+                        String value = scoreStrings.length < 3 ? "" : scoreStrings[2];
+
+                        finishComponent();
+                        currentComponent.addExtra(new ScoreComponent(name, objective, value));
+                        index = contentEndIndex;
+                        continue;
+                    }
+
+                    // selector component
+                    if (next == '@') {
+                        if (charAtOrException(index + 2) != '{') {
+                            throw new ParseException("expected {", index + 2);
+                        }
+
+                        int contentStartIndex = index + 3;
+                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+
+                        // TODO: escaping/conversion needed?
+                        String selector = text.substring(contentStartIndex, contentEndIndex);
+
+                        finishComponent();
+                        currentComponent.addExtra(new SelectorComponent(selector));
+                        index = contentEndIndex;
+                        continue;
+                    }
+
+                    // keybind component
+                    if (next == 'k') {
+                        if (charAtOrException(index + 2) != '{') {
+                            throw new ParseException("expected {", index + 2);
+                        }
+
+                        int contentStartIndex = index + 3;
+                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+
+                        // TODO: escaping/conversion needed?
+                        String keybind = text.substring(contentStartIndex, contentEndIndex);
+
+                        finishComponent();
+                        currentComponent.addExtra(new KeybindComponent(keybind));
+                        index = contentEndIndex;
+                        continue;
+                    }
 
                     throw new ParseException("unknown control sequence \\" + next, index);
                 }
