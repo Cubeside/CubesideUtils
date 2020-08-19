@@ -496,7 +496,7 @@ public class ComponentUtil {
                     }
                     char next = text.charAt(i + 1);
 
-                    if (next == '\\' || next == '{' || next == '}') {
+                    if (next == '\\' || next == '&' || next == '{' || next == '}') {
                         result.append(next);
                     } else if (next == 'n') {
                         result.append('\n');
@@ -504,6 +504,19 @@ public class ComponentUtil {
                         throw new ParseException("unknown simple control sequence \\" + next, i);
                     }
                     i++;
+                } else if (curr == '&') {
+                    if (i + 1 >= to) {
+                        result.append(ChatColor.COLOR_CHAR);
+                        continue;
+                    }
+                    char next = text.charAt(i + 1);
+
+                    if (next == '&') {
+                        result.append('&');
+                        i++;
+                    } else {
+                        result.append(ChatColor.COLOR_CHAR);
+                    }
                 } else {
                     result.append(curr);
                 }
