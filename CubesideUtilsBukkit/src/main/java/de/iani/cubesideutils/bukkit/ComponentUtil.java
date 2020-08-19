@@ -5,14 +5,17 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
+import net.md_5.bungee.api.chat.hover.content.Item;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -114,6 +117,8 @@ public class ComponentUtil {
         BaseComponent convert() throws ParseException {
             for (; index < to; index++) {
                 char current = text.charAt(index);
+
+                // color code (or escaped &)
                 if (current == '&') {
                     char next = charAtOrException(index + 1);
                     // if next is a "&", append "&" and skip next
@@ -165,10 +170,13 @@ public class ComponentUtil {
 
                     throw new ParseException("unknown color code &" + next, index);
 
-                } else if (current == '\\') {
+                }
+
+                // control sequence
+                if (current == '\\') {
                     char next = charAtOrException(index + 1);
 
-                    // escaped characters
+                    // escaped character
                     if (next == '\\' || next == '&' || next == '{' || next == '}') {
                         currentBuilder.append(next);
                         index++;
@@ -185,6 +193,7 @@ public class ComponentUtil {
                     // reset
                     if (next == 'r') {
                         char resetType = charAtOrException(index + 2);
+                        // a = all, e = events, f = formatting
                         if (resetType != 'a' && resetType != 'e' && resetType != 'f') {
                             throw new ParseException("unknown reset type " + resetType, index + 2);
                         }
@@ -197,6 +206,7 @@ public class ComponentUtil {
                     // hover event
                     if (next == 'h') {
                         char actionType = charAtOrException(index + 2);
+                        // t = text, i = item, e = entity
                         if (actionType != 't' && actionType != 'i' && actionType != 'e') {
                             throw new ParseException("unknown action type " + actionType, index + 2);
                         }
@@ -213,8 +223,40 @@ public class ComponentUtil {
                         if (actionType == 't') {
                             action = HoverEvent.Action.SHOW_TEXT;
                             content = new Content[] { new Text(new BaseComponent[] { convertEscaped(text, contentStartIndex, contentEndIndex) }) };
+                        } else if (actionType == 'i') {
+                            action = HoverEvent.Action.SHOW_ITEM;
+
+                            String[] itemStrings = text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
+                            String itemId = itemStrings[0];
+                            int itemCount;
+                            try {
+                                itemCount = itemStrings.length < 2 || itemStrings[1].isEmpty() ? 1 : Integer.parseInt(itemStrings[1]);
+                            } catch (NumberFormatException e) {
+                                throw new ParseException("illegal item count " + itemStrings[1], index + 3 + itemStrings[0].length() + 1);
+                            }
+                            ItemTag tag = itemStrings.length < 3 || itemStrings[2].isEmpty() ? null : ItemTag.ofNbt(convertEscapedString(itemStrings[2]));
+
+                            content = new Content[] { new Item(itemId, itemCount, tag) };
+                            // TODO: allow multiple items in one component?
+                        } else if (actionType == 'e') {
+                            action = HoverEvent.Action.SHOW_ENTITY;
+
+                            int nameStartIndex = text.substring(contentStartIndex, contentEndIndex).indexOf('{') + contentStartIndex;
+                            String[] entityStrings = text.substring(contentStartIndex, nameStartIndex < 0 ? contentEndIndex : nameStartIndex).split("\\,", 2);
+                            String entityType = entityStrings[0];
+                            UUID entityId;
+                            try {
+                                entityId = entityStrings.length < 2 || entityStrings[1].isEmpty() ? UUID.randomUUID() : UUID.fromString(entityStrings[1]);
+                            } catch (IllegalArgumentException e) {
+                                throw new ParseException("illegal entity id " + entityStrings[1], index + 3 + entityStrings[0].length() + 1);
+                            }
+                            BaseComponent entityName = nameStartIndex < contentStartIndex ? null : convertEscaped(text, nameStartIndex + 1, findMatchingRightBrace(nameStartIndex, contentEndIndex));
+
+                            content = new Content[] { new net.md_5.bungee.api.chat.hover.content.Entity(entityType, entityId.toString(), entityName) };
+                            // TODO: allow multiple items in one component?
                         } else {
-                            throw new ParseException("action types i and e are currently not implemented", index + 2);
+                            assert false;
+                            throw new ParseException("unknown action type " + actionType, index + 2);
                         }
 
                         finishComponent();
@@ -299,9 +341,10 @@ public class ComponentUtil {
                     // TODO \s(coreboad) \e(ntity name) \k(eybind)
 
                     throw new ParseException("unknown control sequence \\" + next, index);
+                }
 
-                    // plain block
-                } else if (current == '{') {
+                // plain block
+                if (current == '{') {
                     int closingIndex = findMatchingRightBrace(index, to);
                     finishComponent();
 
@@ -309,16 +352,16 @@ public class ComponentUtil {
                     currentComponent.addExtra(subComponent);
                     index = closingIndex;
                     continue;
-
-                    // unmatched right brace
-                } else if (current == '}') {
-                    throw new ParseException("unmatched right brace", index);
-
-                    // normal character
-                } else {
-                    currentBuilder.append(current);
-                    continue;
                 }
+
+                // unmatched right brace
+                if (current == '}') {
+                    throw new ParseException("unmatched right brace", index);
+                }
+
+                // normal character
+                currentBuilder.append(current);
+                continue;
             }
 
             // finish last component
@@ -373,7 +416,15 @@ public class ComponentUtil {
             throw new ParseException("unmatched left brace", leftBraceIndex);
         }
 
+        private String convertEscapedString(String text) throws ParseException {
+            return convertEscapedString(text, 0, text.length());
+        }
+
         private String convertEscapedString(int from, int to) throws ParseException {
+            return convertEscapedString(text, from, to);
+        }
+
+        private String convertEscapedString(String text, int from, int to) throws ParseException {
             StringBuilder result = new StringBuilder();
             for (int i = from; i < to; i++) {
                 char curr = text.charAt(i);
