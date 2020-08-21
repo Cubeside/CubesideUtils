@@ -1,6 +1,5 @@
-package de.iani.cubesideutils.bukkit;
+package de.iani.cubesideutils;
 
-import de.iani.cubesideutils.StringUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,75 +17,15 @@ import net.md_5.bungee.api.chat.SelectorComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
+import net.md_5.bungee.api.chat.hover.content.Entity;
 import net.md_5.bungee.api.chat.hover.content.Item;
 import net.md_5.bungee.api.chat.hover.content.Text;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionType;
 
 public class ComponentUtil {
     private ComponentUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
-
-    public static BaseComponent createTranslatableComponentFor(Material m) {
-        String key = m.getKey().getKey();
-        if (key.startsWith("music_disc_") || key.endsWith("_banner_pattern")) {
-            return new TextComponent(new TranslatableComponent("item.minecraft." + key), new TextComponent(": "), new TranslatableComponent("item.minecraft." + key + ".desc"));
-        }
-        return new TranslatableComponent((m.isBlock() ? "block.minecraft." : "item.minecraft.") + key);
-    }
-
-    public static BaseComponent createTranslatableComponentFor(ItemStack stack) {
-        Material m = stack.getType();
-        if (m == Material.TIPPED_ARROW || m == Material.POTION || m == Material.SPLASH_POTION || m == Material.LINGERING_POTION) {
-            ItemMeta meta = stack.getItemMeta();
-            if (meta instanceof PotionMeta) {
-                String key = m.getKey().getKey();
-                PotionType type = ((PotionMeta) meta).getBasePotionData().getType();
-                return new TranslatableComponent("item.minecraft." + key + ".effect." + getInternalPotionName(type));
-            }
-        }
-        String key = m.getKey().getKey();
-        if (key.startsWith("music_disc_")) {
-            return new TextComponent(new TranslatableComponent("item.minecraft." + key), new TextComponent(": "), new TranslatableComponent("item.minecraft." + key + ".desc"));
-        }
-        return new TranslatableComponent((m.isBlock() ? "block.minecraft." : "item.minecraft.") + key);
-    }
-
-    public static BaseComponent createTranslatableComponentFor(EntityType t) {
-        return new TranslatableComponent("entity.minecraft." + t.getKey().getKey());
-    }
-
-    public static BaseComponent createTranslatableComponentFor(Entity e) {
-        return createTranslatableComponentFor(e.getType());
-    }
-
-    private static String getInternalPotionName(PotionType t) {
-        switch (t) {
-            case UNCRAFTABLE:
-                return "empty";
-            case JUMP:
-                return "leaping";
-            case SPEED:
-                return "swiftness";
-            case INSTANT_HEAL:
-                return "healing";
-            case INSTANT_DAMAGE:
-                return "harming";
-            case REGEN:
-                return "regeneration";
-            default:
-                return t.name().toLowerCase();
-        }
-    }
-
-    /* DO NOT USE ANYTHING BELOW HERE! UNTESTED! */
 
     public static BaseComponent convertEscaped(String text) throws ParseException {
         return convertEscaped(text, 0, text.length());
@@ -255,7 +194,7 @@ public class ComponentUtil {
                             }
                             BaseComponent entityName = nameStartIndex < contentStartIndex ? null : convertEscaped(text, nameStartIndex + 1, findMatchingRightBrace(nameStartIndex, contentEndIndex));
 
-                            content = new Content[] { new net.md_5.bungee.api.chat.hover.content.Entity(entityType, entityId.toString(), entityName) };
+                            content = new Content[] { new Entity(entityType, entityId.toString(), entityName) };
                             // TODO: allow multiple items in one component?
                         } else {
                             assert false;
@@ -541,5 +480,4 @@ public class ComponentUtil {
             return result.toString();
         }
     }
-
 }
