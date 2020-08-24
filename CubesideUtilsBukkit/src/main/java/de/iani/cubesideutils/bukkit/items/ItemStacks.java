@@ -60,6 +60,11 @@ public class ItemStacks {
         return itemStack;
     }
 
+    public static ItemStack amount(ItemStack itemStack, int amount) {
+        itemStack.setAmount(amount);
+        return itemStack;
+    }
+
     public static ItemStack colorize(ItemStack itemStack, Color color) {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta instanceof LeatherArmorMeta) {
