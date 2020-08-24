@@ -207,7 +207,7 @@ public class StringUtil {
         return builder == null ? text : builder.toString();
     }
 
-    private static ChatColor parseHexColor(String text, int startIndex) {
+    public static ChatColor parseHexColor(String text, int startIndex) {
         if (text.length() - startIndex < 6) {
             return null;
         }

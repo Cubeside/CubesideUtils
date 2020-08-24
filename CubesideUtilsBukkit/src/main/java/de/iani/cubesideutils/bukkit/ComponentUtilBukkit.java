@@ -11,8 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
-public class ComponentUtils {
-    private ComponentUtils() {
+public class ComponentUtilBukkit {
+    private ComponentUtilBukkit() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
@@ -68,4 +68,5 @@ public class ComponentUtils {
                 return t.name().toLowerCase();
         }
     }
+
 }
