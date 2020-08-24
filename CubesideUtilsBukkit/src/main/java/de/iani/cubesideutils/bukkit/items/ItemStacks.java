@@ -100,6 +100,8 @@ public class ItemStacks {
             addDamage = 5;
         } else if (type == Material.DIAMOND_SWORD) {
             addDamage = 6;
+        } else if (type == Material.NETHERITE_SWORD) {
+            addDamage = 7;
         }
         if (!Double.isNaN(addDamage)) {
             boolean attackModifierExists = false;
