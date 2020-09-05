@@ -32,6 +32,21 @@ public class HastebinUtil {
             public void run() {
                 HttpClient client = HttpClient.newHttpClient();
                 try {
+                    HttpRequest request = HttpRequest.newBuilder(URI.create("https://cpaste.de/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
+                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    String content = response.body();
+                    JSONObject responseJson = (JSONObject) new JSONParser().parse(content);
+                    String key = (String) responseJson.get("key");
+                    if (key != null) {
+                        listener.onSuccess("https://cpaste.de/" + key);
+                        return;
+                    } else {
+                        // fallthrough listener.onError(new IOException("No key was returned"));
+                    }
+                } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
+                    // fallthrough
+                }
+                try {
                     HttpRequest request = HttpRequest.newBuilder(URI.create("https://hastebin.com/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
                     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     String content = response.body();
