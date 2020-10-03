@@ -247,6 +247,7 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.HOGLIN_SPAWN_EGG, EntityType.HOGLIN);
         SPAWN_EGGS_INTERNAL.put(Material.ZOGLIN_SPAWN_EGG, EntityType.ZOGLIN);
         SPAWN_EGGS_INTERNAL.put(Material.STRIDER_SPAWN_EGG, EntityType.STRIDER);
+        SPAWN_EGGS_INTERNAL.put(Material.PIGLIN_BRUTE_SPAWN_EGG, EntityType.PIGLIN_BRUTE);
 
         for (Material m : Material.values()) {
             String name = m.name();

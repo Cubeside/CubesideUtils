@@ -167,6 +167,14 @@ public class StringUtil {
     }
 
     public static String convertColors(String text) {
+        return parseColors(text, false);
+    }
+
+    public static String stripColors(String text) {
+        return parseColors(text, true);
+    }
+
+    private static String parseColors(String text, boolean remove) {
         if (text == null) {
             return null;
         }
@@ -190,11 +198,15 @@ public class StringUtil {
                             if (hex == null) {
                                 builder.append(current).append(next);
                             } else {
-                                builder.append(hex);
+                                if (!remove) {
+                                    builder.append(hex);
+                                }
                                 i += 6;
                             }
                         } else {
-                            builder.append(ChatColor.COLOR_CHAR).append(next);
+                            if (!remove) {
+                                builder.append(ChatColor.COLOR_CHAR).append(next);
+                            }
                         }
                         continue;
                     }
