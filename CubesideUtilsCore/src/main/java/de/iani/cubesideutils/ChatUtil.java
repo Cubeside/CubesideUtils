@@ -80,6 +80,10 @@ public abstract class ChatUtil {
             this.message = message;
         }
 
+        public ComponentMsg(BaseComponent message) {
+            this.message = new BaseComponent[] { message };
+        }
+
         @Override
         public void send(MessageReceiver recipient) {
             recipient.sendMessage(this.message);
