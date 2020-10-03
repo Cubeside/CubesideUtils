@@ -1,9 +1,8 @@
 package de.iani.cubesideutils.collections;
 
+import com.google.common.base.Preconditions;
 import java.util.Objects;
 import java.util.Random;
-
-import com.google.common.base.Preconditions;
 
 public class ArrayUtils {
     private ArrayUtils() {
@@ -186,7 +185,7 @@ public class ArrayUtils {
     }
 
     public static void flip(boolean[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             boolean b = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = b;
@@ -194,7 +193,7 @@ public class ArrayUtils {
     }
 
     public static void flip(int[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             int j = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = j;
@@ -202,7 +201,7 @@ public class ArrayUtils {
     }
 
     public static void flip(long[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             long l = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = l;
@@ -210,7 +209,7 @@ public class ArrayUtils {
     }
 
     public static void flip(char[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             char c = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = c;
@@ -218,7 +217,7 @@ public class ArrayUtils {
     }
 
     public static void flip(float[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             float f = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = f;
@@ -226,7 +225,7 @@ public class ArrayUtils {
     }
 
     public static void flip(double[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             double d = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = d;
@@ -234,7 +233,7 @@ public class ArrayUtils {
     }
 
     public static <T> void flip(T[] array) {
-        for (int i=0; i<array.length/2; i++) {
+        for (int i = 0; i < array.length / 2; i++) {
             T t = array[i];
             array[i] = array[array.length - i - 1];
             array[array.length - i - 1] = t;
@@ -243,7 +242,7 @@ public class ArrayUtils {
 
     @SafeVarargs
     public static <T> int indexOf(T element, T... array) {
-        for (int i=0; i<array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             if (Objects.equals(element, array[i])) {
                 return i;
             }
