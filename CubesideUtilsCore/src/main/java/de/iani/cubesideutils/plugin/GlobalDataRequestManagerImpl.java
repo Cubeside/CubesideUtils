@@ -206,6 +206,12 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
         getHelper().sendMsgPart(msgout, msg);
     }
 
+    protected void sendMsgParts(DataOutputStream msgout, Object... msgs) throws IOException {
+        for (Object msg : msgs) {
+            sendMsgPart(msgout, msg);
+        }
+    }
+
     protected UUID readUUID(DataInputStream msgin) throws IOException {
         return getHelper().readUUID(msgin);
     }
