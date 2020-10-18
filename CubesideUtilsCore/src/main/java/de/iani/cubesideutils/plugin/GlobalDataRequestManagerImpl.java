@@ -219,8 +219,8 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
         return getHelper().readStringSerializable(msgin);
     }
 
-    protected abstract void respondToRequest(T requestType, GlobalServer source, DataInputStream requestData, DataOutputStream responseData);
+    protected abstract void respondToRequest(T requestType, GlobalServer source, DataInputStream requestData, DataOutputStream responseData) throws IOException;
 
-    protected abstract Object handleResponse(T requestType, GlobalServer source, DataInputStream responseData);
+    protected abstract Object handleResponse(T requestType, GlobalServer source, DataInputStream responseData) throws IOException;
 
 }
