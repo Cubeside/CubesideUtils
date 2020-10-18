@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 
 public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements GlobalDataRequestManager<T> {
 
@@ -130,7 +129,7 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
 
         }
 
-        public void handleMessage(T messageType, GlobalServer source, DataInputStream data) {
+        public void handleMessage(T messageType, GlobalServer source, DataInputStream data) throws IOException {
             if (this.requestManager == null) {
                 throw new IllegalStateException();
             }
@@ -174,37 +173,33 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
     }
 
     @SuppressWarnings("unchecked")
-    protected void handleMessage(T messageType, GlobalServer source, DataInputStream data) {
+    protected void handleMessage(T messageType, GlobalServer source, DataInputStream data) throws IOException {
         ByteArrayOutputStream responseBytes = new ByteArrayOutputStream();
         DataOutputStream responseOut = new DataOutputStream(responseBytes);
-        try {
-            boolean isResponse = data.readBoolean();
-            UUID requestId = readUUID(data);
+        boolean isResponse = data.readBoolean();
+        UUID requestId = readUUID(data);
 
-            if (isResponse) {
-                Request<Object> request = (Request<Object>) this.activeRequests.remove(requestId);
-                if (request == null) {
-                    throw new NoSuchElementException("unknown request id");
-                }
-                if (!request.setRunning()) {
-                    return;
-                }
-                Object result = handleResponse(messageType, source, data);
-                request.set(result);
-            } else {
-                responseOut.writeInt(messageType.ordinal());
-                responseOut.writeBoolean(true);
-                sendMsgPart(responseOut, requestId);
-
-                respondToRequest(messageType, source, data, responseOut);
-
-                byte[] msgarry = responseBytes.toByteArray();
-                source.sendData(getHelper().getChannel(), msgarry);
+        if (isResponse) {
+            Request<Object> request = (Request<Object>) this.activeRequests.remove(requestId);
+            if (request == null) {
+                throw new NoSuchElementException("unknown request id");
             }
-        } catch (IOException e) {
-            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "IOException trying to send GlobalDataMessage!", e);
-            return;
+            if (!request.setRunning()) {
+                return;
+            }
+            Object result = handleResponse(messageType, source, data);
+            request.set(result);
+        } else {
+            responseOut.writeInt(messageType.ordinal());
+            responseOut.writeBoolean(true);
+            sendMsgPart(responseOut, requestId);
+
+            respondToRequest(messageType, source, data, responseOut);
+
+            byte[] msgarry = responseBytes.toByteArray();
+            source.sendData(getHelper().getChannel(), msgarry);
         }
+
     }
 
     protected void sendMsgPart(DataOutputStream msgout, Object msg) throws IOException {
