@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -22,16 +24,43 @@ import java.util.concurrent.TimeoutException;
 
 public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements GlobalDataRequestManager<T> {
 
-    private static class Request<V> implements Future<V> {
-        private Object lock;
-        private boolean running;
+    private static final long TIMEOUT_MS = 60L * 1000L; // 1 minute
+    private static final Timer timeoutTimer = new Timer();
+
+    private class Request<V> implements Future<V> {
+
+        private final Object lock;
         private boolean cancelled;
+        private boolean responseReceived;
         private boolean done;
+        private Throwable thrown;
         private V result;
 
-        private Request() {
+        private TimerTask timeoutTask;
+        private UUID requestId;
+
+        private Request(UUID requestId) {
             this.lock = new Object();
-            this.done = false;
+            this.requestId = requestId;
+            this.timeoutTask = new TimerTask() {
+
+                @Override
+                public void run() {
+                    synchronized (Request.this.lock) {
+                        if (Request.this.responseReceived || Request.this.cancelled) {
+                            return;
+                        }
+
+                        GlobalDataRequestManagerImpl.this.activeRequests.remove(Request.this.requestId, Request.this);
+                        Request.this.responseReceived = true;
+                        Request.this.done = true;
+                        Request.this.thrown = new TimeoutException();
+                        Request.this.lock.notifyAll();
+                    }
+                }
+            };
+
+            timeoutTimer.schedule(timeoutTask, TIMEOUT_MS);
         }
 
         @Override
@@ -40,11 +69,13 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
                 return false;
             }
             synchronized (this.lock) {
-                if (this.running) {
+                if (this.responseReceived) {
                     return false;
                 }
                 this.cancelled = true;
                 this.done = true;
+                this.timeoutTask.cancel();
+                this.lock.notifyAll();
                 return true;
             }
         }
@@ -74,7 +105,7 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
                     throw new CancellationException();
                 }
 
-                return this.result;
+                return getResult();
             }
         }
 
@@ -96,27 +127,48 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
                     throw new TimeoutException();
                 }
 
-                return this.result;
+                return getResult();
             }
+        }
+
+        private V getResult() throws ExecutionException {
+            if (this.thrown != null) {
+                throw new ExecutionException(thrown);
+            }
+
+            return this.result;
         }
 
         public void set(V result) {
             synchronized (this.lock) {
-                if (this.done || !this.running) {
+                if (this.done || !this.responseReceived) {
                     throw new IllegalStateException();
                 }
                 this.result = result;
                 this.done = true;
+                this.timeoutTask.cancel();
                 this.lock.notifyAll();
             }
         }
 
-        public boolean setRunning() {
+        public void error(Throwable thrown) {
+            synchronized (this.lock) {
+                if (this.done || !this.responseReceived) {
+                    throw new IllegalStateException();
+                }
+                this.thrown = thrown;
+                this.done = true;
+                this.timeoutTask.cancel();
+                this.lock.notifyAll();
+            }
+        }
+
+        public boolean setResponseReceived() {
             synchronized (this.lock) {
                 if (this.cancelled) {
                     return false;
                 }
-                this.running = true;
+                this.responseReceived = true;
                 return true;
             }
         }
@@ -159,8 +211,8 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
 
     @Override
     public <V> Future<V> makeRequest(T requestType, GlobalServer server, Object... data) {
-        Request<V> request = new Request<>();
         UUID requestId = UUID.randomUUID();
+        Request<V> request = new Request<>(requestId);
         this.activeRequests.put(requestId, request);
 
         Object[] requestData = new Object[data.length + 2];
@@ -184,11 +236,15 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
             if (request == null) {
                 throw new NoSuchElementException("unknown request id");
             }
-            if (!request.setRunning()) {
+            if (!request.setResponseReceived()) {
                 return;
             }
-            Object result = handleResponse(messageType, source, data);
-            request.set(result);
+
+            try {
+                request.set(handleResponse(messageType, source, data));
+            } catch (Throwable t) {
+                request.error(t);
+            }
         } else {
             responseOut.writeInt(messageType.ordinal());
             responseOut.writeBoolean(true);
