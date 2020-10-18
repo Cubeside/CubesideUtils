@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
+import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.GlobalDataHelperBukkit;
 import de.iani.cubesideutils.conditions.Condition;
@@ -17,7 +18,7 @@ public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageT
     }
 
     @Override
-    protected void handleMessage(MessageType messageType, DataInputStream data) throws IOException {
+    protected void handleMessage(MessageType messageType, GlobalServer source, DataInputStream data) throws IOException {
         switch (messageType) {
             case RANK_INFORMATION_CHANGED:
                 CubesideUtilsBukkit.getInstance().updateRankInformation();

@@ -218,7 +218,7 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
 
         DataInputStream data = new DataInputStream(event.getData());
         T messageType = fromOrdinal(data.readInt());
-        handleMessage(messageType, data);
+        handleMessage(messageType, event.getSource(), data);
     }
 
 }

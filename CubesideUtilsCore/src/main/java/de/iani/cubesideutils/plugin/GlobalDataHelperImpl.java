@@ -345,6 +345,6 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
         return messageTypes[ordinal];
     }
 
-    protected abstract void handleMessage(T messageType, DataInputStream data) throws IOException;
+    protected abstract void handleMessage(T messageType, GlobalServer source, DataInputStream data) throws IOException;
 
 }
