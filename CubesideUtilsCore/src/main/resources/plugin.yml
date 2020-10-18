@@ -1,0 +1,17 @@
+name: ${project.name}
+main: ${mainClass}
+version: ${project.version}
+api-version: 1.13
+authors: [${project.author}]
+
+depend: [GlobalClient]
+
+permissions:
+  cubesideutils.changerankinformation:
+    description: "Allows configuring rank information during runtime."
+    default: op
+
+commands:
+  ranks:
+    description: "Configures rank information during runtime."
+    permission: cubesideutils.changerankinformation

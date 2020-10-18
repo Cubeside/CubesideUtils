@@ -1,0 +1,23 @@
+name: CubesideUtils
+main: ${mainClass}
+version: ${project.version}
+api-version: 1.13
+authors: [${project.author}]
+ 
+depend: [GlobalClient]
+ 
+permissions:
+  cubesideutils.changerankinformation:
+    description: "Allows configuring rank information during runtime."
+    default: op
+  cubesideutils.playeroptions:
+    description: "Allows to use the /playeroptions command."
+    default: true
+ 
+commands:
+  ranks:
+    description: "Configures rank information during runtime."
+    permission: cubesideutils.changerankinformation
+  playeroptions:
+    description: "Show player options menu."
+    permission: cubesideutils.playeroptions
