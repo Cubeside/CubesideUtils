@@ -10,6 +10,8 @@ import org.bukkit.command.CommandSender;
 
 public class PlayerOptionsCommand extends SubCommand {
 
+    public static final String COMMAND = "playeroptions";
+
     private CubesideUtilsBukkit cubesideUtilsBukkit;
 
     public PlayerOptionsCommand(CubesideUtilsBukkit cubesideUtilsBukkit) {
