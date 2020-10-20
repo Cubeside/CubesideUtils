@@ -51,21 +51,12 @@ public class StringUtil {
             return 0;
         }
 
-        int hash = 0;
-        for (int i = 0; i < s.length(); i++) {
-            int c = s.charAt(i);
-            if (c == ChatColor.COLOR_CHAR && i + 1 < s.length() && ChatColor.getByChar(s.charAt(i + 1)) != null) {
-                i++;
-                continue;
-            }
-            hash = 31 * hash + Character.toLowerCase(c);
-        }
-        return hash;
+        return CASE_IGNORING_HASHER.applyAsInt(ChatColor.stripColor(s));
     };
 
     public static final BiPredicate<String, String> CASE_AND_COLORS_IGNORING_EQUALITY = (s1, s2) -> {
-        if (s2 == null) {
-            return false;
+        if (s1 == null || s2 == null) {
+            return s1 == null && s2 == null;
         }
 
         s1 = ChatColor.stripColor(s1);
