@@ -1,8 +1,12 @@
 package de.iani.cubesideutils;
 
+import java.awt.Color;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
@@ -478,6 +482,194 @@ public class ComponentUtil {
                 }
             }
             return result.toString();
+        }
+    }
+
+    private static final Map<ChatColor, String> CONSTANT_CHAT_COLORS;
+
+    static {
+        Map<ChatColor, String> constantChatColors = new LinkedHashMap<>();
+        for (char c : "0123456789abcdef".toCharArray()) {
+            constantChatColors.put(ChatColor.getByChar(c), "&" + c);
+        }
+        CONSTANT_CHAT_COLORS = Collections.unmodifiableMap(constantChatColors);
+    }
+
+    public static String serializeComponent(BaseComponent component) {
+        return serializeComponent(component, new StringBuilder()).toString();
+    }
+
+    private static StringBuilder serializeComponent(BaseComponent component, StringBuilder builder) {
+        serializeColor(component, builder);
+        serializeFormatting(component, builder);
+        serializeEvents(component, builder);
+
+        if (component instanceof TextComponent) {
+            TextComponent tc = (TextComponent) component;
+            escapeString(tc.getText(), builder);
+        } else {
+            throw new IllegalArgumentException("unsupported component type " + component.getClass().getName());
+        }
+
+        serializeExtraComponents(component, builder);
+        return builder;
+    }
+
+    private static void escapeString(String raw, StringBuilder builder) {
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+            switch (c) {
+                case '\n':
+                    builder.append("\\n");
+                    break;
+                case '\\':
+                case '&':
+                case '{':
+                case '}':
+                    builder.append('\\');
+                default:
+                    builder.append(c);
+            }
+        }
+    }
+
+    private static void serializeColor(BaseComponent component, StringBuilder builder) {
+        ChatColor color = component.getColorRaw();
+        if (color == null) {
+            return;
+        }
+
+        String colorString = CONSTANT_CHAT_COLORS.get(color);
+        if (colorString != null) {
+            builder.append(colorString);
+            return;
+        }
+
+        builder.append("&x");
+        appendHexColorString(color.getColor(), builder);
+    }
+
+    private static void appendHexColorString(Color color, StringBuilder builder) {
+        String hexString = Integer.toHexString(color.getRGB());
+        for (int i = 0; i + hexString.length() < 6; i++) {
+            builder.append('0');
+        }
+        builder.append(hexString);
+    }
+
+    private static void serializeFormatting(BaseComponent component, StringBuilder builder) {
+        if (component.isObfuscatedRaw() == Boolean.TRUE) {
+            builder.append("&k");
+        }
+        if (component.isBoldRaw() == Boolean.TRUE) {
+            builder.append("&l");
+        }
+        if (component.isStrikethroughRaw() == Boolean.TRUE) {
+            builder.append("&m");
+        }
+        if (component.isUnderlinedRaw() == Boolean.TRUE) {
+            builder.append("&n");
+        }
+        if (component.isItalicRaw() == Boolean.TRUE) {
+            builder.append("&o");
+        }
+    }
+
+    private static void serializeEvents(BaseComponent component, StringBuilder builder) {
+        HoverEvent he = component.getHoverEvent();
+        if (he != null) {
+            builder.append("\\h");
+            List<Content> hoverContents = he.getContents();
+            if (hoverContents.size() != 1) {
+                throw new IllegalArgumentException("HoverEvents with more than one content object are not supported.");
+            }
+            switch (he.getAction()) {
+                case SHOW_TEXT:
+                    builder.append("t{");
+                    Text text = (Text) hoverContents.get(0);
+                    if (text.getValue() instanceof String) {
+                        escapeString((String) text.getValue(), builder);
+                    } else if (text.getValue() instanceof BaseComponent[]) {
+                        serializeComponent(new TextComponent((BaseComponent[]) text.getValue()));
+                    } else {
+                        throw new ClassCastException("Expected HoverEvent Text value to be instance of String or BaseComponent[].");
+                    }
+                    builder.append('}');
+                    break;
+                case SHOW_ITEM:
+                    builder.append("i{");
+                    Item item = (Item) hoverContents.get(0);
+                    builder.append(item.getId()).append(',').append(item.getCount()).append(',');
+                    escapeString(item.getTag().getNbt(), builder);
+                    builder.append('}');
+                    break;
+                case SHOW_ENTITY:
+                    builder.append("e{");
+                    Entity entity = (Entity) hoverContents.get(0);
+                    builder.append(entity.getType()).append(',').append(entity.getId()).append(',');
+                    serializeComponent(entity.getName(), builder);
+                    builder.append('}');
+                    break;
+                default:
+                    throw new IllegalArgumentException("HoverEvent Action " + he.getAction() + " is not supported.");
+            }
+        }
+
+        ClickEvent ce = component.getClickEvent();
+        if (ce != null) {
+            builder.append("\\c");
+            switch (ce.getAction()) {
+                case RUN_COMMAND:
+                    builder.append('r');
+                    break;
+                case SUGGEST_COMMAND:
+                    builder.append('s');
+                    break;
+                case COPY_TO_CLIPBOARD:
+                    builder.append('c');
+                    break;
+                case CHANGE_PAGE:
+                    builder.append('p');
+                    break;
+                case OPEN_URL:
+                    builder.append('u');
+                    break;
+                case OPEN_FILE:
+                    throw new IllegalArgumentException("ClickEvent Action OPEN_FILE is rejectet by clients and not supported.");
+            }
+            builder.append('{');
+            escapeString(ce.getValue(), builder);
+            builder.append('}');
+        }
+
+        String insertion = component.getInsertion();
+        if (insertion != null) {
+            builder.append("\\i{");
+            escapeString(insertion, builder);
+            builder.append('}');
+        }
+    }
+
+    private static void serializeExtraComponents(BaseComponent component, StringBuilder builder) {
+        List<BaseComponent> extra = component.getExtra();
+        if (extra == null) {
+            return;
+        }
+
+        extra = new ArrayList<>(extra);
+        extra.removeIf(bc -> bc.toPlainText().isEmpty());
+        if (extra.isEmpty()) {
+            return;
+        }
+
+        for (BaseComponent bc : extra) {
+            if (extra.size() != 1) {
+                builder.append('{');
+            }
+            serializeComponent(bc, builder);
+            if (extra.size() != 1) {
+                builder.append('}');
+            }
         }
     }
 }
