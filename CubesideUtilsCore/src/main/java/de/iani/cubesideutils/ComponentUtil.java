@@ -527,6 +527,7 @@ public class ComponentUtil {
                 case '{':
                 case '}':
                     builder.append('\\');
+                    //$FALL-THROUGH$
                 default:
                     builder.append(c);
             }
