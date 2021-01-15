@@ -31,6 +31,14 @@ public class ComponentUtil {
         // prevents instances
     }
 
+    public static BaseComponent deserializeComponent(String text) throws ParseException {
+        return convertEscaped(text);
+    }
+
+    public static BaseComponent deserializeComponent(String text, int from, int to) throws ParseException {
+        return convertEscaped(text, from, to);
+    }
+
     public static BaseComponent convertEscaped(String text) throws ParseException {
         return convertEscaped(text, 0, text.length());
     }
