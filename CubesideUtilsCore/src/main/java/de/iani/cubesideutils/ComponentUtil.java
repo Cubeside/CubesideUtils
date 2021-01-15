@@ -31,6 +31,14 @@ public class ComponentUtil {
         // prevents instances
     }
 
+    public static BaseComponent deserializeComponent(String text) throws ParseException {
+        return convertEscaped(text);
+    }
+
+    public static BaseComponent deserializeComponent(String text, int from, int to) throws ParseException {
+        return convertEscaped(text, from, to);
+    }
+
     public static BaseComponent convertEscaped(String text) throws ParseException {
         return convertEscaped(text, 0, text.length());
     }
@@ -505,8 +513,15 @@ public class ComponentUtil {
         serializeEvents(component, builder);
 
         if (component instanceof TextComponent) {
-            TextComponent tc = (TextComponent) component;
-            escapeString(tc.getText(), builder);
+            serializeTextComponent((TextComponent) component, builder);
+        } else if (component instanceof TranslatableComponent) {
+            serializeTranslatableComponent((TranslatableComponent) component, builder);
+        } else if (component instanceof ScoreComponent) {
+            serializeScoreComponent((ScoreComponent) component, builder);
+        } else if (component instanceof SelectorComponent) {
+            serializeSelectorComponent((SelectorComponent) component, builder);
+        } else if (component instanceof KeybindComponent) {
+            serializeKeybindComponent((KeybindComponent) component, builder);
         } else {
             throw new IllegalArgumentException("unsupported component type " + component.getClass().getName());
         }
@@ -527,6 +542,7 @@ public class ComponentUtil {
                 case '{':
                 case '}':
                     builder.append('\\');
+                    //$FALL-THROUGH$
                 default:
                     builder.append(c);
             }
@@ -671,5 +687,42 @@ public class ComponentUtil {
                 builder.append('}');
             }
         }
+    }
+
+    private static void serializeTextComponent(TextComponent componet, StringBuilder builder) {
+        escapeString(componet.getText(), builder);
+    }
+
+    private static void serializeTranslatableComponent(TranslatableComponent component, StringBuilder builder) {
+        builder.append("\\t{");
+        builder.append(component.getTranslate());
+
+        for (BaseComponent with : component.getWith()) {
+            builder.append('{');
+            serializeComponent(with, builder);
+            builder.append('}');
+        }
+
+        builder.append('}');
+    }
+
+    private static void serializeScoreComponent(ScoreComponent component, StringBuilder builder) {
+        builder.append("\\s{");
+        builder.append(component.getName()).append(',');
+        builder.append(component.getObjective()).append(',');
+        builder.append(component.getValue());
+        builder.append('}');
+    }
+
+    private static void serializeSelectorComponent(SelectorComponent component, StringBuilder builder) {
+        builder.append("\\@{");
+        builder.append(component.getSelector());
+        builder.append('}');
+    }
+
+    private static void serializeKeybindComponent(KeybindComponent component, StringBuilder builder) {
+        builder.append("\\k{");
+        builder.append(component.getKeybind());
+        builder.append('}');
     }
 }
