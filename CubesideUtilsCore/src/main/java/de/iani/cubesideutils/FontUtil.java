@@ -2,6 +2,7 @@ package de.iani.cubesideutils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public class FontUtil {
     public static final int BOOK_LINE_WIDTH = 110;// mojang: 116
@@ -14,6 +15,17 @@ public class FontUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean fitsSingleBookPage(BaseComponent... text) {
+        if (text == null) {
+            return true;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (BaseComponent c : text) {
+            sb.append(c.toLegacyText());
+        }
+        return fitsSingleBookPage(sb.toString());
     }
 
     public static boolean fitsSingleBookPage(String string) {
