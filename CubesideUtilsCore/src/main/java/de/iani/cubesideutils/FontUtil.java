@@ -17,7 +17,7 @@ public class FontUtil {
         }
     }
 
-    public boolean fitsSingleBookPage(BaseComponent... text) {
+    public static boolean fitsSingleBookPage(BaseComponent... text) {
         if (text == null) {
             return true;
         }
