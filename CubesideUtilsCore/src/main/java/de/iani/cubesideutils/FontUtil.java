@@ -78,6 +78,7 @@ public class FontUtil {
                     break;
                 case ' ': // possible position for a line break
                     lastSpace = pos;
+                    //$FALL-THROUGH$
                 default:
                     totalWidth += getCharWidth(c) + (bold ? 1 : 0);
             }
