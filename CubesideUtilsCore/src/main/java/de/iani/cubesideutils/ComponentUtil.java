@@ -272,6 +272,22 @@ public class ComponentUtil {
                         continue;
                     }
 
+                    // font
+                    if (next == 'f') {
+                        if (charAtOrException(index + 2) != '{') {
+                            throw new ParseException("expected {", index + 2);
+                        }
+
+                        int fontStartIndex = index + 3;
+                        int fontEndIndex = findMatchingRightBrace(index + 2, to);
+                        String fontString = text.substring(fontStartIndex, fontEndIndex);
+
+                        finishComponent();
+                        currentComponent.setFont(fontString);
+                        index = fontEndIndex;
+                        continue;
+                    }
+
                     // translated component
                     if (next == 't') {
                         if (charAtOrException(index + 2) != '{') {
@@ -589,6 +605,10 @@ public class ComponentUtil {
         if (component.isItalicRaw() == Boolean.TRUE) {
             builder.append("&o");
         }
+
+        if (component.getFontRaw() != null) {
+            builder.append("\\f{").append(component.getFontRaw()).append('}');
+        }
     }
 
     private static void serializeEvents(BaseComponent component, StringBuilder builder) {
@@ -725,4 +745,5 @@ public class ComponentUtil {
         builder.append(component.getKeybind());
         builder.append('}');
     }
+
 }
