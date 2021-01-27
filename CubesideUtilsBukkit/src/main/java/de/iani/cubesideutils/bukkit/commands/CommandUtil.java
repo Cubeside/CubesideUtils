@@ -39,6 +39,22 @@ public class CommandUtil {
         }
     }
 
+    public static boolean registerCommand(Plugin plugin, String command, CommandRouter commandRouter) {
+        return registerCommand(plugin, command, commandRouter, false);
+    }
+
+    public static boolean registerCommand(Plugin plugin, String command, CommandRouter commandRouter, boolean replaceExisting) {
+        return registerCommand(plugin, command, Collections.emptyList(), commandRouter, replaceExisting);
+    }
+
+    public static boolean registerCommand(Plugin plugin, String command, List<String> aliases, CommandRouter commandRouter) {
+        return registerCommand(plugin, command, aliases, commandRouter, false);
+    }
+
+    public static boolean registerCommand(Plugin plugin, String command, List<String> aliases, CommandRouter commandRouter, boolean replaceExisting) {
+        return registerCommand(plugin, command, aliases, commandRouter, commandRouter, replaceExisting);
+    }
+
     public static boolean registerCommand(Plugin plugin, String command, HybridCommand hybridCommand) {
         return registerCommand(plugin, command, hybridCommand, false);
     }
