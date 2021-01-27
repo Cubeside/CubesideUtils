@@ -52,6 +52,24 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         this.exceptionHandler = Objects.requireNonNull(exceptionHandler);
     }
 
+    public CommandRouter() {
+        this(true);
+    }
+
+    public CommandRouter(boolean caseInsensitive) {
+        this(caseInsensitive, CommandExceptionHandler.DEFAULT_HANDLER);
+    }
+
+    public CommandRouter(CommandExceptionHandler exceptionHandler) {
+        this(true, exceptionHandler);
+    }
+
+    public CommandRouter(boolean caseInsensitive, CommandExceptionHandler exceptionHandler) {
+        super(caseInsensitive);
+
+        this.exceptionHandler = Objects.requireNonNull(exceptionHandler);
+    }
+
     public void addPluginCommand(PluginCommand command) {
         command.setExecutor(this);
         command.setTabCompleter(this);
