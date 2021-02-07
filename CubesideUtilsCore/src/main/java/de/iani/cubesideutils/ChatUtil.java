@@ -143,6 +143,32 @@ public abstract class ChatUtil {
 
     }
 
+    public static class AbortPageSendException extends RuntimeException {
+
+        private static final long serialVersionUID = -2300346467867854669L;
+
+        public AbortPageSendException() {
+            super();
+        }
+
+        public AbortPageSendException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+            super(message, cause, enableSuppression, writableStackTrace);
+        }
+
+        public AbortPageSendException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public AbortPageSendException(String message) {
+            super(message);
+        }
+
+        public AbortPageSendException(Throwable cause) {
+            super(cause);
+        }
+
+    }
+
     public static final int PAGE_LENGTH = 10;
 
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix) {
@@ -166,83 +192,87 @@ public abstract class ChatUtil {
     }
 
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
-        if (page < 0) {
-            sendMessage(recipient, pluginPrefix, warningColor.toString(), "Bitte gib die Seitenzahl als positive ganze Zahl an.");
-            return;
-        }
-
-        TextComponent prefixComponent = new TextComponent(pluginPrefix.isEmpty() ? "" : (pluginPrefix + " "));
-        TextComponent nameComponent = new TextComponent(name);
-
-        int listSize = messages.size();
-        int numPages = (int) Math.ceil(listSize / (double) PAGE_LENGTH);
-        if (page >= numPages && page > 0) {
-            sendMessage(recipient, pluginPrefix, warningColor.toString(), nameComponent.getText(), " hat keine Seite ", (page + 1));
-            return;
-        }
-
-        if (!openPageCommandPrefix.startsWith("/")) {
-            openPageCommandPrefix = "/" + openPageCommandPrefix;
-        }
-
-        if (numPages > 1) {
-            ComponentBuilder builder = new ComponentBuilder(prefixComponent);
-            builder.append(nameComponent).color(normalColor).append(" (Seite ").append(String.valueOf(page + 1)).append("/").append(String.valueOf(numPages)).append("):");
-            recipient.sendMessage(builder.create());
-        } else {
-            ComponentBuilder builder = new ComponentBuilder(prefixComponent);
-            builder.append(nameComponent).color(normalColor).append(":");
-            recipient.sendMessage(builder.create());
-        }
-
-        if (listSize == 0) {
-            recipient.sendMessage(ChatColor.GRAY + " -- keine --");
-        }
-
-        int index = page * PAGE_LENGTH;
-        for (int i = 0; i < PAGE_LENGTH && index < listSize;) {
-            messages.get(index).send(recipient);
-
-            i++;
-            index++;
-        }
-
-        if (numPages > 1) {
-            sendMessage(recipient, pluginPrefix, normalColor.toString(), "Seite x anzeigen: ", openPageCommandPrefix, " x");
-            ComponentBuilder builder = new ComponentBuilder(pluginPrefix).append(" << vorherige");
-            if (page > 0) {
-                builder.color(ChatColor.BLUE);
-
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + page + " anzeigen").create()));
-                ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + page);
-
-                builder.event(he).event(ce);
-            } else {
-                builder.color(ChatColor.GRAY);
-
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite 1").create()));
-
-                builder.event(he);
+        try {
+            if (page < 0) {
+                sendMessage(recipient, pluginPrefix, warningColor.toString(), "Bitte gib die Seitenzahl als positive ganze Zahl an.");
+                return;
             }
 
-            builder.append("   ").reset().append("nächste >>");
+            TextComponent prefixComponent = new TextComponent(pluginPrefix.isEmpty() ? "" : (pluginPrefix + " "));
+            TextComponent nameComponent = new TextComponent(name);
 
-            if (page + 1 < numPages) {
-                builder.color(ChatColor.BLUE);
-
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create()));
-                ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + (page + 2));
-
-                builder.event(he).event(ce);
-            } else {
-                builder.color(ChatColor.GRAY);
-
-                HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite " + numPages).create()));
-
-                builder.event(he);
+            int listSize = messages.size();
+            int numPages = (int) Math.ceil(listSize / (double) PAGE_LENGTH);
+            if (page >= numPages && page > 0) {
+                sendMessage(recipient, pluginPrefix, warningColor.toString(), nameComponent.getText(), " hat keine Seite ", (page + 1));
+                return;
             }
 
-            recipient.sendMessage(builder.create());
+            if (!openPageCommandPrefix.startsWith("/")) {
+                openPageCommandPrefix = "/" + openPageCommandPrefix;
+            }
+
+            if (numPages > 1) {
+                ComponentBuilder builder = new ComponentBuilder(prefixComponent);
+                builder.append(nameComponent).color(normalColor).append(" (Seite ").append(String.valueOf(page + 1)).append("/").append(String.valueOf(numPages)).append("):");
+                recipient.sendMessage(builder.create());
+            } else {
+                ComponentBuilder builder = new ComponentBuilder(prefixComponent);
+                builder.append(nameComponent).color(normalColor).append(":");
+                recipient.sendMessage(builder.create());
+            }
+
+            if (listSize == 0) {
+                recipient.sendMessage(ChatColor.GRAY + " -- keine --");
+            }
+
+            int index = page * PAGE_LENGTH;
+            for (int i = 0; i < PAGE_LENGTH && index < listSize;) {
+                messages.get(index).send(recipient);
+
+                i++;
+                index++;
+            }
+
+            if (numPages > 1) {
+                sendMessage(recipient, pluginPrefix, normalColor.toString(), "Seite x anzeigen: ", openPageCommandPrefix, " x");
+                ComponentBuilder builder = new ComponentBuilder(pluginPrefix).append(" << vorherige");
+                if (page > 0) {
+                    builder.color(ChatColor.BLUE);
+
+                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + page + " anzeigen").create()));
+                    ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + page);
+
+                    builder.event(he).event(ce);
+                } else {
+                    builder.color(ChatColor.GRAY);
+
+                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite 1").create()));
+
+                    builder.event(he);
+                }
+
+                builder.append("   ").reset().append("nächste >>");
+
+                if (page + 1 < numPages) {
+                    builder.color(ChatColor.BLUE);
+
+                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create()));
+                    ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + (page + 2));
+
+                    builder.event(he).event(ce);
+                } else {
+                    builder.color(ChatColor.GRAY);
+
+                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite " + numPages).create()));
+
+                    builder.event(he);
+                }
+
+                recipient.sendMessage(builder.create());
+            }
+        } catch (AbortPageSendException e) {
+            return;
         }
     }
 
