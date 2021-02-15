@@ -233,6 +233,10 @@ public class ItemStacks {
         return resultList.toArray(new ItemStack[resultList.size()]);
     }
 
+    public static boolean isEmpty(ItemStack stack) {
+        return stack == null || stack.getType() == Material.AIR || stack.getAmount() == 0;
+    }
+
     public static boolean isEmpty(ItemStack[] items) {
         for (ItemStack item : items) {
             if (item != null && item.getAmount() > 0 && item.getType() != Material.AIR) {
