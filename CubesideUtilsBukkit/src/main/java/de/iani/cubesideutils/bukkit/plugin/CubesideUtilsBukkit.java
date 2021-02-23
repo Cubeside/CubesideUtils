@@ -232,7 +232,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     @Override
     public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
-        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.instance : seeMsgCondition, message);
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, message);
     }
 
     @Override

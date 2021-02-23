@@ -4,7 +4,7 @@ public class NullWrapper implements StringSerializable {
 
     public static final String SERIALIZATION_TYPE = "NULL";
 
-    public static final NullWrapper instance = new NullWrapper();
+    public static final NullWrapper INSTANCE = new NullWrapper();
 
     private NullWrapper() {
 
