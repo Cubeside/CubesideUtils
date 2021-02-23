@@ -225,14 +225,15 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     }
 
     @Override
-    public void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
-        sendMessageToPlayersAllServers(seeMsgPermission == null ? null : new HasPermissionCondition(seeMsgPermission), message);
+    public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message) {
+        ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, false, message);
     }
 
     @Override
-    public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message) {
+    public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
-        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, message);
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, true, message);
     }
 
     @Override

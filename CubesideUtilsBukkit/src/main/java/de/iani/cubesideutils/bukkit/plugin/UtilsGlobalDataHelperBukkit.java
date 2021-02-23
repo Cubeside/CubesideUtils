@@ -9,6 +9,7 @@ import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import java.io.DataInputStream;
 import java.io.IOException;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 
 public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageType> implements UtilsGlobalDataHelper {
@@ -37,8 +38,14 @@ public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageT
                 break;
             case SEND_MESSAGE:
                 Condition<? super Player> seeMsgCondition = readStringSerializable(data);
-                String message = data.readUTF();
-                ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
+                boolean componentMsg = data.readBoolean();
+                if (componentMsg) {
+                    BaseComponent message = readComponent(data);
+                    ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
+                } else {
+                    String message = data.readUTF();
+                    ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
+                }
                 break;
             default:
                 break;

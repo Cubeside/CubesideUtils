@@ -3,6 +3,7 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
+import de.iani.cubesideutils.ComponentUtil;
 import de.iani.cubesideutils.FunctionUtil;
 import de.iani.cubesideutils.plugin.api.GlobalDataHelper;
 import de.iani.cubesideutils.serialization.StringSerializable;
@@ -12,6 +13,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +25,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalDataHelper<T> {
 
@@ -276,57 +280,48 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
             throw new NullPointerException();
         }
 
+        // complex stuff
         if (msg instanceof UUID) {
             long first = ((UUID) msg).getMostSignificantBits();
             long second = ((UUID) msg).getLeastSignificantBits();
             msgout.writeLong(first);
             msgout.writeLong(second);
-            return;
-        }
-        if (msg instanceof StringSerializable) {
+        } else if (msg instanceof StringSerializable) {
             StringSerializable serializable = (StringSerializable) msg;
             msgout.writeUTF(serializable.getSerializationType());
             msgout.writeUTF(serializable.serializeToString());
-            return;
-        }
+        } else if (msg instanceof BaseComponent) {
+            msgout.writeUTF(ComponentUtil.serializeComponent((BaseComponent) msg));
+        } else if (msg instanceof BaseComponent[]) {
+            BaseComponent[] bc = (BaseComponent[]) msg;
+            if (bc.length == 1) {
+                sendMsgPart(msgout, bc[0]);
+            } else {
+                msgout.writeUTF(ComponentUtil.serializeComponent(new TextComponent(bc)));
+            }
+        } else
+        // simple stuff
         if (msg instanceof String) {
             msgout.writeUTF((String) msg);
-            return;
-        }
-        if (msg instanceof Byte) {
+        } else if (msg instanceof Byte) {
             msgout.writeByte((Byte) msg);
-            return;
-        }
-        if (msg instanceof Short) {
+        } else if (msg instanceof Short) {
             msgout.writeShort((Short) msg);
-            return;
-        }
-        if (msg instanceof Integer) {
+        } else if (msg instanceof Integer) {
             msgout.writeInt((Integer) msg);
-            return;
-        }
-        if (msg instanceof Long) {
+        } else if (msg instanceof Long) {
             msgout.writeLong((Long) msg);
-            return;
-        }
-        if (msg instanceof Float) {
+        } else if (msg instanceof Float) {
             msgout.writeFloat((Float) msg);
-            return;
-        }
-        if (msg instanceof Double) {
+        } else if (msg instanceof Double) {
             msgout.writeDouble((Double) msg);
-            return;
-        }
-        if (msg instanceof Boolean) {
+        } else if (msg instanceof Boolean) {
             msgout.writeBoolean((Boolean) msg);
-            return;
-        }
-        if (msg instanceof Character) {
+        } else if (msg instanceof Character) {
             msgout.writeChar((Character) msg);
-            return;
+        } else {
+            throw new IllegalArgumentException("Unsendable data object of type " + msg.getClass().getName() + ".");
         }
-
-        throw new IllegalArgumentException("Unsendable data object of type " + msg.getClass().getName() + ".");
     }
 
     protected UUID readUUID(DataInputStream msgin) throws IOException {
@@ -339,6 +334,15 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
         String type = msgin.readUTF();
         String serialized = msgin.readUTF();
         return StringSerialization.deserialize(type, serialized);
+    }
+
+    protected BaseComponent readComponent(DataInputStream msgin) throws IOException {
+        String serialized = msgin.readUTF();
+        try {
+            return ComponentUtil.deserializeComponent(serialized);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected T fromOrdinal(int ordinal) {

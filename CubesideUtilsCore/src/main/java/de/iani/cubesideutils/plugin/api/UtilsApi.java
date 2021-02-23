@@ -39,6 +39,4 @@ public interface UtilsApi {
 
     public abstract Map<String, Boolean> getCachedRealServers();
 
-    public abstract void sendMessageToPlayersAllServers(String seeMsgPermission, String message);
-
 }

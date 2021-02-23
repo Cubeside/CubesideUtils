@@ -6,6 +6,7 @@ import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -37,6 +38,8 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract Set<String> getWorldDisplayNames(UUID playerId);
 
     public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message);
+
+    public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message);
 
     public abstract void sendPlayerOptions(CommandSender sender, OfflinePlayer player);
 

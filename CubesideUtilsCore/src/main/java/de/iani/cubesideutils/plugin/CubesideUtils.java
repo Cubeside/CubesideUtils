@@ -213,9 +213,4 @@ public abstract class CubesideUtils implements UtilsApi {
         return this.cachedRealServers;
     }
 
-    @Override
-    public void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
-        getGlobalDataHelper().sendData(MessageType.SEND_MESSAGE, seeMsgPermission, message);
-    }
-
 }

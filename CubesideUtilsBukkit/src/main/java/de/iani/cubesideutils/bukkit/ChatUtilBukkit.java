@@ -182,10 +182,18 @@ public class ChatUtilBukkit extends ChatUtil {
     }
 
     public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, String message) {
-        Bukkit.getConsoleSender().sendMessage(message);
+        sendMessageToPlayers(seeMsgCondition, new StringMsg(message));
+    }
+
+    public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, BaseComponent... message) {
+        sendMessageToPlayers(seeMsgCondition, new ComponentMsg(message));
+    }
+
+    public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, BukkitSendable message) {
+        message.send(Bukkit.getConsoleSender());
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (seeMsgCondition == null || seeMsgCondition.test(player)) {
-                player.sendMessage(message);
+                message.send(player);
             }
         }
     }
