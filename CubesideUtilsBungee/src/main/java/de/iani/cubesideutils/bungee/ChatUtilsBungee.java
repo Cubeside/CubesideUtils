@@ -124,8 +124,4 @@ public class ChatUtilsBungee {
         ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
-    public static void sendMessageToPlayersAllServers(String seeMsgPermission, String message) {
-        // UtilsPlugin.getInstance().sendMessageToPlayersAllServers(seeMsgPermission, message); // TODO
-    }
-
 }

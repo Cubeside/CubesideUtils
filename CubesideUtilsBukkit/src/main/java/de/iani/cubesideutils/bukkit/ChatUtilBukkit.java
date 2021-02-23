@@ -198,12 +198,12 @@ public class ChatUtilBukkit extends ChatUtil {
         }
     }
 
-    public static void sendMessage(CommandSender receiver, String pluginPrefix, String colors, Object message, Object... messageParts) {
-        ChatUtil.sendMessage(new CommandSenderWrapper(receiver), pluginPrefix, colors, message, messageParts);
+    public static void sendMessage(CommandSender receiver, String pluginPrefix, String colors, Object... messageParts) {
+        ChatUtil.sendMessage(new CommandSenderWrapper(receiver), pluginPrefix, colors, messageParts);
     }
 
-    public static void sendMessage(UUID playerId, String pluginPrefix, String colors, Object message, Object... messageParts) {
-        ChatUtil.sendMessage(new GlobalPlayerWrapper(playerId), pluginPrefix, colors, message, messageParts);
+    public static void sendMessage(UUID playerId, String pluginPrefix, String colors, Object... messageParts) {
+        ChatUtil.sendMessage(new GlobalPlayerWrapper(playerId), pluginPrefix, colors, messageParts);
     }
 
     public static Integer toRGB(org.bukkit.ChatColor color) {

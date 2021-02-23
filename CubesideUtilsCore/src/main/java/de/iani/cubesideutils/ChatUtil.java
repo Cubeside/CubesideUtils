@@ -1,7 +1,9 @@
 package de.iani.cubesideutils;
 
+import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
+import java.util.logging.Level;
+import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -276,24 +280,29 @@ public abstract class ChatUtil {
         }
     }
 
-    public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object message, Object... messageParts) {
-        if (messageParts.length == 0) {
-            receiver.sendMessage(pluginPrefix + " " + (colors == null ? "" : colors) + message);
-        } else {
-            StringBuilder builder = new StringBuilder(pluginPrefix);
-            if (!pluginPrefix.isEmpty()) {
-                builder.append(" ");
-            }
-
-            builder.append(colors == null ? "" : colors).append(message);
-            for (Object s : messageParts) {
-                if (colors != null) {
-                    builder.append(ChatColor.RESET).append(colors);
-                }
-                builder.append(Objects.toString(s));
-            }
-            receiver.sendMessage(builder.toString());
+    public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object... messageParts) {
+        StringBuilder builder = new StringBuilder(pluginPrefix);
+        if (!pluginPrefix.isEmpty()) {
+            builder.append(" ");
         }
+
+        if (Arrays.stream(messageParts).anyMatch(o -> o != null && o.getClass().isArray())) {
+            CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage.", new Throwable());
+            messageParts = Arrays.stream(messageParts).flatMap(o -> (o != null && o.getClass().isArray()) ? arrayStream(o) : Stream.of(o)).toArray();
+        }
+
+        for (Object s : messageParts) {
+            if (colors != null) {
+                builder.append(ChatColor.RESET).append(colors);
+            }
+            builder.append(Objects.toString(s));
+        }
+        receiver.sendMessage(builder.toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Stream<T> arrayStream(Object array) {
+        return Arrays.stream((T[]) array);
     }
 
     public static Integer toRGB(ChatColor color) {
