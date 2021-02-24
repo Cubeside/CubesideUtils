@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -137,6 +138,9 @@ public class ItemGroups {
     private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
+
+    private static final EnumMap<EntityType, Material> SPAWNEGG_FOR_ENTITY_INTERNAL = new EnumMap<>(EntityType.class);
+    public static final Map<EntityType, Material> SPAWNEGG_FOR_ENTITY = Collections.unmodifiableMap(SPAWNEGG_FOR_ENTITY_INTERNAL);
 
     private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_DYE = new EnumMap<>(DyeColor.class);
     private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_WOOL = new EnumMap<>(DyeColor.class);
@@ -337,6 +341,12 @@ public class ItemGroups {
                     MUSIC_DISCS_INTERNAL.add(m);
                 } else if (name.endsWith("_SKULL") || name.endsWith("_HEAD")) {
                     SKULLS_INTERNAL.add(m);
+                }
+            }
+
+            for (Entry<Material, EntityType> e : SPAWN_EGGS_INTERNAL.entrySet()) {
+                if (e.getValue() != null) {
+                    SPAWNEGG_FOR_ENTITY_INTERNAL.put(e.getValue(), e.getKey());
                 }
             }
         }
@@ -789,6 +799,10 @@ public class ItemGroups {
 
     public static EntityType getSpawnedTypeForSpawnEgg(Material m) {
         return SPAWN_EGGS_INTERNAL.get(m);
+    }
+
+    public static Material getSpawnEggForEntity(EntityType e) {
+        return SPAWNEGG_FOR_ENTITY.get(e);
     }
 
     public static boolean isDoubleBlockPlant(Material m) {
