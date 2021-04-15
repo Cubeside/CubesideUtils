@@ -216,7 +216,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             smt.setString(2, holderId.toString());
             ResultSet rs = smt.executeQuery();
 
-            Pair<byte[], byte[]> result = rs.first() ? new Pair<>(rs.getBytes(1), rs.getBytes(2)) : null;
+            Pair<byte[], byte[]> result = rs.next() ? new Pair<>(rs.getBytes(1), rs.getBytes(2)) : null;
 
             rs.close();
             return result;
@@ -299,7 +299,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             smt.setString(1, playerId.toString());
             ResultSet rs = smt.executeQuery();
 
-            if (!rs.first()) {
+            if (!rs.next()) {
                 rs.close();
                 if (!insertIfMissing) {
                     return null;
