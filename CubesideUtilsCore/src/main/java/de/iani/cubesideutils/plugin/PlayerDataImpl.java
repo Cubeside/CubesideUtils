@@ -215,7 +215,7 @@ public abstract class PlayerDataImpl implements PlayerData {
     public void checkRank() {
         // Overwritten in OnlinePlayer
 
-        if (this.rank != null && CubesideUtils.getInstance().getPermission(this.rank) != null) {
+        if (this.rank != null && CubesideUtils.getInstance().isRank(this.rank)) {
             return;
         }
 

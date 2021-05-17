@@ -170,6 +170,16 @@ public abstract class CubesideUtils implements UtilsApi {
         }
     }
 
+    public boolean isRank(String rank) {
+        this.rankLock.readLock().lock();
+
+        try {
+            return this.rankPermissionsAndPrefixes.containsKey(rank);
+        } finally {
+            this.rankLock.readLock().unlock();
+        }
+    }
+
     @Override
     public void setRankInformation(String rank, int priority, String permission, String prefix) throws SQLException {
         getDatabase().setRankInformation(rank, priority, permission, prefix);
