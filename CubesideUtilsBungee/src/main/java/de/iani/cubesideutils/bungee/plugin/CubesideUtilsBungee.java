@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bungee.plugin;
 
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
+import de.iani.cubesideutils.bungee.plugin.api.UtilsApiBungee;
 import de.iani.cubesideutils.bungee.sql.SQLConfigBungee;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
@@ -9,13 +10,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.UUID;
 import java.util.logging.Logger;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-public class CubesideUtilsBungee extends CubesideUtils {
+public class CubesideUtilsBungee extends CubesideUtils implements UtilsApiBungee {
     private static volatile CubesideUtilsBungee instance = null;
 
     public static CubesideUtilsBungee getInstance() {
@@ -101,6 +104,16 @@ public class CubesideUtilsBungee extends CubesideUtils {
 
     public PlayerDataCache getPlayerDataCache() {
         return this.playerDataCache;
+    }
+
+    @Override
+    public PlayerDataImplBungee getPlayerData(ProxiedPlayer player) {
+        return getPlayerData(player.getUniqueId());
+    }
+
+    @Override
+    public PlayerDataImplBungee getPlayerData(UUID playerId) {
+        return this.playerDataCache.get(playerId);
     }
 
     @Override
