@@ -1,0 +1,4 @@
+name: CubesideUtils
+main: de.iani.cubesideutils.bungee.plugin.UtilsPluginBungee
+version: 1.0
+author: Starjon, Brokkonaut
