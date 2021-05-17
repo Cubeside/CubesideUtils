@@ -54,9 +54,12 @@ public class CubesideUtilsBungee extends CubesideUtils implements UtilsApiBungee
         }
 
         this.database = new UtilsDatabaseBungee(new SQLConfigBungee(this.config.getSection("database")));
+        this.playerDataCache = new PlayerDataCache();
 
         this.globalClientPlugin = (GlobalClientPlugin) ProxyServer.getInstance().getPluginManager().getPlugin("GlobalClient");
         this.globalDataHelper = new UtilsGlobalDataHelperBungee(this.plugin);
+
+        updateRankInformation();
     }
 
     private void saveDefaultConfig() throws IOException {
