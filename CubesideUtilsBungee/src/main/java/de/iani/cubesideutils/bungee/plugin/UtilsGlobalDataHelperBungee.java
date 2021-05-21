@@ -1,14 +1,12 @@
 package de.iani.cubesideutils.bungee.plugin;
 
 import de.cubeside.connection.GlobalServer;
-import de.cubeside.connection.event.GlobalDataEvent;
 import de.iani.cubesideutils.bungee.plugin.api.GlobalDataHelperBungee;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import java.io.DataInputStream;
 import java.io.IOException;
-import net.md_5.bungee.event.EventHandler;
 
 public class UtilsGlobalDataHelperBungee extends GlobalDataHelperBungee<MessageType> implements UtilsGlobalDataHelper {
 
@@ -16,15 +14,8 @@ public class UtilsGlobalDataHelperBungee extends GlobalDataHelperBungee<MessageT
         super(MessageType.class, GLOBAL_DATA_CHANNEL, plugin);
     }
 
-    @EventHandler
-    @Override
-    public void onGlobalDataEvent(GlobalDataEvent event) throws IOException {
-        super.onGlobalDataEvent(event);
-    }
-
     @Override
     protected void handleMessage(MessageType messageType, GlobalServer source, DataInputStream data) throws IOException {
-        System.out.println(messageType);
         switch (messageType) {
             case RANK_INFORMATION_CHANGED:
                 CubesideUtilsBungee.getInstance().updateRankInformation();
