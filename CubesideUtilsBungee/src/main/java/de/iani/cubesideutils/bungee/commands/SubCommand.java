@@ -20,10 +20,6 @@ public abstract class SubCommand implements PermissionRequirer {
         return false;
     }
 
-    public boolean allowsCommandBlock() {
-        return false;
-    }
-
     @Override
     public String getRequiredPermission() {
         return null;
