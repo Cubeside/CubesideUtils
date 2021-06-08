@@ -41,22 +41,26 @@ public class ItemBuilder {
     }
 
     public ItemBuilder enchantment(Enchantment enchantment, int level) {
-        item.addEnchantment(enchantment, level);
+        return enchantment(enchantment, level, true);
+    }
+
+    public ItemBuilder enchantment(Enchantment enchantment, int level, boolean ignoreMaxLevel) {
+        meta.addEnchant(enchantment, level, ignoreMaxLevel);
         return this;
     }
 
     public ItemBuilder removeEnchantment(Enchantment enchantment) {
-        item.removeEnchantment(enchantment);
+        meta.removeEnchant(enchantment);
         return this;
     }
 
     public ItemBuilder flag(ItemFlag flag) {
-        item.addItemFlags(flag);
+        meta.addItemFlags(flag);
         return this;
     }
 
     public ItemBuilder removeFlag(ItemFlag flag) {
-        item.removeItemFlags(flag);
+        meta.removeItemFlags(flag);
         return this;
     }
 
