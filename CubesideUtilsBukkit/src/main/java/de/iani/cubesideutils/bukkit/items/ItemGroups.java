@@ -252,6 +252,10 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.ZOGLIN_SPAWN_EGG, EntityType.ZOGLIN);
         SPAWN_EGGS_INTERNAL.put(Material.STRIDER_SPAWN_EGG, EntityType.STRIDER);
         SPAWN_EGGS_INTERNAL.put(Material.PIGLIN_BRUTE_SPAWN_EGG, EntityType.PIGLIN_BRUTE);
+        // 1.17
+        SPAWN_EGGS_INTERNAL.put(Material.AXOLOTL_SPAWN_EGG, EntityType.AXOLOTL);
+        SPAWN_EGGS_INTERNAL.put(Material.GLOW_SQUID_SPAWN_EGG, EntityType.GLOW_SQUID);
+        SPAWN_EGGS_INTERNAL.put(Material.GOAT_SPAWN_EGG, EntityType.GOAT);
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -377,6 +381,10 @@ public class ItemGroups {
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.TWISTING_VINES_PLANT);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.WEEPING_VINES);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.WEEPING_VINES_PLANT);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.CAVE_VINES);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.CAVE_VINES_PLANT);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BIG_DRIPLEAF);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BIG_DRIPLEAF_STEM);
 
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.LARGE_FERN);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_GRASS);
@@ -385,6 +393,7 @@ public class ItemGroups {
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SUNFLOWER);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.PEONY);
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_SEAGRASS);
+        DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SMALL_DRIPLEAF);
 
         CROPS_INTERNAL.add(Material.NETHER_WART);
         CROPS_INTERNAL.add(Material.WHEAT);
@@ -419,6 +428,11 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CRIMSON_ROOTS);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.WARPED_ROOTS);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.NETHER_SPROUTS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.AZALEA);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.FLOWERING_AZALEA);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.GLOW_LICHEN);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.MOSS_CARPET);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.MOSS_BLOCK);
         SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
@@ -434,6 +448,7 @@ public class ItemGroups {
         FISH_BUCKETS_INTERNAL.add(Material.SALMON_BUCKET);
         FISH_BUCKETS_INTERNAL.add(Material.PUFFERFISH_BUCKET);
         FISH_BUCKETS_INTERNAL.add(Material.TROPICAL_FISH_BUCKET);
+        FISH_BUCKETS_INTERNAL.add(Material.AXOLOTL_BUCKET);
 
         DYE_COLOR_TO_DYE.put(DyeColor.WHITE, Material.WHITE_DYE);
         DYE_COLOR_TO_DYE.put(DyeColor.ORANGE, Material.ORANGE_DYE);
