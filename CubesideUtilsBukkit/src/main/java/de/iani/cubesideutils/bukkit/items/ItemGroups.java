@@ -34,6 +34,7 @@ public class ItemGroups {
     private static final EnumSet<Material> CARPET_INTERNAL = EnumSet.noneOf(Material.class);
     private static final EnumSet<Material> TERRACOTTA_INTERNAL = EnumSet.noneOf(Material.class);
     private static final EnumSet<Material> GLAZED_TERRACOTTA_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> CANDLE_INTERNAL = EnumSet.noneOf(Material.class);
 
     public static final Set<Material> CONCRETE_POWDER = Collections.unmodifiableSet(CONCRETE_POWDER_INTERNAL);
     public static final Set<Material> CONCRETE = Collections.unmodifiableSet(CONCRETE_INTERNAL);
@@ -45,6 +46,7 @@ public class ItemGroups {
     public static final Set<Material> CARPET = Collections.unmodifiableSet(CARPET_INTERNAL);
     public static final Set<Material> TERRACOTTA = Collections.unmodifiableSet(TERRACOTTA_INTERNAL);
     public static final Set<Material> GLAZED_TERRACOTTA = Collections.unmodifiableSet(GLAZED_TERRACOTTA_INTERNAL);
+    public static final Set<Material> CANDLE = Collections.unmodifiableSet(CANDLE_INTERNAL);
 
     // wood-made
     private static final EnumSet<Material> LOGS_INTERNAL = EnumSet.noneOf(Material.class);
@@ -280,6 +282,8 @@ public class ItemGroups {
                     TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("_GLAZED_TERRACOTTA")) {
                     GLAZED_TERRACOTTA_INTERNAL.add(m);
+                } else if (name.endsWith("CANDLE")) {
+                    CANDLE_INTERNAL.add(m);
                 } else if (name.endsWith("_LOG") || name.endsWith("_WOOD") || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
                     LOGS_INTERNAL.add(m);
                 } else if (name.endsWith("_LEAVES")) {
@@ -706,6 +710,10 @@ public class ItemGroups {
 
     public static boolean isGlazedTerracotta(Material m) {
         return GLAZED_TERRACOTTA_INTERNAL.contains(m);
+    }
+
+    public static boolean isCandle(Material m) {
+        return CANDLE_INTERNAL.contains(m);
     }
 
     public static boolean isLog(Material m) {
