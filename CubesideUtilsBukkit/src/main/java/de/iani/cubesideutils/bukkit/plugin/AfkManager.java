@@ -18,7 +18,7 @@ public class AfkManager implements Listener {
     private Set<Player>[] onlinePlayers;
     private int currentTick;
 
-    public static final long AFK_THRESHOLD = 2L * 60L * 1000L;
+    public static final long AFK_THRESHOLD = 10L * 60L * 1000L;
 
     @SuppressWarnings("unchecked")
     public AfkManager() {
