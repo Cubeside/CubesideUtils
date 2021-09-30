@@ -290,7 +290,7 @@ public class ItemGroups {
                     LEAVES_INTERNAL.add(m);
                 } else if (name.endsWith("_PLANKS")) {
                     PLANKS_INTERNAL.add(m);
-                } else if (name.endsWith("_SAPLINGS")) {
+                } else if (name.endsWith("_SAPLING") && !name.startsWith("POTTED")) {
                     SAPLINGS_INTERNAL.add(m);
                 } else if (name.endsWith("_SLAB") && isProbablyWood(m)) {
                     WOODEN_SLABS_INTERNAL.add(m);
@@ -439,6 +439,7 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.MOSS_BLOCK);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SPORE_BLOSSOM);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.HANGING_ROOTS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.LILY_PAD);
         SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
 
         PLANTS_INTERNAL.addAll(SINGLE_BLOCK_PLANTS_INTERNAL);
