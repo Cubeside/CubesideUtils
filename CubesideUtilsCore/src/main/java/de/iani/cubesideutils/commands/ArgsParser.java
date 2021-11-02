@@ -39,6 +39,10 @@ public class ArgsParser implements Iterable<String>, Iterator<String> {
         return current < args.length - 1;
     }
 
+    public String[] toArray() {
+        return args.clone();
+    }
+
     public int remaining() {
         return Math.max(args.length - 1 - current, 0);
     }
