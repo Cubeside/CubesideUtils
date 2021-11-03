@@ -23,15 +23,27 @@ public class SQLConnection {
     private HashMap<Object, PreparedStatement> cachedStatements;
 
     public SQLConnection(String connectURL, String database, String user, String password) throws SQLException {
-        this(connectURL, database, user, password, null);
+        this(connectURL, database, user, password, (String) null);
     }
 
     public SQLConnection(String connectURL, String database, String user, String password, String driverClass) throws SQLException {
-        if (driverClass != null) {
-            try {
-                Class.forName(driverClass);
-            } catch (Exception e) {
-                throw new SQLException(e);
+        this(connectURL, database, user, password, driverClass == null ? null : new String[] { driverClass });
+    }
+
+    public SQLConnection(String connectURL, String database, String user, String password, String... driverClasses) throws SQLException {
+        if (driverClasses != null) {
+            Exception exception = null;
+            for (String driverClass : driverClasses) {
+                try {
+                    Class.forName(driverClass);
+                    exception = null;
+                    break;
+                } catch (Exception e) {
+                    exception = e;
+                }
+            }
+            if (exception != null) {
+                throw new SQLException(exception);
             }
         }
         this.connectURL = connectURL;
