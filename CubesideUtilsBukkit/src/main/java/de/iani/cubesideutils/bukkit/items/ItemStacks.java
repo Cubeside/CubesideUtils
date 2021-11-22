@@ -215,10 +215,13 @@ public class ItemStacks {
         return counts;
     }
 
-    public static ItemStack[] shrink(ItemStack[] items) {
-        Map<ItemStack, Integer> counts = countItems(items);
+    public static int countStacks(Map<ItemStack, Integer> itemCounts) {
+        return itemCounts.entrySet().stream().mapToInt(entry -> (int) Math.ceil((double) entry.getValue() / entry.getKey().getMaxStackSize())).sum();
+    }
+
+    public static ItemStack[] fromAmounts(Map<ItemStack, Integer> amounts) {
         List<ItemStack> resultList = new ArrayList<>();
-        for (Entry<ItemStack, Integer> entry : counts.entrySet()) {
+        for (Entry<ItemStack, Integer> entry : amounts.entrySet()) {
             ItemStack item = entry.getKey();
             int count = entry.getValue();
 
@@ -231,6 +234,10 @@ public class ItemStacks {
         }
 
         return resultList.toArray(new ItemStack[resultList.size()]);
+    }
+
+    public static ItemStack[] shrink(ItemStack[] items) {
+        return fromAmounts(countItems(items));
     }
 
     public static boolean isEmpty(ItemStack stack) {
