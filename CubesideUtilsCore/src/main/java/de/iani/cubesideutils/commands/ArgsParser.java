@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.commands;
 
+import com.google.common.base.Preconditions;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,6 +31,7 @@ public class ArgsParser implements Iterable<String>, Iterator<String> {
     }
 
     public ArgsParser(String[] args, int skipParts) {
+        Preconditions.checkArgument(skipParts >= 0, "require skipParts >= 0");
         this.args = args;
         this.current = -1 + skipParts;
     }
@@ -40,7 +42,7 @@ public class ArgsParser implements Iterable<String>, Iterator<String> {
     }
 
     public String[] toArray() {
-        return args.clone();
+        return args.length <= current + 1 ? new String[0] : Arrays.copyOfRange(args, current + 1, args.length);
     }
 
     public int remaining() {
