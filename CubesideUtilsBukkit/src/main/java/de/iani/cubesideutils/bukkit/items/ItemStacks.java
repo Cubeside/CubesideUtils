@@ -1,23 +1,27 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -48,7 +52,7 @@ public class ItemStacks {
 
     public static ItemStack enchant(ItemStack itemStack, Enchantment enchantment, int level) {
         ItemMeta meta = itemStack.getItemMeta();
-        meta.addEnchant(enchantment, level, true);
+        Enchantments.addEnchant(meta, enchantment, level, true);
         itemStack.setItemMeta(meta);
         return itemStack;
     }
@@ -253,6 +257,89 @@ public class ItemStacks {
         return true;
     }
 
+    public static boolean isSimilar(ItemStack i1, ItemStack i2) {
+        if (i1 == null) {
+            return i2 == null;
+        }
+
+        if (!ItemGroups.isShulkerBox(i1.getType())) {
+            return i1.isSimilar(i2);
+        }
+
+        if (i1.getType() != i2.getType()) {
+            return false;
+        }
+
+        BlockStateMeta m1 = (BlockStateMeta) i1.getItemMeta();
+        BlockStateMeta m2 = (BlockStateMeta) i2.getItemMeta();
+
+        if (m1.hasDisplayName() != m2.hasDisplayName()) {
+            return false;
+        }
+        if (m1.hasDisplayName() && !Objects.equals(m1.displayName(), m2.displayName())) {
+            return false;
+        }
+
+        if (m1.hasLore() != m2.hasLore()) {
+            return false;
+        }
+        if (m1.hasLore() && !Objects.equals(m1.lore(), m2.lore())) {
+            return false;
+        }
+
+        if (!Objects.equals(m1.getEnchants(), m2.getEnchants())) {
+            return false;
+        }
+
+        if (!Objects.equals(m1.getItemFlags(), m2.getItemFlags())) {
+            return false;
+        }
+
+        if (!Objects.equals(m1.getAttributeModifiers(), m2.getAttributeModifiers())) {
+            return false;
+        }
+
+        if (!Objects.equals(m1.getDestroyableKeys(), m2.getDestroyableKeys())) {
+            return false;
+        }
+
+        if (!Objects.equals(m1.getPlaceableKeys(), m2.getPlaceableKeys())) {
+            return false;
+        }
+
+        if (m1.hasCustomModelData() != m2.hasCustomModelData()) {
+            return false;
+        }
+        if (m1.hasCustomModelData() && !Objects.equals(m1.getCustomModelData(), m2.getCustomModelData())) {
+            return false;
+        }
+
+        if (!Objects.equals(m1.getPersistentDataContainer(), m2.getPersistentDataContainer())) {
+            return false;
+        }
+
+        ShulkerBox s1 = (ShulkerBox) m1.getBlockState();
+        ShulkerBox s2 = (ShulkerBox) m2.getBlockState();
+
+        if (s1.isLocked() != s2.isLocked()) {
+            return false;
+        }
+
+        if (!Objects.equals(s1.getCustomName(), s2.getCustomName())) {
+            return false;
+        }
+
+        if (!Objects.equals(s1.getColor(), s2.getColor())) {
+            return false;
+        }
+
+        if (!Arrays.equals(s1.getInventory().getContents(), s2.getInventory().getContents())) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Checks whether the given player's inventory contains the given items.
      *
@@ -296,7 +383,7 @@ public class ItemStacks {
                 if (hisStack == null || hisStack.getAmount() <= 0) {
                     continue;
                 }
-                if (!hisStack.isSimilar(toStack)) {
+                if (!isSimilar(hisStack, toStack)) {
                     continue;
                 }
                 if (toStack.getAmount() > hisStack.getAmount()) {
