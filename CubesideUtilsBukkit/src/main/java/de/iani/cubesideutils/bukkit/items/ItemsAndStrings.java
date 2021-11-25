@@ -65,16 +65,23 @@ public class ItemsAndStrings {
         });
 
         Arrays.stream(items).filter(item -> item != null && item.getType() != Material.AIR && item.getAmount() > 0).forEach(item -> itemMap.put(item, item.getAmount() + (itemMap.containsKey(item) ? itemMap.get(item) : 0)));
+        return toNiceString(itemMap, colorPrefix);
+    }
 
+    public static String toNiceString(Map<ItemStack, Integer> amounts) {
+        return toNiceString(amounts, "");
+    }
+
+    public static String toNiceString(Map<ItemStack, Integer> amounts, String colorPrefix) {
         StringBuilder builder = new StringBuilder();
         int index = 0;
 
-        for (ItemStack item : itemMap.keySet()) {
-            int amount = itemMap.get(item);
+        for (ItemStack item : amounts.keySet()) {
+            int amount = amounts.get(item);
 
             builder.append(toNiceString(item, amount, colorPrefix));
-            if (index + 1 < itemMap.size()) {
-                if (index + 2 < itemMap.size()) {
+            if (index + 1 < amounts.size()) {
+                if (index + 2 < amounts.size()) {
                     builder.append(", ");
                 } else {
                     builder.append(" und ");
