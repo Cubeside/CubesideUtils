@@ -3,9 +3,6 @@ package de.iani.cubesideutils.bukkit.items;
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.StringUtilBukkit;
 import io.papermc.paper.text.PaperComponents;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -206,14 +203,6 @@ public class ItemsAndStrings {
                 }
                 index++;
             }
-        }
-
-        try {
-            PrintWriter writer = new PrintWriter("testOut.txt", "UTF-8");
-            writer.println(builder.toString());
-            writer.close();
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
-
         }
 
         return builder.toString();
