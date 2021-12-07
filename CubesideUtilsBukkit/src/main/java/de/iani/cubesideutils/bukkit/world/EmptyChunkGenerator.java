@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Random;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.generator.WorldInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EmptyChunkGenerator extends ChunkGenerator {
     @Override
@@ -15,16 +19,26 @@ public class EmptyChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
-        int height = world.getMaxHeight();
-        for (int xx = 0; xx < 16; xx += 4) {
-            for (int zz = 0; zz < 16; zz += 4) {
-                for (int yy = 0; yy < height; yy += 4) {
-                    biome.setBiome(xx, yy, zz, Biome.PLAINS);
-                }
-            }
+    public @Nullable BiomeProvider getDefaultBiomeProvider(@NotNull WorldInfo worldInfo) {
+        return PlainsProvider.INSTANCE;
+    }
+
+    @Override
+    public void generateNoise(@NotNull WorldInfo worldInfo, @NotNull Random random, int x, int z, @NotNull ChunkData chunkData) {
+    }
+
+    protected static class PlainsProvider extends BiomeProvider {
+        protected static final PlainsProvider INSTANCE = new PlainsProvider();
+        private static final List<Biome> PLAINS = Collections.singletonList(Biome.PLAINS);
+
+        @Override
+        public @NotNull Biome getBiome(@NotNull WorldInfo worldInfo, int x, int y, int z) {
+            return Biome.PLAINS;
         }
-        ChunkData chunk = createChunkData(world);
-        return chunk;
+
+        @Override
+        public @NotNull List<Biome> getBiomes(@NotNull WorldInfo worldInfo) {
+            return PLAINS;
+        }
     }
 }
