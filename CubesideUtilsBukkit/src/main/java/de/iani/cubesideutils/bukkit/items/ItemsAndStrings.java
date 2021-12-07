@@ -2,7 +2,6 @@ package de.iani.cubesideutils.bukkit.items;
 
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.StringUtilBukkit;
-import io.papermc.paper.text.PaperComponents;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -158,7 +157,7 @@ public class ItemsAndStrings {
             boolean appended = false;
 
             if (meta.hasDisplayName()) {
-                builder.append(" (\"").append(PaperComponents.legacySectionSerializer().serialize(meta.displayName())).append(colorPrefix).append('"');
+                builder.append(" (\"").append(meta.getDisplayName()).append(colorPrefix).append('"'); // PaperComponents.legacySectionSerializer().serialize(meta.displayName())
                 appended = true;
             } else if (bookMeta.hasTitle()) {
                 builder.append(" (\"").append(bookMeta.getTitle()).append(colorPrefix).append('"');
@@ -173,7 +172,7 @@ public class ItemsAndStrings {
                 builder.append(")");
             }
         } else if (meta != null && meta.hasDisplayName()) {
-            builder.append(" (\"").append(PaperComponents.legacySectionSerializer().serialize(meta.displayName())).append(colorPrefix).append("\")");
+            builder.append(" (\"").append(meta.getDisplayName()).append(colorPrefix).append("\")");
         }
 
         Map<Enchantment, Integer> enchantments = meta == null ? Collections.emptyMap() : new HashMap<>(meta.getEnchants());
