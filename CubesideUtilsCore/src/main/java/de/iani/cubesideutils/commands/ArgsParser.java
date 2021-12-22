@@ -1,6 +1,5 @@
 package de.iani.cubesideutils.commands;
 
-import com.google.common.base.Preconditions;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,7 +30,9 @@ public class ArgsParser implements Iterable<String>, Iterator<String> {
     }
 
     public ArgsParser(String[] args, int skipParts) {
-        Preconditions.checkArgument(skipParts >= 0, "require skipParts >= 0");
+        if (skipParts < 0) {
+            throw new IllegalArgumentException("skipParts must be >= 0");
+        }
         this.args = args;
         this.current = -1 + skipParts;
     }

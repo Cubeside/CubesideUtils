@@ -1,20 +1,25 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>CubesideUtilsBungee</artifactId>
     <properties>
         <mainClass>de.iani.cubesideutils.bungee.plugin.UtilsPluginBungee</mainClass>
     </properties>
-	<parent>
-		<groupId>de.iani.cubeside</groupId>
-		<artifactId>CubesideUtils</artifactId>
-		<version>1.16-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> 
-	</parent> 
+    <parent>
+        <groupId>de.iani.cubeside</groupId>
+        <artifactId>CubesideUtils</artifactId>
+        <version>1.16-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <dependencies>
         <dependency>
             <groupId>de.iani.cubeside</groupId>
             <artifactId>CubesideUtilsCore</artifactId>
+            <version>1.16-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.iani.cubeside</groupId>
+            <artifactId>CubesideUtilsCoreBungeecordChat</artifactId>
             <version>1.16-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
@@ -71,7 +76,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
-             </plugin>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -84,6 +89,46 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>junit:junit</artifact>
+                            <excludes>
+                                <exclude>**</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>org.hamcrest:hamcrest-core</artifact>
+                            <excludes>
+                                <exclude>**</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>com.googlecode.json-simple:json-simple</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>de.iani.cubeside:CubesideUtilsCore</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>de.iani.cubeside:CubesideUtilsCoreBungeecordChat</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.json.simple</pattern>
+                            <shadedPattern>de.iani.cubesideutils.libs.json-simple</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
         </plugins>
         <resources>

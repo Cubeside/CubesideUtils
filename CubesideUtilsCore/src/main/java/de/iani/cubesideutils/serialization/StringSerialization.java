@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.serialization;
 
-import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.StringUtilCore;
 import de.iani.cubesideutils.collections.GeneralHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -11,7 +11,7 @@ public class StringSerialization {
     private static Map<String, Function<String, StringSerializable>> serializationTypes;
 
     static {
-        serializationTypes = new GeneralHashMap<>(StringUtil.CASE_IGNORING_HASHER, StringUtil.CASE_IGNORING_EQUALITY);
+        serializationTypes = new GeneralHashMap<>(StringUtilCore.CASE_IGNORING_HASHER, StringUtilCore.CASE_IGNORING_EQUALITY);
 
         register(NullWrapper.SERIALIZATION_TYPE, serialized -> null);
     }
