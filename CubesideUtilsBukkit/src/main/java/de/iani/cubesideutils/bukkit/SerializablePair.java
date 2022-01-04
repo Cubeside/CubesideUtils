@@ -26,12 +26,12 @@ public class SerializablePair<T, S> extends Pair<T, S> implements ConfigurationS
     }
 
     @Override
-    public SerializablePair<T, S> setFirst(T first) {
+    public <X> SerializablePair<X, S> setFirst(X first) {
         return new SerializablePair<>(first, this.second);
     }
 
     @Override
-    public SerializablePair<T, S> setSecond(S second) {
+    public <X> SerializablePair<T, X> setSecond(X second) {
         return new SerializablePair<>(this.first, second);
     }
 

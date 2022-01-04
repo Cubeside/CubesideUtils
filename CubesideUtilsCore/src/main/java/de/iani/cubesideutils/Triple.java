@@ -18,12 +18,24 @@ public class Triple<T, S, U> {
         return this.first;
     }
 
+    public <X> Triple<X, S, U> setFirst(X first) {
+        return new Triple<>(first, this.second, this.third);
+    }
+
     public S second() {
         return this.second;
     }
 
+    public <X> Triple<T, X, U> setSecond(X second) {
+        return new Triple<>(first, second, this.third);
+    }
+
     public U third() {
         return this.third;
+    }
+
+    public <X> Triple<T, S, X> setThird(X third) {
+        return new Triple<>(first, this.second, third);
     }
 
     @Override

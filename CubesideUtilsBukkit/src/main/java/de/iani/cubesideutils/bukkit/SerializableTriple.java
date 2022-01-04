@@ -20,6 +20,18 @@ public class SerializableTriple<T, S, U> extends Triple<T, S, U> implements Conf
         this(copyOf.first, copyOf.second, copyOf.third);
     }
 
+    public <X> SerializableTriple<X, S, U> setFirst(X first) {
+        return new SerializableTriple<>(first, this.second, this.third);
+    }
+
+    public <X> SerializableTriple<T, X, U> setSecond(X second) {
+        return new SerializableTriple<>(first, second, this.third);
+    }
+
+    public <X> SerializableTriple<T, S, X> setThird(X third) {
+        return new SerializableTriple<>(first, this.second, third);
+    }
+
     @SuppressWarnings("unchecked")
     public SerializableTriple(Map<String, Object> serialized) {
         this((T) serialized.get("first"), (S) serialized.get("second"), (U) serialized.get("third"));

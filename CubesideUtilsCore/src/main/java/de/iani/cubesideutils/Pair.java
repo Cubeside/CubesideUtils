@@ -19,11 +19,11 @@ public class Pair<T, S> {
         this.second = (S) serialized.get("second");
     }
 
-    public Pair<T, S> setFirst(T first) {
+    public <X> Pair<X, S> setFirst(X first) {
         return new Pair<>(first, this.second);
     }
 
-    public Pair<T, S> setSecond(S second) {
+    public <X> Pair<T, X> setSecond(X second) {
         return new Pair<>(this.first, second);
     }
 
