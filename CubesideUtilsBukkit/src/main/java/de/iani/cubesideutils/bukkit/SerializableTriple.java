@@ -16,6 +16,10 @@ public class SerializableTriple<T, S, U> extends Triple<T, S, U> implements Conf
         super(first, second, third);
     }
 
+    public SerializableTriple(Triple<T, S, U> copyOf) {
+        this(copyOf.first, copyOf.second, copyOf.third);
+    }
+
     @SuppressWarnings("unchecked")
     public SerializableTriple(Map<String, Object> serialized) {
         this((T) serialized.get("first"), (S) serialized.get("second"), (U) serialized.get("third"));

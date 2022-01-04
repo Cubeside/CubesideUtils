@@ -16,6 +16,10 @@ public class SerializablePair<T, S> extends Pair<T, S> implements ConfigurationS
         super(first, second);
     }
 
+    public SerializablePair(Pair<T, S> copyOf) {
+        this(copyOf.first, copyOf.second);
+    }
+
     @SuppressWarnings("unchecked")
     public SerializablePair(Map<String, Object> serialized) {
         this((T) serialized.get("first"), (S) serialized.get("second"));
