@@ -1,12 +1,12 @@
 package de.iani.cubesideutils.commands;
 
-import com.google.common.base.Objects;
 import de.iani.cubesideutils.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 
 public abstract class AbstractCommandRouter<ControllerT extends PermissionRequirer, HandlerT> {
 
@@ -185,7 +185,7 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
                 }
             }
         }
-        if (!Objects.equal(map.requiredPermissions, requiredPermissions)) {
+        if (!Objects.equals(map.requiredPermissions, requiredPermissions)) {
             map.requiredPermissions = requiredPermissions;
             if (map.parent != null) {
                 onSubCommandsModified(map.parent);

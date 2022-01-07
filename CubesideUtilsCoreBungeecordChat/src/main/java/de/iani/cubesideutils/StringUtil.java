@@ -31,20 +31,9 @@ public class StringUtil {
     public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR);
     public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + ChatColor.COLOR_CHAR + "([0-9a-fk-or]|(x(" + ChatColor.COLOR_CHAR + "[0-9a-f]){6}))", Pattern.CASE_INSENSITIVE);
 
-    public static final ToIntFunction<String> CASE_IGNORING_HASHER = s -> {
-        if (s == null) {
-            return 0;
-        }
+    public static final ToIntFunction<String> CASE_IGNORING_HASHER = StringUtilCore.CASE_IGNORING_HASHER;
 
-        int hash = 0;
-        for (int i = 0; i < s.length(); i++) {
-            int c = s.charAt(i);
-            hash = 31 * hash + Character.toLowerCase(c);
-        }
-        return hash;
-    };
-
-    public static final BiPredicate<String, String> CASE_IGNORING_EQUALITY = (s1, s2) -> s1 == null ? s2 == null : s1.equalsIgnoreCase(s2);
+    public static final BiPredicate<String, String> CASE_IGNORING_EQUALITY = StringUtilCore.CASE_IGNORING_EQUALITY;
 
     public static final ToIntFunction<String> CASE_AND_COLORS_IGNORING_HASHER = s -> {
         if (s == null) {

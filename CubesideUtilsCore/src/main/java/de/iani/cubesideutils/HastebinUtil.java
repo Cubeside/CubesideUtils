@@ -1,6 +1,5 @@
 package de.iani.cubesideutils;
 
-import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,8 +24,12 @@ public class HastebinUtil {
      *            The listener that will be called when the paste is completed
      */
     public static void paste(String content, PasteCompletedListener listener) {
-        Preconditions.checkNotNull(content, "content");
-        Preconditions.checkNotNull(listener, "listener");
+        if (content == null) {
+            throw new NullPointerException("content");
+        }
+        if (listener == null) {
+            throw new NullPointerException("listener");
+        }
         new Thread("Hastebin Paste Thread") {
             @Override
             public void run() {
