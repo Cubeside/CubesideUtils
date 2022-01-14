@@ -32,6 +32,12 @@
             <url>https://www.iani.de/nexus/content/groups/public</url>
         </repository>
     </repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-snapshots</id>
+			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
     <ciManagement>
         <system>jenkins</system>
         <url>https://www.iani.de/jenkins/</url>
