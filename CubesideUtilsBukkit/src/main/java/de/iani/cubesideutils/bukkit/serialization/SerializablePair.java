@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.bukkit;
+package de.iani.cubesideutils.bukkit.serialization;
 
 import de.iani.cubesideutils.Pair;
 import java.util.LinkedHashMap;
