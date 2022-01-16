@@ -10,6 +10,7 @@ public class SerializableTriple<T, S, U> extends Triple<T, S, U> implements Conf
 
     static {
         ConfigurationSerialization.registerClass(SerializableTriple.class);
+        ConfigurationSerialization.registerClass(SerializableTriple.class, "de.iani.cubesideutils.bukkit.SerializableTriple");
     }
 
     public SerializableTriple(T first, S second, U third) {
@@ -20,14 +21,17 @@ public class SerializableTriple<T, S, U> extends Triple<T, S, U> implements Conf
         this(copyOf.first, copyOf.second, copyOf.third);
     }
 
+    @Override
     public <X> SerializableTriple<X, S, U> setFirst(X first) {
         return new SerializableTriple<>(first, this.second, this.third);
     }
 
+    @Override
     public <X> SerializableTriple<T, X, U> setSecond(X second) {
         return new SerializableTriple<>(first, second, this.third);
     }
 
+    @Override
     public <X> SerializableTriple<T, S, X> setThird(X third) {
         return new SerializableTriple<>(first, this.second, third);
     }

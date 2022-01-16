@@ -10,6 +10,7 @@ public class SerializablePair<T, S> extends Pair<T, S> implements ConfigurationS
 
     static {
         ConfigurationSerialization.registerClass(SerializablePair.class);
+        ConfigurationSerialization.registerClass(SerializablePair.class, "de.iani.cubesideutils.bukkit.SerializablePair");
     }
 
     public SerializablePair(T first, S second) {
