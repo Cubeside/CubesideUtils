@@ -131,18 +131,18 @@ public abstract class ChatUtil {
 
         @Override
         public T get(int index) {
-            int transformedIndex = index - cacheStartIndex;
-            if (cache == null || transformedIndex < 0 || transformedIndex >= cacheSize) {
-                cache = listFiller.apply(index, cacheSize);
-                cacheStartIndex = index;
+            int transformedIndex = index - this.cacheStartIndex;
+            if (this.cache == null || transformedIndex < 0 || transformedIndex >= this.cacheSize) {
+                this.cache = this.listFiller.apply(index, this.cacheSize);
+                this.cacheStartIndex = index;
                 transformedIndex = 0;
             }
-            return cache.get(transformedIndex);
+            return this.cache.get(transformedIndex);
         }
 
         @Override
         public int size() {
-            return sizeGetter.getAsInt();
+            return this.sizeGetter.getAsInt();
         }
 
     }
@@ -208,7 +208,12 @@ public abstract class ChatUtil {
             int listSize = messages.size();
             int numPages = (int) Math.ceil(listSize / (double) PAGE_LENGTH);
             if (page >= numPages && page > 0) {
-                sendMessage(recipient, pluginPrefix, warningColor.toString(), nameComponent.getText(), " hat keine Seite ", (page + 1));
+                ComponentBuilder builder = new ComponentBuilder(pluginPrefix);
+                if (!pluginPrefix.isEmpty()) {
+                    builder.append(" ");
+                }
+                builder.append(nameComponent).color(warningColor).append(" hat keine Seite ").append(String.valueOf(page + 1));
+                recipient.sendMessage(builder.create());
                 return;
             }
 
