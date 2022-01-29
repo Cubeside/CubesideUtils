@@ -8,12 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -314,6 +316,29 @@ public class StringUtilBukkit {
             }
             return result;
         }
+    }
+
+    // Offline Players
+
+    public static OfflinePlayer parseOfflinePlayer(String playerString) {
+        try {
+            UUID playerId = UUID.fromString(playerString);
+            return CubesideUtilsBukkit.getInstance().getPlayerUUIDCache().getPlayer(playerId);
+        } catch (IllegalArgumentException e) {
+            return CubesideUtilsBukkit.getInstance().getPlayerUUIDCache().getPlayer(playerString);
+        }
+    }
+
+    public static String getPlayerString(OfflinePlayer player) {
+        return getPlayerString(player.getUniqueId());
+    }
+
+    public static String getPlayerString(UUID playerId) {
+        OfflinePlayer player = CubesideUtilsBukkit.getInstance().getPlayerUUIDCache().getPlayer(playerId);
+        if (player == null || player.getName() == null) {
+            return playerId.toString();
+        }
+        return player.getName();
     }
 
 }

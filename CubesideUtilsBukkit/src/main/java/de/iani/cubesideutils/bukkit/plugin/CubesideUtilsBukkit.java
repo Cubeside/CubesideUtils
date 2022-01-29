@@ -25,6 +25,8 @@ import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.serialization.NullWrapper;
 import de.iani.cubesideutils.serialization.StringSerialization;
+import de.iani.playerUUIDCache.PlayerUUIDCache;
+import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -74,6 +76,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     private UtilsDatabaseBukkit database;
     private PlayerDataCache playerDataCache;
+    private PlayerUUIDCacheAPI playerUUIDCache;
     private GlobalClientPlugin globalClientPlugin;
     private UtilsGlobalDataHelperBukkit globalDataHelper;
 
@@ -108,6 +111,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         new EventListener();
         new AfkManager();
 
+        this.playerUUIDCache = JavaPlugin.getPlugin(PlayerUUIDCache.class);
         this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
         this.globalDataHelper = new UtilsGlobalDataHelperBukkit(this.plugin);
 
@@ -131,6 +135,10 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     public UtilsPluginBukkit getPlugin() {
         return plugin;
+    }
+
+    public PlayerUUIDCacheAPI getPlayerUUIDCache() {
+        return this.playerUUIDCache;
     }
 
     public GlobalClientPlugin getGlobalClientPlugin() {
