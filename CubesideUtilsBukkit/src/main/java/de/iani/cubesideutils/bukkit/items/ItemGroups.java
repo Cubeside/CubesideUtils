@@ -262,7 +262,7 @@ public class ItemGroups {
             SPAWN_EGGS_INTERNAL.put(Material.GLOW_SQUID_SPAWN_EGG, EntityType.GLOW_SQUID);
             SPAWN_EGGS_INTERNAL.put(Material.GOAT_SPAWN_EGG, EntityType.GOAT);
         } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Some items could not be loaded into the ItemGroup");
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
 
 
@@ -398,7 +398,7 @@ public class ItemGroups {
             MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BIG_DRIPLEAF);
             MULTI_BLOCK_PLANTS_INTERNAL.add(Material.BIG_DRIPLEAF_STEM);
         } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Some items could not be loaded into the ItemGroup");
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
 
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.LARGE_FERN);
@@ -411,7 +411,7 @@ public class ItemGroups {
         try {
             DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SMALL_DRIPLEAF);
         } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Some items could not be loaded into the ItemGroup");
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
 
 
@@ -457,7 +457,7 @@ public class ItemGroups {
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SPORE_BLOSSOM);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.HANGING_ROOTS);
         } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Some items could not be loaded into the ItemGroup");
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.LILY_PAD);
         SINGLE_BLOCK_PLANTS_INTERNAL.addAll(CROPS_INTERNAL);
@@ -478,7 +478,7 @@ public class ItemGroups {
         try {
             FISH_BUCKETS_INTERNAL.add(Material.AXOLOTL_BUCKET);
         } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Some items could not be loaded into the ItemGroup");
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
 
         DYE_COLOR_TO_DYE.put(DyeColor.WHITE, Material.WHITE_DYE);
