@@ -130,7 +130,7 @@
                     <relocations>
                         <relocation>
                             <pattern>org.json.simple</pattern>
-                            <shadedPattern>de.iani.cubesideutils.libs.json-simple</shadedPattern>
+                            <shadedPattern>de.iani.cubesideutils.libs.jsonsimple</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
