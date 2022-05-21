@@ -11,6 +11,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.profile.PlayerProfile;
+import org.jetbrains.annotations.NotNull;
 
 public class CachedOfflinePlayer implements OfflinePlayer {
 
@@ -225,5 +227,11 @@ public class CachedOfflinePlayer implements OfflinePlayer {
     @Override
     public void setStatistic(Statistic statistic, EntityType entityType, int newValue) {
         getBukkitOfflinePlayer().setStatistic(statistic, entityType, newValue);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public @NotNull PlayerProfile getPlayerProfile() {
+        return Bukkit.createPlayerProfile(playerId, name);
     }
 }
