@@ -96,9 +96,9 @@ public class EventListener implements Listener {
         globalData.setPropertyValue(event.getPlayer(), CubesideUtilsBukkit.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), core.getWorldDisplayName(event.getPlayer()));
     }
 
-    // On monitor, GlobalPlayer may no longer be available.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
+        // On monitor, GlobalPlayer may no longer be available.
         UtilsGlobalDataHelperBukkit globalData = core.getGlobalDataHelper();
         globalData.setPropertyValue(event.getPlayer(), CubesideUtilsBukkit.DISPLAY_NAME_PROPERTY_PREFIX + globalData.getThisServerName(), null);
 

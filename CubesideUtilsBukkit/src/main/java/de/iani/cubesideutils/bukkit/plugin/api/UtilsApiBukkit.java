@@ -19,6 +19,8 @@ public interface UtilsApiBukkit extends UtilsApi {
         return CubesideUtilsBukkit.getInstance();
     }
 
+    public abstract InventoryInputManager getInventoryInputManager();
+
     public abstract OnlinePlayerData getPlayerData(Player player);
 
     public abstract PlayerDataBukkit getPlayerData(OfflinePlayer player);

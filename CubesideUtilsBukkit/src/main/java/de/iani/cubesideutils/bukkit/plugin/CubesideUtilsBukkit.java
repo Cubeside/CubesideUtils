@@ -80,6 +80,8 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     private GlobalClientPlugin globalClientPlugin;
     private UtilsGlobalDataHelperBukkit globalDataHelper;
 
+    private InventoryInputManagerImpl inventoryInputManager;
+
     private String defaultDisplayName;
     private Map<String, String> worldDisplayNames;
 
@@ -114,6 +116,8 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         this.playerUUIDCache = JavaPlugin.getPlugin(PlayerUUIDCache.class);
         this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
         this.globalDataHelper = new UtilsGlobalDataHelperBukkit(this.plugin);
+
+        this.inventoryInputManager = new InventoryInputManagerImpl();
 
         this.database.registerRealServer();
 
@@ -167,6 +171,10 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     @Override
     public UtilsGlobalDataHelperBukkit getGlobalDataHelper() {
         return this.globalDataHelper;
+    }
+
+    public InventoryInputManagerImpl getInventoryInputManager() {
+        return this.inventoryInputManager;
     }
 
     @Override
