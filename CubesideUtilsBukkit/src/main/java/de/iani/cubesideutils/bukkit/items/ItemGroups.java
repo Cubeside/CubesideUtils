@@ -183,6 +183,7 @@ public class ItemGroups {
         woodTypes.add("ACACIA");
         woodTypes.add("CRIMSON");
         woodTypes.add("WARPED");
+        woodTypes.add("MANGROVE");
 
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
@@ -264,7 +265,15 @@ public class ItemGroups {
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
-
+        // 1.19
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.ALLAY_SPAWN_EGG, EntityType.ALLAY);
+            SPAWN_EGGS_INTERNAL.put(Material.WARDEN_SPAWN_EGG, EntityType.WARDEN);
+            SPAWN_EGGS_INTERNAL.put(Material.TADPOLE_SPAWN_EGG, EntityType.TADPOLE);
+            SPAWN_EGGS_INTERNAL.put(Material.FROG_SPAWN_EGG, EntityType.FROG);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -366,6 +375,13 @@ public class ItemGroups {
             }
         }
 
+        // 1.19
+        try {
+            SAPLINGS_INTERNAL.add(Material.MANGROVE_PROPAGULE);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
+
         TOOLS_INTERNAL.addAll(PICKAXES_INTERNAL);
         TOOLS_INTERNAL.addAll(AXES_INTERNAL);
         TOOLS_INTERNAL.addAll(SHOVELS_INTERNAL);
@@ -413,7 +429,6 @@ public class ItemGroups {
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
-
 
         CROPS_INTERNAL.add(Material.NETHER_WART);
         CROPS_INTERNAL.add(Material.WHEAT);

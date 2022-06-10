@@ -42,6 +42,8 @@ public class EnchantmentNames {
         addEnchantment(Enchantment.IMPALING, "Impaling");
         addEnchantment(Enchantment.RIPTIDE, "Riptide");
         addEnchantment(Enchantment.CHANNELING, "Channeling");
+        addEnchantment(Enchantment.SOUL_SPEED, "Soul Speed");
+        addEnchantment(Enchantment.SWIFT_SNEAK, "Swift Sneak");
     }
 
     private static void addEnchantment(Enchantment enchantment, String name) {
