@@ -13,7 +13,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.profile.PlayerProfile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("deprecation")
 public class CachedOfflinePlayer implements OfflinePlayer {
 
     private UUID playerId;
@@ -233,5 +235,10 @@ public class CachedOfflinePlayer implements OfflinePlayer {
     @Override
     public @NotNull PlayerProfile getPlayerProfile() {
         return Bukkit.createPlayerProfile(playerId, name);
+    }
+
+    @Override
+    public @Nullable Location getLastDeathLocation() {
+        return null;
     }
 }
