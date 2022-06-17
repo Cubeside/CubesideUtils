@@ -171,6 +171,8 @@ public class ItemGroups {
     private static final EnumSet<Material> CONTAINER_BLOCKS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> CONTAINER_BLOCKS = Collections.unmodifiableSet(CONTAINER_BLOCKS_INTERNAL);
 
+    private static final EnumSet<Material> DYEABLE_ITEMS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> DYEABLE_ITEMS = Collections.unmodifiableSet(DYEABLE_ITEMS_INTERNAL);
     private static final Collection<String> woodTypes;
 
     static {
@@ -691,6 +693,12 @@ public class ItemGroups {
         CONTAINER_BLOCKS_INTERNAL.add(Material.BARREL);
         CONTAINER_BLOCKS_INTERNAL.add(Material.BLAST_FURNACE);
         CONTAINER_BLOCKS_INTERNAL.add(Material.SMOKER);
+
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_HELMET);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_CHESTPLATE);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_LEGGINGS);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_BOOTS);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_HORSE_ARMOR);
     }
 
     /**
@@ -924,6 +932,10 @@ public class ItemGroups {
 
     public static boolean isContainer(Material m) {
         return CONTAINER_BLOCKS_INTERNAL.contains(m);
+    }
+
+    public static boolean isDyeableItem(Material m) {
+        return DYEABLE_ITEMS_INTERNAL.contains(m);
     }
 
     public static Material getDyeForDyeColor(DyeColor color) {
