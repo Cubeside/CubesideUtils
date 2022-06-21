@@ -1,7 +1,6 @@
 package de.iani.cubesideutils.bukkit;
 
 import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 
 public class MinecraftVersion {
@@ -61,5 +60,17 @@ public class MinecraftVersion {
             }
         }
         return Integer.parseInt(s);
+    }
+
+    public static boolean isAboveOrEqual(int major, int minor, int release) {
+        return MAJOR > major || (MAJOR == major && (MINOR > minor || (MINOR == minor && RELEASE >= release)));
+    }
+
+    public static boolean isAbove(int major, int minor, int release) {
+        return MAJOR > major || (MAJOR == major && (MINOR > minor || (MINOR == minor && RELEASE > release)));
+    }
+
+    public static boolean isEqual(int major, int minor, int release) {
+        return MAJOR == major && MINOR == minor && RELEASE == release;
     }
 }
