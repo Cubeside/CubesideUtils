@@ -746,4 +746,59 @@ public class ComponentUtil {
         builder.append('}');
     }
 
+    public static BaseComponent setColor(BaseComponent component, ChatColor color) {
+        component.setColor(color);
+        return component;
+    }
+
+    public static TextComponent setColor(String text, ChatColor color) {
+        TextComponent component = new TextComponent(text);
+        component.setColor(color);
+        return component;
+    }
+
+    public static BaseComponent setBold(BaseComponent component, Boolean bold) {
+        component.setBold(bold);
+        return component;
+    }
+
+    public static BaseComponent setItalic(BaseComponent component, Boolean italic) {
+        component.setItalic(italic);
+        return component;
+    }
+
+    public static BaseComponent setStrikethrough(BaseComponent component, Boolean strikethrough) {
+        component.setStrikethrough(strikethrough);
+        return component;
+    }
+
+    public static BaseComponent setUnderlined(BaseComponent component, Boolean underlined) {
+        component.setUnderlined(underlined);
+        return component;
+    }
+
+    public static BaseComponent setObfuscated(BaseComponent component, Boolean obfuscated) {
+        component.setObfuscated(obfuscated);
+        return component;
+    }
+
+    public static BaseComponent addClickEvent(BaseComponent component, ClickEvent event) {
+        component.setClickEvent(event);
+        return component;
+    }
+
+    public static BaseComponent addHoverEvent(BaseComponent component, HoverEvent event) {
+        component.setHoverEvent(event);
+        return component;
+    }
+
+    public static BaseComponent addExtra(BaseComponent component, BaseComponent extra) {
+        component.addExtra(extra);
+        return component;
+    }
+
+    public static BaseComponent addExtra(BaseComponent component, String extra) {
+        component.addExtra(extra);
+        return component;
+    }
 }
