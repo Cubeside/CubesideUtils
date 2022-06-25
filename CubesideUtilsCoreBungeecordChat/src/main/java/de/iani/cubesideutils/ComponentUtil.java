@@ -746,7 +746,7 @@ public class ComponentUtil {
         builder.append('}');
     }
 
-    public static BaseComponent setColor(BaseComponent component, ChatColor color) {
+    public static <T extends BaseComponent> T setColor(T component, ChatColor color) {
         component.setColor(color);
         return component;
     }
@@ -757,47 +757,47 @@ public class ComponentUtil {
         return component;
     }
 
-    public static BaseComponent setBold(BaseComponent component, Boolean bold) {
+    public static <T extends BaseComponent> T setBold(T component, Boolean bold) {
         component.setBold(bold);
         return component;
     }
 
-    public static BaseComponent setItalic(BaseComponent component, Boolean italic) {
+    public static <T extends BaseComponent> T setItalic(T component, Boolean italic) {
         component.setItalic(italic);
         return component;
     }
 
-    public static BaseComponent setStrikethrough(BaseComponent component, Boolean strikethrough) {
+    public static <T extends BaseComponent> T setStrikethrough(T component, Boolean strikethrough) {
         component.setStrikethrough(strikethrough);
         return component;
     }
 
-    public static BaseComponent setUnderlined(BaseComponent component, Boolean underlined) {
+    public static <T extends BaseComponent> T setUnderlined(T component, Boolean underlined) {
         component.setUnderlined(underlined);
         return component;
     }
 
-    public static BaseComponent setObfuscated(BaseComponent component, Boolean obfuscated) {
+    public static <T extends BaseComponent> T setObfuscated(T component, Boolean obfuscated) {
         component.setObfuscated(obfuscated);
         return component;
     }
 
-    public static BaseComponent addClickEvent(BaseComponent component, ClickEvent event) {
+    public static <T extends BaseComponent> T addClickEvent(T component, ClickEvent event) {
         component.setClickEvent(event);
         return component;
     }
 
-    public static BaseComponent addHoverEvent(BaseComponent component, HoverEvent event) {
+    public static <T extends BaseComponent> T addHoverEvent(T component, HoverEvent event) {
         component.setHoverEvent(event);
         return component;
     }
 
-    public static BaseComponent addExtra(BaseComponent component, BaseComponent extra) {
+    public static <T extends BaseComponent> T addExtra(T component, BaseComponent extra) {
         component.addExtra(extra);
         return component;
     }
 
-    public static BaseComponent addExtra(BaseComponent component, String extra) {
+    public static <T extends BaseComponent> T addExtra(T component, String extra) {
         component.addExtra(extra);
         return component;
     }
