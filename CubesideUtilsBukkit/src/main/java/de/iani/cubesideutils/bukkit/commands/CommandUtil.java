@@ -55,6 +55,10 @@ public class CommandUtil {
         return registerCommand(plugin, command, aliases, commandRouter, commandRouter, replaceExisting);
     }
 
+    public static boolean registerCommand(Plugin plugin, String command, List<String> aliases, CommandRouter commandRouter, String permission, boolean replaceExisting) {
+        return registerCommand(plugin, command, aliases, commandRouter, commandRouter, permission, replaceExisting);
+    }
+
     public static boolean registerCommand(Plugin plugin, String command, HybridCommand hybridCommand) {
         return registerCommand(plugin, command, hybridCommand, false);
     }
@@ -84,6 +88,10 @@ public class CommandUtil {
     }
 
     public static boolean registerCommand(Plugin plugin, String command, List<String> aliases, CommandExecutor executor, TabCompleter completer, boolean replaceExisting) {
+        return registerCommand(plugin, command, aliases, executor, completer, null, replaceExisting);
+    }
+
+    public static boolean registerCommand(Plugin plugin, String command, List<String> aliases, CommandExecutor executor, TabCompleter completer, String permission, boolean replaceExisting) {
         Preconditions.checkNotNull(plugin, "plugin");
         Preconditions.checkNotNull(command, "command");
         Preconditions.checkNotNull(aliases, "aliases");
@@ -109,6 +117,9 @@ public class CommandUtil {
                 return completer == null ? super.tabComplete(sender, alias, args) : completer.onTabComplete(sender, this, alias, args);
             }
         }.setAliases(new ArrayList<>(aliases));
+        if (permission != null) {
+            cmd.setPermission(permission);
+        }
 
         boolean result = commandMap.register(plugin.getDescription().getName(), cmd);
         resyncCommandTabCompletions();

@@ -171,6 +171,8 @@ public class ItemGroups {
     private static final EnumSet<Material> CONTAINER_BLOCKS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> CONTAINER_BLOCKS = Collections.unmodifiableSet(CONTAINER_BLOCKS_INTERNAL);
 
+    private static final EnumSet<Material> DYEABLE_ITEMS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> DYEABLE_ITEMS = Collections.unmodifiableSet(DYEABLE_ITEMS_INTERNAL);
     private static final Collection<String> woodTypes;
 
     static {
@@ -183,6 +185,7 @@ public class ItemGroups {
         woodTypes.add("ACACIA");
         woodTypes.add("CRIMSON");
         woodTypes.add("WARPED");
+        woodTypes.add("MANGROVE");
 
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
@@ -264,7 +267,15 @@ public class ItemGroups {
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
-
+        // 1.19
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.ALLAY_SPAWN_EGG, EntityType.ALLAY);
+            SPAWN_EGGS_INTERNAL.put(Material.WARDEN_SPAWN_EGG, EntityType.WARDEN);
+            SPAWN_EGGS_INTERNAL.put(Material.TADPOLE_SPAWN_EGG, EntityType.TADPOLE);
+            SPAWN_EGGS_INTERNAL.put(Material.FROG_SPAWN_EGG, EntityType.FROG);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -366,6 +377,13 @@ public class ItemGroups {
             }
         }
 
+        // 1.19
+        try {
+            SAPLINGS_INTERNAL.add(Material.MANGROVE_PROPAGULE);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
+
         TOOLS_INTERNAL.addAll(PICKAXES_INTERNAL);
         TOOLS_INTERNAL.addAll(AXES_INTERNAL);
         TOOLS_INTERNAL.addAll(SHOVELS_INTERNAL);
@@ -413,7 +431,6 @@ public class ItemGroups {
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
-
 
         CROPS_INTERNAL.add(Material.NETHER_WART);
         CROPS_INTERNAL.add(Material.WHEAT);
@@ -477,6 +494,7 @@ public class ItemGroups {
         FISH_BUCKETS_INTERNAL.add(Material.TROPICAL_FISH_BUCKET);
         try {
             FISH_BUCKETS_INTERNAL.add(Material.AXOLOTL_BUCKET);
+            FISH_BUCKETS_INTERNAL.add(Material.TADPOLE_BUCKET);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
@@ -676,6 +694,12 @@ public class ItemGroups {
         CONTAINER_BLOCKS_INTERNAL.add(Material.BARREL);
         CONTAINER_BLOCKS_INTERNAL.add(Material.BLAST_FURNACE);
         CONTAINER_BLOCKS_INTERNAL.add(Material.SMOKER);
+
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_HELMET);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_CHESTPLATE);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_LEGGINGS);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_BOOTS);
+        DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_HORSE_ARMOR);
     }
 
     /**
@@ -909,6 +933,10 @@ public class ItemGroups {
 
     public static boolean isContainer(Material m) {
         return CONTAINER_BLOCKS_INTERNAL.contains(m);
+    }
+
+    public static boolean isDyeableItem(Material m) {
+        return DYEABLE_ITEMS_INTERNAL.contains(m);
     }
 
     public static Material getDyeForDyeColor(DyeColor color) {

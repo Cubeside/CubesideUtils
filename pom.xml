@@ -12,7 +12,7 @@
         <project.author>Brokkonaut, Starjon</project.author>
         <mainClass>de.iani.cubesideutils.plugin.UtilsPlugin</mainClass>
     </properties>
-	<modules>
+    <modules>
         <module>CubesideUtilsCore</module>
         <module>CubesideUtilsCoreBungeecordChat</module>
         <module>CubesideUtilsBukkit</module>
@@ -20,8 +20,8 @@
     </modules>
     <repositories>
         <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://repo.destroystokyo.com/repository/maven-public/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>bungeecord-repo</id>
@@ -32,12 +32,6 @@
             <url>https://www.iani.de/nexus/content/groups/public</url>
         </repository>
     </repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>maven-snapshots</id>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
     <ciManagement>
         <system>jenkins</system>
         <url>https://www.iani.de/jenkins/</url>
