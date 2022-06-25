@@ -214,7 +214,7 @@ public class StringUtil {
         return ChatColor.of(hexString.toString());
     }
 
-    private static final Pattern PIPE_PATTERN = Pattern.compile(" \\| ");
+    private static final Pattern PIPE_PATTERN = Pattern.compile("( |\\A)\\|( |\\Z)");
     private static final Pattern REMOVE_PIPE_PATTERN = Pattern.compile("\\|([^\\|])");
 
     public static Pair<String, String> splitAtPipe(String args) {
@@ -223,9 +223,8 @@ public class StringUtil {
             return null;
         }
 
-        int splitIndex = matcher.start();
-        String first = args.substring(0, splitIndex);
-        String second = args.substring(splitIndex + 3);
+        String first = args.substring(0, matcher.start());
+        String second = (matcher.end() >= args.length()) ? "" : args.substring(matcher.end());
 
         first = REMOVE_PIPE_PATTERN.matcher(first).replaceAll("$1");
         second = REMOVE_PIPE_PATTERN.matcher(second).replaceAll("$1");
