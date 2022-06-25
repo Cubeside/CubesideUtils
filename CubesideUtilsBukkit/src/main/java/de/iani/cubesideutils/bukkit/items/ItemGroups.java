@@ -494,6 +494,7 @@ public class ItemGroups {
         FISH_BUCKETS_INTERNAL.add(Material.TROPICAL_FISH_BUCKET);
         try {
             FISH_BUCKETS_INTERNAL.add(Material.AXOLOTL_BUCKET);
+            FISH_BUCKETS_INTERNAL.add(Material.TADPOLE_BUCKET);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
