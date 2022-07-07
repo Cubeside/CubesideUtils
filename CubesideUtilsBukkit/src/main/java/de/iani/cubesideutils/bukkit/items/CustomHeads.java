@@ -36,7 +36,7 @@ public enum CustomHeads {
     }
 
     public ItemStack getHead(String displayName) {
-        return getHead(displayName, null);
+        return getHead(displayName, (String[]) null);
     }
 
     public ItemStack getHead(String displayName, String... lore) {
