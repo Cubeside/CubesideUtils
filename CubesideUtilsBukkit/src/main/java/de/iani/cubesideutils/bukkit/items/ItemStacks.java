@@ -57,6 +57,13 @@ public class ItemStacks {
         return itemStack;
     }
 
+    public static ItemStack lore(ItemStack itemStack, String... lore) {
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.setLore((lore == null || lore.length == 0) ? null : List.of(lore));
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
     public static ItemStack rename(ItemStack itemStack, String name) {
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);
