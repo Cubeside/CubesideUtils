@@ -5,6 +5,7 @@ api-version: 1.13
 authors: [${project.author}]
  
 depend: [GlobalClient, PlayerUUIDCache]
+loadbefore: [Multiverse-Core]
  
 permissions:
   cubesideutils.changerankinformation:
