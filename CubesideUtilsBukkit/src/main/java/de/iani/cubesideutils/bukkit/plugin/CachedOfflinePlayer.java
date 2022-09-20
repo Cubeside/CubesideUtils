@@ -20,12 +20,14 @@ public class CachedOfflinePlayer implements OfflinePlayer {
 
     private UUID playerId;
     private String name;
+    private long lastSeen;
 
     private OfflinePlayer bukkitOfflinePlayer;
 
-    public CachedOfflinePlayer(UUID playerId, String name) {
+    public CachedOfflinePlayer(UUID playerId, String name, long lastSeen) {
         this.playerId = playerId;
         this.name = name;
+        this.lastSeen = lastSeen;
     }
 
     private OfflinePlayer getBukkitOfflinePlayer() {
@@ -138,7 +140,7 @@ public class CachedOfflinePlayer implements OfflinePlayer {
 
     @Override
     public long getLastSeen() {
-        return getBukkitOfflinePlayer().getLastSeen();
+        return lastSeen >= 0 ? lastSeen : getBukkitOfflinePlayer().getLastSeen();
     }
 
     @Override

@@ -43,7 +43,7 @@ public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBu
 
     @Override
     public OfflinePlayer getOfflinePlayer() {
-        return new CachedOfflinePlayer(getPlayerId(), getLastName());
+        return new CachedOfflinePlayer(getPlayerId(), getLastName(), getLastSeen());
     }
 
     public void checkRank(Permissible player) {

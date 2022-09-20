@@ -125,7 +125,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.setCustomPlayerDataQuery = "INSERT INTO `" + this.customPlayerDataTableName + "` (playerId, `key`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?";
         this.removeCustomPlayerDataQuery = "DELETE FROM `" + this.customPlayerDataTableName + "` WHERE playerId = ? AND `key` = ?";
 
-        this.getPlayerIdsByPartialNameQuery = "SELECT playerId, name FROM `" + this.playerDataTableName + "` WHERE name LIKE ? ORDER BY lastSeen DESC";
+        this.getPlayerIdsByPartialNameQuery = "SELECT playerId, name, lastSeen FROM `" + this.playerDataTableName + "` WHERE name LIKE ? ORDER BY lastSeen DESC";
 
         this.getAfkServersQuery = "SELECT server FROM `" + this.afkPlayersTableName + "` WHERE player = ?";
         this.addAfkServerQuery = "INSERT IGNORE INTO `" + this.afkPlayersTableName + "` (player, server) VALUES (?, ?)";
@@ -398,17 +398,18 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         });
     }
 
-    protected List<Pair<UUID, String>> getPlayerIdsByPartialName(String partialName) throws SQLException {
+    protected List<Triple<UUID, String, Long>> getPlayerIdsByPartialName(String partialName) throws SQLException {
         return this.connection.runCommands((connection, sqlConnection) -> {
             PreparedStatement smt = sqlConnection.getOrCreateStatement(this.getPlayerIdsByPartialNameQuery);
             smt.setString(1, "%" + SQLUtil.escapeLike(partialName) + "%");
             ResultSet rs = smt.executeQuery();
 
-            List<Pair<UUID, String>> result = new ArrayList<>();
+            List<Triple<UUID, String, Long>> result = new ArrayList<>();
             while (rs.next()) {
-                UUID playerId = UUID.fromString(rs.getString(1));
-                String name = rs.getString(2);
-                result.add(new Pair<>(playerId, name));
+                UUID playerId = UUID.fromString(rs.getString("playerId"));
+                String name = rs.getString("name");
+                long lastSeen = rs.getLong("lastSeen");
+                result.add(new Triple<>(playerId, name, lastSeen));
             }
             rs.close();
             return result;

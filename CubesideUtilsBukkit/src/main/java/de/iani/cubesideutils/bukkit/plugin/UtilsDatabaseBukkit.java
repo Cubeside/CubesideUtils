@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
-import de.iani.cubesideutils.Pair;
+import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.plugin.UtilsDatabase;
 import de.iani.cubesideutils.sql.SQLConfig;
 import java.sql.SQLException;
@@ -37,11 +37,11 @@ public class UtilsDatabaseBukkit extends UtilsDatabase<PlayerDataImplBukkit> {
     }
 
     public List<OfflinePlayer> searchPlayersByPartialName(String partialName) throws SQLException {
-        List<Pair<UUID, String>> idNamePairs = getPlayerIdsByPartialName(partialName);
+        List<Triple<UUID, String, Long>> idNamePairs = getPlayerIdsByPartialName(partialName);
         List<OfflinePlayer> result = new ArrayList<>(idNamePairs.size());
 
-        for (Pair<UUID, String> pair : idNamePairs) {
-            OfflinePlayer player = new CachedOfflinePlayer(pair.first, pair.second);
+        for (Triple<UUID, String, Long> pair : idNamePairs) {
+            OfflinePlayer player = new CachedOfflinePlayer(pair.first, pair.second, pair.third);
             result.add(player);
         }
 
