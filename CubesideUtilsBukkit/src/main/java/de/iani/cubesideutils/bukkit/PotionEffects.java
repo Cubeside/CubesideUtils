@@ -1,8 +1,10 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -17,10 +19,12 @@ public class PotionEffects {
         typeToMax = new HashMap<>();
 
         addEffectType(PotionEffectType.ABSORPTION, 4);
+        addEffectType(PotionEffectType.BAD_OMEN, 5);
         addEffectType(PotionEffectType.BLINDNESS, 1);
         addEffectType(PotionEffectType.CONDUIT_POWER, 1);
         addEffectType(PotionEffectType.CONFUSION, 1);
         addEffectType(PotionEffectType.DAMAGE_RESISTANCE, 2);
+        addEffectType(PotionEffectType.DARKNESS, 1);
         addEffectType(PotionEffectType.DOLPHINS_GRACE, 1);
         addEffectType(PotionEffectType.FAST_DIGGING, 2);
         addEffectType(PotionEffectType.FIRE_RESISTANCE, 1);
@@ -28,6 +32,7 @@ public class PotionEffects {
         addEffectType(PotionEffectType.HARM, 2);
         addEffectType(PotionEffectType.HEAL, 2);
         addEffectType(PotionEffectType.HEALTH_BOOST, 0);
+        addEffectType(PotionEffectType.HERO_OF_THE_VILLAGE, 5);
         addEffectType(PotionEffectType.HUNGER, 1);
         addEffectType(PotionEffectType.INCREASE_DAMAGE, 2);
         addEffectType(PotionEffectType.INVISIBILITY, 1);
@@ -53,6 +58,11 @@ public class PotionEffects {
     }
 
     public static int getMaxAmplifier(PotionEffectType type) {
+        int res = typeToMax.getOrDefault(type, -1);
+        if (res == -1) {
+            CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "No maximum level known for PotionEffectType " + type);
+            res = 0;
+        }
         return typeToMax.get(type);
     }
 
