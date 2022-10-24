@@ -301,6 +301,12 @@ public class StringUtil {
         return buffer.toString();
     }
 
+    public static String revertEscaped(String text) {
+        text = text.replaceAll("\\\\", "\\\\\\\\");
+        text = text.replaceAll("\\n", "\\\\n");
+        return text;
+    }
+
     // Line breaking
 
     public static List<String> breakLinesForMinecraft(String text, int lineLength) {
