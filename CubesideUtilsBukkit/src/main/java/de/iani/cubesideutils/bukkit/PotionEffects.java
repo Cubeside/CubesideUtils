@@ -63,7 +63,7 @@ public class PotionEffects {
             CubesideUtilsBukkit.getInstance().getLogger().log(Level.SEVERE, "No maximum level known for PotionEffectType " + type);
             res = 0;
         }
-        return typeToMax.get(type);
+        return res;
     }
 
     public static String toNiceString(PotionEffect effect) {
