@@ -106,7 +106,7 @@ public class CommandUtil {
             }
         }
 
-        Command cmd = new Command(command) {
+        Command cmd = new DynamicPluginCommand(plugin, command) {
             @Override
             public boolean execute(CommandSender sender, String commandLabel, String[] args) {
                 return executor.onCommand(sender, this, commandLabel, args);
