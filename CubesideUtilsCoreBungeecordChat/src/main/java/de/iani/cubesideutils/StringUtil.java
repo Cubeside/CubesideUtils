@@ -20,7 +20,10 @@ import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class StringUtil {
     private StringUtil() {
@@ -99,6 +102,13 @@ public class StringUtil {
             cap[i] = c;
         }
         return new String(cap);
+    }
+
+    public static void main(String[] args) {
+        String s = "" + ChatColor.GREEN + ChatColor.BOLD + ChatColor.ITALIC;
+        BaseComponent[] bc = TextComponent.fromLegacyText(s);
+        System.out.println(bc.length);
+        System.out.println(Arrays.stream(bc).map(c -> ComponentUtil.serializeComponent(c)).collect(Collectors.joining("\n")));
     }
 
     public static String replaceLast(String in, String sequence, String replacement) {

@@ -54,7 +54,7 @@ public abstract class ChatUtil {
 
         public void sendMessage(String message);
 
-        public void sendMessage(BaseComponent[] message);
+        public void sendMessage(BaseComponent... message);
     }
 
     public static interface Sendable<T> {
@@ -80,7 +80,7 @@ public abstract class ChatUtil {
 
         public final BaseComponent[] message;
 
-        public ComponentMsg(BaseComponent[] message) {
+        public ComponentMsg(BaseComponent... message) {
             this.message = message;
         }
 
@@ -286,9 +286,18 @@ public abstract class ChatUtil {
     }
 
     public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object... messageParts) {
-        StringBuilder builder = new StringBuilder(pluginPrefix);
+        TextComponent builder = new TextComponent(pluginPrefix);
         if (!pluginPrefix.isEmpty()) {
-            builder.append(" ");
+            builder.addExtra(" ");
+        }
+
+        if (colors != null && !colors.isEmpty()) {
+            BaseComponent[] colorComponents = TextComponent.fromLegacyText(colors);
+            if (colorComponents.length == 1) {
+                builder.copyFormatting(colorComponents[0]);
+            } else {
+                CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage (colors-String).", new Throwable());
+            }
         }
 
         if (Arrays.stream(messageParts).anyMatch(o -> o != null && o.getClass().isArray())) {
@@ -297,12 +306,15 @@ public abstract class ChatUtil {
         }
 
         for (Object s : messageParts) {
-            if (colors != null) {
-                builder.append(ChatColor.RESET).append(colors);
+            if (s instanceof BaseComponent[] bc) {
+                builder.addExtra(new TextComponent(bc));
+            } else if (s instanceof BaseComponent bc) {
+                builder.addExtra(bc);
+            } else {
+                builder.addExtra(Objects.toString(s));
             }
-            builder.append(Objects.toString(s));
         }
-        receiver.sendMessage(builder.toString());
+        receiver.sendMessage(builder);
     }
 
     @SuppressWarnings("unchecked")

@@ -34,7 +34,7 @@ public class ChatUtilBukkit extends ChatUtil {
         }
 
         @Override
-        public void sendMessage(BaseComponent[] message) {
+        public void sendMessage(BaseComponent... message) {
             original.sendMessage(message);
         }
     }
@@ -59,7 +59,7 @@ public class ChatUtilBukkit extends ChatUtil {
         }
 
         @Override
-        public void sendMessage(BaseComponent[] message) {
+        public void sendMessage(BaseComponent... message) {
             CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
         }
 

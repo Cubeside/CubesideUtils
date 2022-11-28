@@ -30,7 +30,7 @@ public class ChatUtilsBungee {
         }
 
         @Override
-        public void sendMessage(BaseComponent[] message) {
+        public void sendMessage(BaseComponent... message) {
             original.sendMessage(message);
         }
     }
@@ -65,7 +65,7 @@ public class ChatUtilsBungee {
 
         public final BaseComponent[] message;
 
-        public ComponentMsg(BaseComponent[] message) {
+        public ComponentMsg(BaseComponent... message) {
             this.message = message;
         }
 
