@@ -312,7 +312,8 @@ public abstract class ChatUtil {
             } else if (s instanceof BaseComponent bc) {
                 builder.addExtra(bc);
             } else {
-                builder.addExtra(Objects.toString(s));
+                String stringObject = Objects.toString(s);
+                builder.addExtra(new TextComponent(TextComponent.fromLegacyText(stringObject != null ? stringObject : "null")));
             }
         }
         receiver.sendMessage(builder);
