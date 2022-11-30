@@ -35,7 +35,16 @@ public class ChatUtilBukkit extends ChatUtil {
 
         @Override
         public void sendMessage(BaseComponent... message) {
-            original.sendMessage(message);
+            try {
+                original.sendMessage(message);
+            } catch (NoSuchMethodError e) {
+                // spigot compatibility
+                if (original instanceof Player) {
+                    ((Player) original).spigot().sendMessage(message);
+                } else {
+                    original.sendMessage(BaseComponent.toLegacyText(message));
+                }
+            }
         }
     }
 
