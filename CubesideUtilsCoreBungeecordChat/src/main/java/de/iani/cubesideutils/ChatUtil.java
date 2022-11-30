@@ -286,8 +286,9 @@ public abstract class ChatUtil {
     }
 
     public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object... messageParts) {
-        TextComponent builder = new TextComponent(pluginPrefix);
+        TextComponent builder = new TextComponent();
         if (!pluginPrefix.isEmpty()) {
+            builder.addExtra(new TextComponent(TextComponent.fromLegacyText(pluginPrefix)));
             builder.addExtra(" ");
         }
 
