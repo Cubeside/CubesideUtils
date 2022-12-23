@@ -56,6 +56,16 @@ public class EventListener implements Listener {
         core.getPlayerData(event.getPlayer()).checkRank();
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerLoginEarly(PlayerLoginEvent event) {
+        String hostName = event.getHostname();
+        int split = hostName.indexOf('\0');
+        if (split >= 0) {
+            hostName = hostName.substring(0, split);
+        }
+        core.getPlayerData(event.getPlayer()).setHostName(hostName);
+    }
+
     @EventHandler
     public void onPlayerPermissionsChanged(PlayerPermissionsChangedEvent event) {
         Player player = Bukkit.getPlayer(event.getPlayerId());

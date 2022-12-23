@@ -19,6 +19,7 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
     private long lastLocalAction;
     private boolean manuallySetAfk;
     private boolean locallyAfk;
+    private String hostName;
 
     public OnlinePlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String lastName, String rank) {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, lastName, rank);
@@ -195,4 +196,11 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         checkRank(getPlayer());
     }
 
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
 }

@@ -16,4 +16,5 @@ public interface OnlinePlayerData extends PlayerDataBukkit {
 
     public void checkRank();
 
+    public String getHostName();
 }
