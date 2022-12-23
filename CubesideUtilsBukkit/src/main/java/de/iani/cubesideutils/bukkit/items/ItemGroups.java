@@ -161,6 +161,11 @@ public class ItemGroups {
     private static final EnumSet<Material> DYES_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> DYES = Collections.unmodifiableSet(DYES_INTERNAL);
 
+    private static final EnumSet<Material> HANGING_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> HANGING_SIGNS = Collections.unmodifiableSet(HANGING_SIGNS_INTERNAL);
+    private static final EnumSet<Material> WALL_HANGING_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    public static final Set<Material> WALL_HANGING_SIGNS = Collections.unmodifiableSet(WALL_HANGING_SIGNS_INTERNAL);
+
     private static final EnumSet<Material> SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
     public static final Set<Material> SIGNS = Collections.unmodifiableSet(SIGNS_INTERNAL);
     private static final EnumSet<Material> WALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
@@ -186,6 +191,7 @@ public class ItemGroups {
         woodTypes.add("CRIMSON");
         woodTypes.add("WARPED");
         woodTypes.add("MANGROVE");
+        woodTypes.add("BAMBOO");
 
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
@@ -276,6 +282,16 @@ public class ItemGroups {
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
+        // 1.19.3
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.ENDER_DRAGON_SPAWN_EGG, EntityType.ENDER_DRAGON);
+            SPAWN_EGGS_INTERNAL.put(Material.WITHER_SPAWN_EGG, EntityType.WITHER);
+            SPAWN_EGGS_INTERNAL.put(Material.SNOW_GOLEM_SPAWN_EGG, EntityType.SNOWMAN);
+            SPAWN_EGGS_INTERNAL.put(Material.IRON_GOLEM_SPAWN_EGG, EntityType.IRON_GOLEM);
+            SPAWN_EGGS_INTERNAL.put(Material.CAMEL_SPAWN_EGG, EntityType.CAMEL);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -353,6 +369,10 @@ public class ItemGroups {
                     SWORDS_INTERNAL.add(m);
                 } else if (name.endsWith("_WALL_SIGN")) {
                     WALL_SIGNS_INTERNAL.add(m);
+                } else if (name.endsWith("_HANGING_SIGN")) {
+                    HANGING_SIGNS_INTERNAL.add(m);
+                } else if (name.endsWith("_WALL_HANGING_SIGN")) {
+                    WALL_HANGING_SIGNS_INTERNAL.add(m);
                 } else if (name.endsWith("_SIGN")) {
                     SIGNS_INTERNAL.add(m);
                 } else if (name.endsWith("_BOAT")) {
@@ -682,6 +702,8 @@ public class ItemGroups {
 
         ALL_SIGNS_INTERNAL.addAll(SIGNS_INTERNAL);
         ALL_SIGNS_INTERNAL.addAll(WALL_SIGNS_INTERNAL);
+        ALL_SIGNS_INTERNAL.addAll(HANGING_SIGNS_INTERNAL);
+        ALL_SIGNS_INTERNAL.addAll(WALL_HANGING_SIGNS_INTERNAL);
 
         CONTAINER_BLOCKS_INTERNAL.add(Material.CHEST);
         CONTAINER_BLOCKS_INTERNAL.add(Material.TRAPPED_CHEST);

@@ -64,7 +64,7 @@ public class ItemsAndStrings {
             return item1.getItemMeta().toString().compareTo(item2.getItemMeta().toString());
         });
 
-        Arrays.stream(items).filter(item -> item != null && item.getType() != Material.AIR && item.getAmount() > 0).forEach(item -> itemMap.put(item, item.getAmount() + (itemMap.containsKey(item) ? itemMap.get(item) : 0)));
+        Arrays.stream(items).filter(item -> item != null && item.getType() != Material.AIR && item.getAmount() > 0).forEach(item -> itemMap.merge(item, item.getAmount(), (v1, v2) -> v1 + v2));
         return toNiceString(itemMap, colorPrefix);
     }
 
