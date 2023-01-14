@@ -34,7 +34,7 @@ public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBu
             return (OnlinePlayerDataImpl) this;
         }
 
-        if (!isOnlineHere()) {
+        if (Bukkit.isPrimaryThread() && !isOnlineHere()) {
             throw new IllegalStateException("The player isn't online.");
         }
 
