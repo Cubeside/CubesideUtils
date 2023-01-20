@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 /**
  * A data output stream that contains some additional methods to write data in minecraft format.
@@ -39,5 +41,9 @@ public class MinecraftDataOutputStream extends DataOutputStream {
     public void writeUuid(UUID uuid) throws IOException {
         writeLong(uuid.getMostSignificantBits());
         writeLong(uuid.getLeastSignificantBits());
+    }
+
+    public void writeText(BaseComponent... text) throws IOException {
+        writeString(ComponentSerializer.toString(text));
     }
 }
