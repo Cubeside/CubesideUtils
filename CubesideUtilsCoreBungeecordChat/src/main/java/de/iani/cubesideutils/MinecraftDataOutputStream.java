@@ -46,4 +46,8 @@ public class MinecraftDataOutputStream extends DataOutputStream {
     public void writeText(BaseComponent... text) throws IOException {
         writeString(ComponentSerializer.toString(text));
     }
+
+    public void writeText(BaseComponent text) throws IOException {
+        writeString(ComponentSerializer.toString(text));
+    }
 }
