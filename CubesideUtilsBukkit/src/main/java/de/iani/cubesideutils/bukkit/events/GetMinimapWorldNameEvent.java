@@ -1,4 +1,4 @@
-package de.iani.cubesideutils.bukkit.plugin.api.events;
+package de.iani.cubesideutils.bukkit.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
