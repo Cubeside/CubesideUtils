@@ -4,6 +4,7 @@ import de.cubeside.connection.ConnectionAPI;
 import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.collections.SimpleCacheMap;
 import de.iani.cubesideutils.conditions.BinaryCombinedCondition;
+import de.iani.cubesideutils.conditions.ConstantCondition;
 import de.iani.cubesideutils.conditions.NegatedCondition;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.plugin.api.PasswordHandler;
@@ -30,6 +31,7 @@ public abstract class CubesideUtils implements UtilsApi {
 
     static {
         StringSerialization.register(BinaryCombinedCondition.SERIALIZATION_TYPE, BinaryCombinedCondition::deserialize);
+        StringSerialization.register(ConstantCondition.SERIALIZATION_TYPE, ConstantCondition::deserialize);
         StringSerialization.register(NegatedCondition.SERIALIZATION_TYPE, NegatedCondition::deserialize);
     }
 
