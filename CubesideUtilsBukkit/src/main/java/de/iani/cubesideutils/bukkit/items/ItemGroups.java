@@ -192,6 +192,7 @@ public class ItemGroups {
         woodTypes.add("WARPED");
         woodTypes.add("MANGROVE");
         woodTypes.add("BAMBOO");
+        woodTypes.add("CHERRY");
 
         AIRS_INTERNAL.add(Material.AIR);
         AIRS_INTERNAL.add(Material.CAVE_AIR);
@@ -289,6 +290,12 @@ public class ItemGroups {
             SPAWN_EGGS_INTERNAL.put(Material.SNOW_GOLEM_SPAWN_EGG, EntityType.SNOWMAN);
             SPAWN_EGGS_INTERNAL.put(Material.IRON_GOLEM_SPAWN_EGG, EntityType.IRON_GOLEM);
             SPAWN_EGGS_INTERNAL.put(Material.CAMEL_SPAWN_EGG, EntityType.CAMEL);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
+        // 1.19.4
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.SNIFFER_SPAWN_EGG, EntityType.SNIFFER);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
@@ -412,6 +419,12 @@ public class ItemGroups {
         TOOLS_INTERNAL.add(Material.FISHING_ROD);
         TOOLS_INTERNAL.add(Material.SHEARS);
         TOOLS_INTERNAL.add(Material.FLINT_AND_STEEL);
+        // 1.19.4
+        try {
+            TOOLS_INTERNAL.add(Material.BRUSH);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         WEAPONS_INTERNAL.addAll(SWORDS_INTERNAL);
         WEAPONS_INTERNAL.addAll(AXES_INTERNAL);
@@ -459,6 +472,11 @@ public class ItemGroups {
         CROPS_INTERNAL.add(Material.BEETROOTS);
         CROPS_INTERNAL.add(Material.PUMPKIN_STEM);
         CROPS_INTERNAL.add(Material.MELON_STEM);
+        try {
+            CROPS_INTERNAL.add(Material.TORCHFLOWER_CROP);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.POPPY);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DANDELION);
@@ -493,6 +511,8 @@ public class ItemGroups {
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.MOSS_BLOCK);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SPORE_BLOSSOM);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.HANGING_ROOTS);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.TORCHFLOWER);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PINK_PETALS);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
