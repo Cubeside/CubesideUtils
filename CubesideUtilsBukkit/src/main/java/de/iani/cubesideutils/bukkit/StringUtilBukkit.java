@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.cubeside.connection.util.GlobalLocation;
+import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -339,6 +341,16 @@ public class StringUtilBukkit {
             return playerId.toString();
         }
         return player.getName();
+    }
+
+    // NamespacedKeys
+
+    public static String toNiceString(NamespacedKey key) {
+        String name = key.getKey();
+        if (name.contains(".")) {
+            name = name.substring(name.lastIndexOf('.'));
+        }
+        return StringUtil.capitalizeFirstLetter(name, true);
     }
 
 }
