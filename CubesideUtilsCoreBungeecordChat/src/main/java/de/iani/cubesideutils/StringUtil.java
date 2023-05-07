@@ -245,7 +245,7 @@ public class StringUtil {
         for (int i = 0; i < converted.length(); i++) {
             char c = converted.charAt(i);
             if (c == ChatColor.COLOR_CHAR) {
-                if (converted.charAt(i + 1) == 'x') {
+                if (converted.length() > i + 1 && converted.charAt(i + 1) == 'x') {
                     if (i + 14 > converted.length()) {
                         builder.append("&");
                         continue;
