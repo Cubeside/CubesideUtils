@@ -1,31 +1,29 @@
-package de.iani.cubesideutils.bukkit.map;
+package de.iani.cubesideutils.image;
 
-import com.google.common.base.Preconditions;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
-import org.bukkit.map.MapPalette;
 
-public class FloydSteinbergDithering {
-    public static void direct(final BufferedImage image) {
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                int oldColor = image.getRGB(x, y);
-                int nearestColor = getNearestMinecraftMapColor(oldColor);
-                image.setRGB(x, y, nearestColor);
-            }
+public class FloydSteinbergDithering implements ImageProcessing {
+    private IndexedColorTable colorTable;
+    private int ditherReductionFactor;
+
+    public FloydSteinbergDithering(IndexedColorTable colorTable) {
+        this(colorTable, 1);
+    }
+
+    public FloydSteinbergDithering(IndexedColorTable colorTable, int ditherReductionFactor) {
+        if (ditherReductionFactor < 1) {
+            throw new IllegalArgumentException("ditherReductionFactor must be postive");
         }
+        this.colorTable = colorTable;
+        this.ditherReductionFactor = ditherReductionFactor;
     }
 
-    public static void applyDithering(final BufferedImage image) {
-        applyDithering(image, 1);
-    }
-
-    public static void applyDithering(final BufferedImage image, int ditherReductionFactor) {
-        Preconditions.checkArgument(ditherReductionFactor >= 1, "ditherReductionFactor must be postive");
+    @Override
+    public void apply(final BufferedImage image) {
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int oldColor = image.getRGB(x, y);
-                int nearestColor = getNearestMinecraftMapColor(oldColor);
+                int nearestColor = colorTable.getRGBForIndex(colorTable.getNearestIndex(oldColor));
                 image.setRGB(x, y, nearestColor);
 
                 int a = (oldColor >> 24) & 0xff;
@@ -61,11 +59,6 @@ public class FloydSteinbergDithering {
                 }
             }
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    public static int getNearestMinecraftMapColor(int rgba) {
-        return MapPalette.getColor(MapPalette.matchColor(new Color(rgba, true))).getRGB();
     }
 
     private static int adjustPixel(final int colorRgb, final int errA, final int errR, final int errG, final int errB, final int mul, int ditherReductionFactor) {
