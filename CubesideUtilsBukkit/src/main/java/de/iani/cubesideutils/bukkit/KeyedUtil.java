@@ -1,9 +1,11 @@
 package de.iani.cubesideutils.bukkit;
 
+import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.bukkit.Art;
 import org.bukkit.Fluid;
 import org.bukkit.GameEvent;
@@ -65,13 +67,28 @@ public class KeyedUtil {
 
     private static <T extends Keyed> void addToRegistry(T[] values) {
         for (T t : values) {
-            internalRegistry.put(t.getKey(), t);
+            addToRegistry(t);
         }
     }
 
     private static <T extends Keyed> void addToRegistry(Collection<T> values) {
         for (T t : values) {
-            internalRegistry.put(t.getKey(), t);
+            addToRegistry(t);
+        }
+    }
+
+    private static void addToRegistry(Keyed k) {
+        try {
+            NamespacedKey key = k.getKey();
+            if (key == null) {
+                throw new NullPointerException();
+            }
+            internalRegistry.put(key, k);
+        } catch (Exception e) {
+            if (k == EntityType.UNKNOWN) {
+                return; // that's fine
+            }
+            CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Couldn't register keyed value " + k, e);
         }
     }
 
