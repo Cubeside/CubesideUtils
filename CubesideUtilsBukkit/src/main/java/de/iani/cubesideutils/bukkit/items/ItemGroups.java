@@ -37,6 +37,7 @@ public class ItemGroups {
     private static final EnumSet<Material> TERRACOTTA_INTERNAL = EnumSet.noneOf(Material.class);
     private static final EnumSet<Material> GLAZED_TERRACOTTA_INTERNAL = EnumSet.noneOf(Material.class);
     private static final EnumSet<Material> CANDLE_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> CANDLE_CAKE_INTERNAL = EnumSet.noneOf(Material.class);
 
     public static final Set<Material> CONCRETE_POWDER = Collections.unmodifiableSet(CONCRETE_POWDER_INTERNAL);
     public static final Set<Material> CONCRETE = Collections.unmodifiableSet(CONCRETE_INTERNAL);
@@ -49,6 +50,7 @@ public class ItemGroups {
     public static final Set<Material> TERRACOTTA = Collections.unmodifiableSet(TERRACOTTA_INTERNAL);
     public static final Set<Material> GLAZED_TERRACOTTA = Collections.unmodifiableSet(GLAZED_TERRACOTTA_INTERNAL);
     public static final Set<Material> CANDLE = Collections.unmodifiableSet(CANDLE_INTERNAL);
+    public static final Set<Material> CANDLE_CAKE = Collections.unmodifiableSet(CANDLE_CAKE_INTERNAL);
 
     // wood-made
     private static final EnumSet<Material> LOGS_INTERNAL = EnumSet.noneOf(Material.class);
@@ -325,6 +327,8 @@ public class ItemGroups {
                     GLAZED_TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("CANDLE")) {
                     CANDLE_INTERNAL.add(m);
+                } else if (name.endsWith("CANDLE_CAKE")) {
+                    CANDLE_CAKE_INTERNAL.add(m);
                 } else if (name.endsWith("_LOG") || name.endsWith("_WOOD") || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
                     LOGS_INTERNAL.add(m);
                 } else if (name.endsWith("_LEAVES")) {
@@ -971,6 +975,10 @@ public class ItemGroups {
 
     public static boolean isDye(Material m) {
         return DYES_INTERNAL.contains(m);
+    }
+
+    public static boolean isCandleCake(Material m) {
+        return CANDLE_CAKE_INTERNAL.contains(m);
     }
 
     public static boolean isContainer(Material m) {
