@@ -3,8 +3,8 @@ package de.iani.cubesideutils.bukkit.items;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -22,22 +22,22 @@ public class ItemGroups {
         // really prevents instances
     }
 
-    private static final EnumSet<Material> AIRS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> AIRS_INTERNAL = new HashSet<>();
     public static final Set<Material> AIRS = Collections.unmodifiableSet(AIRS_INTERNAL);
 
     // colorable
-    private static final EnumSet<Material> CONCRETE_POWDER_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> CONCRETE_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOOL_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> STAINED_GLASS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> STAINED_GLASS_PANE_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> SHULKER_BOX_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> BED_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> CARPET_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> TERRACOTTA_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> GLAZED_TERRACOTTA_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> CANDLE_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> CANDLE_CAKE_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> CONCRETE_POWDER_INTERNAL = new HashSet<>();
+    private static final Set<Material> CONCRETE_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOOL_INTERNAL = new HashSet<>();
+    private static final Set<Material> STAINED_GLASS_INTERNAL = new HashSet<>();
+    private static final Set<Material> STAINED_GLASS_PANE_INTERNAL = new HashSet<>();
+    private static final Set<Material> SHULKER_BOX_INTERNAL = new HashSet<>();
+    private static final Set<Material> BED_INTERNAL = new HashSet<>();
+    private static final Set<Material> CARPET_INTERNAL = new HashSet<>();
+    private static final Set<Material> TERRACOTTA_INTERNAL = new HashSet<>();
+    private static final Set<Material> GLAZED_TERRACOTTA_INTERNAL = new HashSet<>();
+    private static final Set<Material> CANDLE_INTERNAL = new HashSet<>();
+    private static final Set<Material> CANDLE_CAKE_INTERNAL = new HashSet<>();
 
     public static final Set<Material> CONCRETE_POWDER = Collections.unmodifiableSet(CONCRETE_POWDER_INTERNAL);
     public static final Set<Material> CONCRETE = Collections.unmodifiableSet(CONCRETE_INTERNAL);
@@ -53,19 +53,19 @@ public class ItemGroups {
     public static final Set<Material> CANDLE_CAKE = Collections.unmodifiableSet(CANDLE_CAKE_INTERNAL);
 
     // wood-made
-    private static final EnumSet<Material> LOGS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> LEAVES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> PLANKS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> SAPLINGS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_SLABS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_STAIRS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_FENCES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_FENCE_GATES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_DOORS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_TRAPDOORS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_BUTTONS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WOODEN_PRESSURE_PLATES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> BOATS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> LOGS_INTERNAL = new HashSet<>();
+    private static final Set<Material> LEAVES_INTERNAL = new HashSet<>();
+    private static final Set<Material> PLANKS_INTERNAL = new HashSet<>();
+    private static final Set<Material> SAPLINGS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_SLABS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_STAIRS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_FENCES_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_FENCE_GATES_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_DOORS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_TRAPDOORS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_BUTTONS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WOODEN_PRESSURE_PLATES_INTERNAL = new HashSet<>();
+    private static final Set<Material> BOATS_INTERNAL = new HashSet<>();
 
     public static final Set<Material> LOGS = Collections.unmodifiableSet(LOGS_INTERNAL);
     public static final Set<Material> LEAVES = Collections.unmodifiableSet(LEAVES_INTERNAL);
@@ -82,11 +82,11 @@ public class ItemGroups {
     public static final Set<Material> BOATS = Collections.unmodifiableSet(BOATS_INTERNAL);
 
     // redstone stuff
-    private static final EnumSet<Material> FENCE_GATES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> DOORS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> TRAPDOORS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> BUTTONS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> PRESSURE_PLATES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> FENCE_GATES_INTERNAL = new HashSet<>();
+    private static final Set<Material> DOORS_INTERNAL = new HashSet<>();
+    private static final Set<Material> TRAPDOORS_INTERNAL = new HashSet<>();
+    private static final Set<Material> BUTTONS_INTERNAL = new HashSet<>();
+    private static final Set<Material> PRESSURE_PLATES_INTERNAL = new HashSet<>();
 
     public static final Set<Material> FENCE_GATES = Collections.unmodifiableSet(FENCE_GATES_INTERNAL);
     public static final Set<Material> DOORS = Collections.unmodifiableSet(DOORS_INTERNAL);
@@ -95,13 +95,13 @@ public class ItemGroups {
     public static final Set<Material> PRESSURE_PLATES = Collections.unmodifiableSet(PRESSURE_PLATES_INTERNAL);
 
     // weapons and tools
-    private static final EnumSet<Material> PICKAXES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> AXES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> SHOVELS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> HOES_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> SWORDS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> TOOLS_INTERNAL = EnumSet.noneOf(Material.class);
-    private static final EnumSet<Material> WEAPONS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> PICKAXES_INTERNAL = new HashSet<>();
+    private static final Set<Material> AXES_INTERNAL = new HashSet<>();
+    private static final Set<Material> SHOVELS_INTERNAL = new HashSet<>();
+    private static final Set<Material> HOES_INTERNAL = new HashSet<>();
+    private static final Set<Material> SWORDS_INTERNAL = new HashSet<>();
+    private static final Set<Material> TOOLS_INTERNAL = new HashSet<>();
+    private static final Set<Material> WEAPONS_INTERNAL = new HashSet<>();
 
     public static final Set<Material> PICKAXES = Collections.unmodifiableSet(PICKAXES_INTERNAL);
     public static final Set<Material> AXES = Collections.unmodifiableSet(AXES_INTERNAL);
@@ -111,74 +111,74 @@ public class ItemGroups {
     public static final Set<Material> TOOLS = Collections.unmodifiableSet(TOOLS_INTERNAL);
     public static final Set<Material> WEAPONS = Collections.unmodifiableSet(WEAPONS_INTERNAL);
 
-    private static final EnumSet<Material> MULTI_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> MULTI_BLOCK_PLANTS_INTERNAL = new HashSet<>();
     public static final Set<Material> MULTI_BLOCK_PLANTS = Collections.unmodifiableSet(MULTI_BLOCK_PLANTS_INTERNAL);
 
-    private static final EnumSet<Material> DOUBLE_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> DOUBLE_BLOCK_PLANTS_INTERNAL = new HashSet<>();
     public static final Set<Material> DOUBLE_BLOCK_PLANTS = Collections.unmodifiableSet(DOUBLE_BLOCK_PLANTS_INTERNAL);
 
-    private static final EnumSet<Material> SINGLE_BLOCK_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> SINGLE_BLOCK_PLANTS_INTERNAL = new HashSet<>();
     public static final Set<Material> SINGLE_BLOCK_PLANTS = Collections.unmodifiableSet(SINGLE_BLOCK_PLANTS_INTERNAL);
 
-    private static final EnumSet<Material> PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> PLANTS_INTERNAL = new HashSet<>();
     public static final Set<Material> PLANTS = Collections.unmodifiableSet(PLANTS_INTERNAL);
 
-    private static final EnumSet<Material> CROPS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> CROPS_INTERNAL = new HashSet<>();
     public static final Set<Material> CROPS = Collections.unmodifiableSet(CROPS_INTERNAL);
 
-    private static final EnumSet<Material> FISHES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> FISHES_INTERNAL = new HashSet<>();
     public static final Set<Material> FISHES = Collections.unmodifiableSet(FISHES_INTERNAL);
 
-    private static final EnumSet<Material> FISH_BUCKETS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> FISH_BUCKETS_INTERNAL = new HashSet<>();
     public static final Set<Material> FISH_BUCKETS = Collections.unmodifiableSet(FISH_BUCKETS_INTERNAL);
 
-    private static final EnumSet<Material> POTTED_PLANTS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> POTTED_PLANTS_INTERNAL = new HashSet<>();
     public static final Set<Material> POTTED_PLANTS = Collections.unmodifiableSet(POTTED_PLANTS_INTERNAL);
 
-    private static final EnumSet<Material> MUSIC_DISCS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> MUSIC_DISCS_INTERNAL = new HashSet<>();
     public static final Set<Material> MUSIC_DISCS = Collections.unmodifiableSet(MUSIC_DISCS_INTERNAL);
 
-    private static final EnumSet<Material> SKULLS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> SKULLS_INTERNAL = new HashSet<>();
     public static final Set<Material> SKULLS = Collections.unmodifiableSet(SKULLS_INTERNAL);
 
-    private static final EnumMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new EnumMap<>(Material.class);
+    private static final HashMap<Material, EntityType> SPAWN_EGGS_INTERNAL = new HashMap<>();
     public static final Map<Material, EntityType> SPAWN_EGGS_MAP = Collections.unmodifiableMap(SPAWN_EGGS_INTERNAL);
     public static final Set<Material> SPAWN_EGGS = SPAWN_EGGS_MAP.keySet();
 
-    private static final EnumMap<EntityType, Material> SPAWNEGG_FOR_ENTITY_INTERNAL = new EnumMap<>(EntityType.class);
+    private static final HashMap<EntityType, Material> SPAWNEGG_FOR_ENTITY_INTERNAL = new HashMap<>();
     public static final Map<EntityType, Material> SPAWNEGG_FOR_ENTITY = Collections.unmodifiableMap(SPAWNEGG_FOR_ENTITY_INTERNAL);
 
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_DYE = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_WOOL = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_CONCRETE = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_CONCRETE_POWDER = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_TERRACOTTA = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_GLAZED_TERRACOTTA = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS_PANE = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_BED = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<DyeColor, Material> DYE_COLOR_TO_SHULKER_BOX = new EnumMap<>(DyeColor.class);
-    private static final EnumMap<Material, DyeColor> MATERIAL_TO_DYE_COLOR = new EnumMap<>(Material.class);
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_DYE = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_WOOL = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_CONCRETE = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_CONCRETE_POWDER = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_TERRACOTTA = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_GLAZED_TERRACOTTA = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS_PANE = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_BED = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_SHULKER_BOX = new HashMap<>();
+    private static final Map<Material, DyeColor> MATERIAL_TO_DYE_COLOR = new HashMap<>();
 
-    private static final EnumSet<Material> DYES_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> DYES_INTERNAL = new HashSet<>();
     public static final Set<Material> DYES = Collections.unmodifiableSet(DYES_INTERNAL);
 
-    private static final EnumSet<Material> HANGING_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> HANGING_SIGNS_INTERNAL = new HashSet<>();
     public static final Set<Material> HANGING_SIGNS = Collections.unmodifiableSet(HANGING_SIGNS_INTERNAL);
-    private static final EnumSet<Material> WALL_HANGING_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> WALL_HANGING_SIGNS_INTERNAL = new HashSet<>();
     public static final Set<Material> WALL_HANGING_SIGNS = Collections.unmodifiableSet(WALL_HANGING_SIGNS_INTERNAL);
 
-    private static final EnumSet<Material> SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> SIGNS_INTERNAL = new HashSet<>();
     public static final Set<Material> SIGNS = Collections.unmodifiableSet(SIGNS_INTERNAL);
-    private static final EnumSet<Material> WALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> WALL_SIGNS_INTERNAL = new HashSet<>();
     public static final Set<Material> WALL_SIGNS = Collections.unmodifiableSet(WALL_SIGNS_INTERNAL);
-    private static final EnumSet<Material> ALL_SIGNS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> ALL_SIGNS_INTERNAL = new HashSet<>();
     public static final Set<Material> ALL_SIGNS = Collections.unmodifiableSet(ALL_SIGNS_INTERNAL);
 
-    private static final EnumSet<Material> CONTAINER_BLOCKS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> CONTAINER_BLOCKS_INTERNAL = new HashSet<>();
     public static final Set<Material> CONTAINER_BLOCKS = Collections.unmodifiableSet(CONTAINER_BLOCKS_INTERNAL);
 
-    private static final EnumSet<Material> DYEABLE_ITEMS_INTERNAL = EnumSet.noneOf(Material.class);
+    private static final Set<Material> DYEABLE_ITEMS_INTERNAL = new HashSet<>();
     public static final Set<Material> DYEABLE_ITEMS = Collections.unmodifiableSet(DYEABLE_ITEMS_INTERNAL);
     private static final Collection<String> woodTypes;
 
