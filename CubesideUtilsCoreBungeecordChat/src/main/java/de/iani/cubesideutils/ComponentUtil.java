@@ -26,9 +26,32 @@ import net.md_5.bungee.api.chat.hover.content.Item;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class ComponentUtil {
+    // public static void main(String args[]) throws ParseException {
+    // String start = "&4Dies &list &5ein Test.";
+    // String next = start;
+    // String current;
+    // do {
+    // current = next;
+    // next = serializeComponent(deserializeComponent(current));
+    // } while (!current.equals(next));
+    // System.out.println(current);
+    //
+    // start = "&4&lDies {ist &oein &5Test} der &2Components.";
+    // next = start;
+    // do {
+    // current = next;
+    // next = serializeComponent(deserializeComponent(current));
+    // } while (!current.equals(next));
+    // System.out.println(current);
+    // }
+
     private ComponentUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
+    }
+
+    public static final boolean isColor(ChatColor color) {
+        return color != ChatColor.BOLD && color != ChatColor.ITALIC && color != ChatColor.MAGIC && color != ChatColor.RESET && color != ChatColor.STRIKETHROUGH && color != ChatColor.UNDERLINE;
     }
 
     public static BaseComponent deserializeComponent(String text) throws ParseException {
@@ -69,16 +92,16 @@ public class ComponentUtil {
         }
 
         BaseComponent convert() throws ParseException {
-            for (; index < to; index++) {
-                char current = text.charAt(index);
+            for (; this.index < this.to; this.index++) {
+                char current = this.text.charAt(this.index);
 
                 // color code (or escaped &)
                 if (current == '&') {
-                    char next = charAtOrException(index + 1);
+                    char next = charAtOrException(this.index + 1);
                     // if next is a "&", append "&" and skip next
                     if (next == '&') {
-                        currentBuilder.append('&');
-                        index++;
+                        this.currentBuilder.append('&');
+                        this.index++;
                         continue;
                     }
 
@@ -86,107 +109,102 @@ public class ComponentUtil {
                     if (ChatColor.getByChar(next) != null || next == 'x') {
                         ChatColor color;
                         if (next == 'x') {
-                            if (index + 2 + 6 > to) {
-                                throw new ParseException("illegal hex code", index);
+                            if (this.index + 2 + 6 > this.to) {
+                                throw new ParseException("illegal hex code", this.index);
                             }
-                            color = StringUtil.parseHexColor(text, index + 2);
+                            color = StringUtil.parseHexColor(this.text, this.index + 2);
                             if (color == null) {
-                                throw new ParseException("illegal hex code", index);
+                                throw new ParseException("illegal hex code", this.index);
                             }
-                            index += 7;
+                            this.index += 7;
                         } else {
                             color = ChatColor.getByChar(next);
-                            index += 1;
+                            this.index += 1;
                         }
 
-                        finishComponent();
+                        finishComponent(isColor(color) ? FormatRetention.EVENTS : FormatRetention.ALL);
 
                         if (color == ChatColor.BOLD) {
-                            currentComponent.setBold(true);
+                            this.currentComponent.setBold(true);
                         } else if (color == ChatColor.ITALIC) {
-                            currentComponent.setItalic(true);
+                            this.currentComponent.setItalic(true);
                         } else if (color == ChatColor.MAGIC) {
-                            currentComponent.setObfuscated(true);
+                            this.currentComponent.setObfuscated(true);
                         } else if (color == ChatColor.STRIKETHROUGH) {
-                            currentComponent.setStrikethrough(true);
+                            this.currentComponent.setStrikethrough(true);
                         } else if (color == ChatColor.UNDERLINE) {
-                            currentComponent.setUnderlined(true);
+                            this.currentComponent.setUnderlined(true);
                         } else {
-                            // component.setBold(false);
-                            // component.setItalic(false);
-                            // component.setObfuscated(false);
-                            // component.setStrikethrough(false);
-                            // component.setUnderlined(false);
-                            currentComponent.setColor(color);
+                            this.currentComponent.setColor(color);
                         }
                         continue;
                     }
 
-                    throw new ParseException("unknown color code &" + next, index);
+                    throw new ParseException("unknown color code &" + next, this.index);
 
                 }
 
                 // control sequence
                 if (current == '\\') {
-                    char next = charAtOrException(index + 1);
+                    char next = charAtOrException(this.index + 1);
 
                     // escaped character
                     if (next == '\\' || next == '&' || next == '{' || next == '}') {
-                        currentBuilder.append(next);
-                        index++;
+                        this.currentBuilder.append(next);
+                        this.index++;
                         continue;
                     }
 
                     // newline
                     if (next == 'n') {
-                        currentBuilder.append('\n');
-                        index++;
+                        this.currentBuilder.append('\n');
+                        this.index++;
                         continue;
                     }
 
                     // reset
                     if (next == 'r') {
-                        char resetType = charAtOrException(index + 2);
+                        char resetType = charAtOrException(this.index + 2);
                         // a = all, e = events, f = formatting
                         if (resetType != 'a' && resetType != 'e' && resetType != 'f') {
-                            throw new ParseException("unknown reset type " + resetType, index + 2);
+                            throw new ParseException("unknown reset type " + resetType, this.index + 2);
                         }
 
                         finishComponent(resetType == 'a' ? FormatRetention.NONE : resetType == 'e' ? FormatRetention.FORMATTING : FormatRetention.EVENTS);
-                        index += 2;
+                        this.index += 2;
                         continue;
                     }
 
                     // hover event
                     if (next == 'h') {
-                        char actionType = charAtOrException(index + 2);
+                        char actionType = charAtOrException(this.index + 2);
                         // t = text, i = item, e = entity
                         if (actionType != 't' && actionType != 'i' && actionType != 'e') {
-                            throw new ParseException("unknown action type " + actionType, index + 2);
+                            throw new ParseException("unknown action type " + actionType, this.index + 2);
                         }
-                        if (charAtOrException(index + 3) != '{') {
-                            throw new ParseException("expected {", index + 3);
+                        if (charAtOrException(this.index + 3) != '{') {
+                            throw new ParseException("expected {", this.index + 3);
                         }
 
-                        int contentStartIndex = index + 4;
-                        int contentEndIndex = findMatchingRightBrace(index + 3, to);
+                        int contentStartIndex = this.index + 4;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 3, this.to);
 
                         HoverEvent.Action action;
                         Content[] content;
 
                         if (actionType == 't') {
                             action = HoverEvent.Action.SHOW_TEXT;
-                            content = new Content[] { new Text(new BaseComponent[] { convertEscaped(text, contentStartIndex, contentEndIndex) }) };
+                            content = new Content[] { new Text(new BaseComponent[] { convertEscaped(this.text, contentStartIndex, contentEndIndex) }) };
                         } else if (actionType == 'i') {
                             action = HoverEvent.Action.SHOW_ITEM;
 
-                            String[] itemStrings = text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
+                            String[] itemStrings = this.text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
                             String itemId = itemStrings[0];
                             int itemCount;
                             try {
                                 itemCount = itemStrings.length < 2 || itemStrings[1].isEmpty() ? 1 : Integer.parseInt(itemStrings[1]);
                             } catch (NumberFormatException e) {
-                                throw new ParseException("illegal item count " + itemStrings[1], index + 3 + itemStrings[0].length() + 1);
+                                throw new ParseException("illegal item count " + itemStrings[1], this.index + 3 + itemStrings[0].length() + 1);
                             }
                             ItemTag tag = itemStrings.length < 3 || itemStrings[2].isEmpty() ? null : ItemTag.ofNbt(convertEscapedString(itemStrings[2]));
 
@@ -195,33 +213,33 @@ public class ComponentUtil {
                         } else if (actionType == 'e') {
                             action = HoverEvent.Action.SHOW_ENTITY;
 
-                            int nameStartIndex = text.substring(contentStartIndex, contentEndIndex).indexOf('{') + contentStartIndex;
-                            String[] entityStrings = text.substring(contentStartIndex, nameStartIndex < 0 ? contentEndIndex : nameStartIndex).split("\\,", 2);
+                            int nameStartIndex = this.text.substring(contentStartIndex, contentEndIndex).indexOf('{') + contentStartIndex;
+                            String[] entityStrings = this.text.substring(contentStartIndex, nameStartIndex < 0 ? contentEndIndex : nameStartIndex).split("\\,", 2);
                             String entityType = entityStrings[0];
                             UUID entityId;
                             try {
                                 entityId = entityStrings.length < 2 || entityStrings[1].isEmpty() ? UUID.randomUUID() : UUID.fromString(entityStrings[1]);
                             } catch (IllegalArgumentException e) {
-                                throw new ParseException("illegal entity id " + entityStrings[1], index + 3 + entityStrings[0].length() + 1);
+                                throw new ParseException("illegal entity id " + entityStrings[1], this.index + 3 + entityStrings[0].length() + 1);
                             }
-                            BaseComponent entityName = nameStartIndex < contentStartIndex ? null : convertEscaped(text, nameStartIndex + 1, findMatchingRightBrace(nameStartIndex, contentEndIndex));
+                            BaseComponent entityName = nameStartIndex < contentStartIndex ? null : convertEscaped(this.text, nameStartIndex + 1, findMatchingRightBrace(nameStartIndex, contentEndIndex));
 
                             content = new Content[] { new Entity(entityType, entityId.toString(), entityName) };
                             // TODO: allow multiple items in one component?
                         } else {
                             assert false;
-                            throw new ParseException("unknown action type " + actionType, index + 2);
+                            throw new ParseException("unknown action type " + actionType, this.index + 2);
                         }
 
                         finishComponent();
-                        currentComponent.setHoverEvent(new HoverEvent(action, content));
-                        index = contentEndIndex;
+                        this.currentComponent.setHoverEvent(new HoverEvent(action, content));
+                        this.index = contentEndIndex;
                         continue;
                     }
 
                     // click event
                     if (next == 'c') {
-                        char actionType = charAtOrException(index + 2);
+                        char actionType = charAtOrException(this.index + 2);
 
                         ClickEvent.Action action;
                         if (actionType == 'r') {
@@ -235,76 +253,76 @@ public class ComponentUtil {
                         } else if (actionType == 'u') {
                             action = ClickEvent.Action.OPEN_URL;
                         } else if (actionType == 'f') {
-                            throw new ParseException("action type f is rejected by clients", index + 2);
+                            throw new ParseException("action type f is rejected by clients", this.index + 2);
                         } else {
-                            throw new ParseException("unknown action type " + actionType, index + 2);
+                            throw new ParseException("unknown action type " + actionType, this.index + 2);
                         }
 
-                        if (charAtOrException(index + 3) != '{') {
-                            throw new ParseException("expected {", index + 3);
+                        if (charAtOrException(this.index + 3) != '{') {
+                            throw new ParseException("expected {", this.index + 3);
                         }
 
-                        int contentStartIndex = index + 4;
-                        int contentEndIndex = findMatchingRightBrace(index + 3, to);
+                        int contentStartIndex = this.index + 4;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 3, this.to);
 
                         String value = convertEscapedString(contentStartIndex, contentEndIndex);
 
                         finishComponent();
-                        currentComponent.setClickEvent(new ClickEvent(action, value));
-                        index = contentEndIndex;
+                        this.currentComponent.setClickEvent(new ClickEvent(action, value));
+                        this.index = contentEndIndex;
                         continue;
                     }
 
                     // insertion
                     if (next == 'i') {
-                        if (charAtOrException(index + 2) != '{') {
-                            throw new ParseException("expected {", index + 2);
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
                         }
 
-                        int contentStartIndex = index + 3;
-                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+                        int contentStartIndex = this.index + 3;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
 
                         String insertion = convertEscapedString(contentStartIndex, contentEndIndex);
 
                         finishComponent();
-                        currentComponent.setInsertion(insertion);
-                        index = contentEndIndex;
+                        this.currentComponent.setInsertion(insertion);
+                        this.index = contentEndIndex;
                         continue;
                     }
 
                     // font
                     if (next == 'f') {
-                        if (charAtOrException(index + 2) != '{') {
-                            throw new ParseException("expected {", index + 2);
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
                         }
 
-                        int fontStartIndex = index + 3;
-                        int fontEndIndex = findMatchingRightBrace(index + 2, to);
-                        String fontString = text.substring(fontStartIndex, fontEndIndex);
+                        int fontStartIndex = this.index + 3;
+                        int fontEndIndex = findMatchingRightBrace(this.index + 2, this.to);
+                        String fontString = this.text.substring(fontStartIndex, fontEndIndex);
 
                         finishComponent();
-                        currentComponent.setFont(fontString);
-                        index = fontEndIndex;
+                        this.currentComponent.setFont(fontString);
+                        this.index = fontEndIndex;
                         continue;
                     }
 
                     // translated component
                     if (next == 't') {
-                        if (charAtOrException(index + 2) != '{') {
-                            throw new ParseException("expected {", index + 2);
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
                         }
 
-                        int contentStartIndex = index + 3;
-                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+                        int contentStartIndex = this.index + 3;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
 
-                        int translationKeyEndIndex = text.substring(contentStartIndex, contentEndIndex).indexOf('{');
+                        int translationKeyEndIndex = this.text.substring(contentStartIndex, contentEndIndex).indexOf('{');
                         if (translationKeyEndIndex < 0) {
                             translationKeyEndIndex = contentEndIndex;
                         } else {
                             translationKeyEndIndex += contentStartIndex;
                         }
 
-                        String translationKey = text.substring(contentStartIndex, translationKeyEndIndex);
+                        String translationKey = this.text.substring(contentStartIndex, translationKeyEndIndex);
 
                         List<BaseComponent> translationExtras = new ArrayList<>();
                         for (int blockStartIndex = translationKeyEndIndex; blockStartIndex < contentEndIndex;) {
@@ -315,26 +333,26 @@ public class ComponentUtil {
                             int blockEndIndex = findMatchingRightBrace(blockStartIndex, contentEndIndex);
                             assert blockEndIndex >= 0;
 
-                            translationExtras.add(convertEscaped(text, blockStartIndex + 1, blockEndIndex));
+                            translationExtras.add(convertEscaped(this.text, blockStartIndex + 1, blockEndIndex));
                             blockStartIndex = blockEndIndex + 1;
                         }
 
                         finishComponent();
-                        currentComponent.addExtra(new TranslatableComponent(translationKey, translationExtras.toArray(new Object[translationExtras.size()])));
-                        index = contentEndIndex;
+                        this.currentComponent.addExtra(new TranslatableComponent(translationKey, translationExtras.toArray(new Object[translationExtras.size()])));
+                        this.index = contentEndIndex;
                         continue;
                     }
 
                     // score component
                     if (next == 's') {
-                        if (charAtOrException(index + 2) != '{') {
-                            throw new ParseException("expected {", index + 2);
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
                         }
 
-                        int contentStartIndex = index + 3;
-                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+                        int contentStartIndex = this.index + 3;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
 
-                        String[] scoreStrings = text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
+                        String[] scoreStrings = this.text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
                         if (scoreStrings.length < 2) {
                             throw new ParseException("missing objective name", contentEndIndex);
                         }
@@ -345,83 +363,83 @@ public class ComponentUtil {
                         String value = scoreStrings.length < 3 ? "" : scoreStrings[2];
 
                         finishComponent();
-                        currentComponent.addExtra(new ScoreComponent(name, objective, value));
-                        index = contentEndIndex;
+                        this.currentComponent.addExtra(new ScoreComponent(name, objective, value));
+                        this.index = contentEndIndex;
                         continue;
                     }
 
                     // selector component
                     if (next == '@') {
-                        if (charAtOrException(index + 2) != '{') {
-                            throw new ParseException("expected {", index + 2);
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
                         }
 
-                        int contentStartIndex = index + 3;
-                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+                        int contentStartIndex = this.index + 3;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
 
                         // TODO: escaping/conversion needed?
-                        String selector = text.substring(contentStartIndex, contentEndIndex);
+                        String selector = this.text.substring(contentStartIndex, contentEndIndex);
 
                         finishComponent();
-                        currentComponent.addExtra(new SelectorComponent(selector));
-                        index = contentEndIndex;
+                        this.currentComponent.addExtra(new SelectorComponent(selector));
+                        this.index = contentEndIndex;
                         continue;
                     }
 
                     // keybind component
                     if (next == 'k') {
-                        if (charAtOrException(index + 2) != '{') {
-                            throw new ParseException("expected {", index + 2);
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
                         }
 
-                        int contentStartIndex = index + 3;
-                        int contentEndIndex = findMatchingRightBrace(index + 2, to);
+                        int contentStartIndex = this.index + 3;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
 
                         // TODO: escaping/conversion needed?
-                        String keybind = text.substring(contentStartIndex, contentEndIndex);
+                        String keybind = this.text.substring(contentStartIndex, contentEndIndex);
 
                         finishComponent();
-                        currentComponent.addExtra(new KeybindComponent(keybind));
-                        index = contentEndIndex;
+                        this.currentComponent.addExtra(new KeybindComponent(keybind));
+                        this.index = contentEndIndex;
                         continue;
                     }
 
-                    throw new ParseException("unknown control sequence \\" + next, index);
+                    throw new ParseException("unknown control sequence \\" + next, this.index);
                 }
 
                 // plain block
                 if (current == '{') {
-                    int closingIndex = findMatchingRightBrace(index, to);
+                    int closingIndex = findMatchingRightBrace(this.index, this.to);
                     finishComponent();
 
-                    BaseComponent subComponent = convertEscaped(text, index + 1, closingIndex);
-                    currentComponent.addExtra(subComponent);
-                    index = closingIndex;
+                    BaseComponent subComponent = convertEscaped(this.text, this.index + 1, closingIndex);
+                    this.currentComponent.addExtra(subComponent);
+                    this.index = closingIndex;
                     continue;
                 }
 
                 // unmatched right brace
                 if (current == '}') {
-                    throw new ParseException("unmatched right brace", index);
+                    throw new ParseException("unmatched right brace", this.index);
                 }
 
                 // normal character
-                currentBuilder.append(current);
+                this.currentBuilder.append(current);
                 continue;
             }
 
             // finish last component
-            currentComponent.addExtra(currentBuilder.toString());
-            components.add(currentComponent);
+            this.currentComponent.addExtra(this.currentBuilder.toString());
+            this.components.add(this.currentComponent);
 
-            return new TextComponent(components.toArray(new BaseComponent[components.size()]));
+            return new TextComponent(this.components.toArray(new BaseComponent[this.components.size()]));
         }
 
         private char charAtOrException(int i) throws ParseException {
-            if (i >= to) {
-                throw new ParseException("unexpected end of block", to);
+            if (i >= this.to) {
+                throw new ParseException("unexpected end of block", this.to);
             }
-            return text.charAt(i);
+            return this.text.charAt(i);
         }
 
         private void finishComponent() {
@@ -429,20 +447,20 @@ public class ComponentUtil {
         }
 
         private void finishComponent(FormatRetention retention) {
-            currentComponent.addExtra(currentBuilder.toString());
-            components.add(currentComponent);
+            this.currentComponent.addExtra(this.currentBuilder.toString());
+            this.components.add(this.currentComponent);
 
             TextComponent newComponent = new TextComponent();
-            newComponent.copyFormatting(currentComponent, retention, true);
-            currentComponent = newComponent;
+            newComponent.copyFormatting(this.currentComponent, retention, true);
+            this.currentComponent = newComponent;
 
-            currentBuilder = new StringBuilder();
+            this.currentBuilder = new StringBuilder();
         }
 
         private int findMatchingRightBrace(int leftBraceIndex, int endIndex) throws ParseException {
             int depth = 0;
             for (int i = leftBraceIndex; i < endIndex; i++) {
-                switch (text.charAt(i)) {
+                switch (this.text.charAt(i)) {
                     case '\\':
                         i++;
                         break;
@@ -467,7 +485,7 @@ public class ComponentUtil {
         }
 
         private String convertEscapedString(int from, int to) throws ParseException {
-            return convertEscapedString(text, from, to);
+            return convertEscapedString(this.text, from, to);
         }
 
         private String convertEscapedString(String text, int from, int to) throws ParseException {
