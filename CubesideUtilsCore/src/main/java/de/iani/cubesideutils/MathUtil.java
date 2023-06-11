@@ -21,4 +21,23 @@ public class MathUtil {
         arg /= shifter;
         return arg;
     }
+
+    /**
+     * Result is -180.0 (inclusive) to 180.0 (exclusive)
+     *
+     * @param degrees
+     *            the input angle in degrees
+     * @return
+     *         the warped angle
+     */
+    public static double warpDegrees(double degrees) {
+        double d = degrees % 360.0;
+        if (d >= 180.0) {
+            d -= 360.0;
+        }
+        if (d < -180.0) {
+            d += 360.0;
+        }
+        return d;
+    }
 }
