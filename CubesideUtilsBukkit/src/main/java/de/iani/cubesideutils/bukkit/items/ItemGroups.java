@@ -465,6 +465,7 @@ public class ItemGroups {
         DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.TALL_SEAGRASS);
         try {
             DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.SMALL_DRIPLEAF);
+            DOUBLE_BLOCK_PLANTS_INTERNAL.add(Material.PITCHER_PLANT);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
@@ -517,6 +518,7 @@ public class ItemGroups {
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.HANGING_ROOTS);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.TORCHFLOWER);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PINK_PETALS);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PITCHER_CROP);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
