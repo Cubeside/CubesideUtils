@@ -12,6 +12,7 @@ import org.bukkit.block.data.type.HangingSign;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.block.data.type.WallHangingSign;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Entity;
 
 public class SignUtils {
@@ -20,7 +21,7 @@ public class SignUtils {
         // really prevents instances
     }
 
-    public static boolean isFacingSignFront(Entity entity, Block sign) {
+    public static Side getFacingSignSide(Entity entity, Block sign) {
         BlockData data = sign.getBlockData();
         Material type = data.getMaterial();
         BlockFace signFace = null;
@@ -96,7 +97,7 @@ public class SignUtils {
         double relativeZ = entityLoc.getZ() - (sign.getZ() + centerz);
         double f = Math.atan2(relativeZ, relativeX) * 180.0 / Math.PI - 90.0;
 
-        return Math.abs(MathUtil.warpDegrees(f - yRotationDegree)) <= 90.0;
+        return Math.abs(MathUtil.warpDegrees(f - yRotationDegree)) <= 90.0 ? Side.FRONT : Side.BACK;
     }
 
 }
