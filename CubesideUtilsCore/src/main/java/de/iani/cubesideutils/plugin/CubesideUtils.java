@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.plugin;
 
 import de.cubeside.connection.ConnectionAPI;
+import de.cubeside.connection.GlobalPlayer;
 import de.iani.cubesideutils.Triple;
 import de.iani.cubesideutils.collections.SimpleCacheMap;
 import de.iani.cubesideutils.conditions.BinaryCombinedCondition;
@@ -8,6 +9,7 @@ import de.iani.cubesideutils.conditions.ConstantCondition;
 import de.iani.cubesideutils.conditions.NegatedCondition;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.plugin.api.PasswordHandler;
+import de.iani.cubesideutils.plugin.api.PlayerData;
 import de.iani.cubesideutils.plugin.api.UtilsApi;
 import de.iani.cubesideutils.serialization.StringSerialization;
 import java.sql.SQLException;
@@ -111,6 +113,23 @@ public abstract class CubesideUtils implements UtilsApi {
     public boolean removePasswordKey(String key) throws SQLException {
         this.passwordHandlers.remove(key);
         return getDatabase().removePasswordKey(key);
+    }
+
+    @Override
+    public int countActivePlayers(long lastSeenSince, long firstJoinUntil) throws SQLException {
+        if (lastSeenSince > System.currentTimeMillis()) {
+            return 0;
+        }
+
+        int result = getDatabase().countActivePlayers(lastSeenSince, firstJoinUntil);
+        for (GlobalPlayer player : getGlobalDataHelper().getOnlinePlayers()) {
+            PlayerData data = getPlayerData(player.getUniqueId());
+            if (data.getLastSeen() < lastSeenSince && data.getFirstJoin() <= firstJoinUntil) {
+                result++;
+            }
+        }
+
+        return result;
     }
 
     @Override

@@ -74,6 +74,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
     private String setPlayerLastSeenQuery;
     private String setPlayerAfkQuery;
     private String setPlayerRankQuery;
+    private String countActivePlayersQuery;
 
     private String getCustomPlayerDataQuery;
     private String setCustomPlayerDataQuery;
@@ -120,6 +121,7 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
         this.setPlayerLastSeenQuery = "UPDATE `" + this.playerDataTableName + "` SET lastSeen = ? WHERE playerId = ?";
         this.setPlayerAfkQuery = "UPDATE `" + this.playerDataTableName + "` SET afk = ? WHERE playerId = ?";
         this.setPlayerRankQuery = "UPDATE `" + this.playerDataTableName + "` SET `rank` = ? WHERE playerId = ?";
+        this.countActivePlayersQuery = "SELECT COUNT(playerId) FROM `" + this.playerDataTableName + "` WHERE lastSeen >= ? AND firstJoin <= ?";
 
         this.getCustomPlayerDataQuery = "SELECT `key`, `value` FROM `" + this.customPlayerDataTableName + "` WHERE playerId = ?";
         this.setCustomPlayerDataQuery = "INSERT INTO `" + this.customPlayerDataTableName + "` (playerId, `key`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?";
@@ -356,6 +358,20 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
             smt.setString(2, playerId.toString());
             smt.executeUpdate();
             return null;
+        });
+    }
+
+    public int countActivePlayers(long lastSeenSince, long firstJoinUntil) throws SQLException {
+        return this.connection.runCommands((connection, sqlConnection) -> {
+            PreparedStatement smt = sqlConnection.getOrCreateStatement(this.countActivePlayersQuery);
+            smt.setLong(1, lastSeenSince);
+            smt.setLong(2, firstJoinUntil);
+            ResultSet rs = smt.executeQuery();
+
+            rs.next();
+            int result = rs.getInt(1);
+            rs.close();
+            return result;
         });
     }
 

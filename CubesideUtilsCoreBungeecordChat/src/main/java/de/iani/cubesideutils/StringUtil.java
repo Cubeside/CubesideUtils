@@ -778,10 +778,11 @@ public class StringUtil {
         if (arg.isEmpty()) {
             throw new IllegalArgumentException("empty String");
         }
+        arg = arg.replaceAll("_", " ");
 
         String[] args = arg.split(" ");
         if (args.length > 2) {
-            throw new IllegalArgumentException("Only one space allowed.");
+            throw new IllegalArgumentException("Only one space/underscore allowed.");
         }
 
         try {

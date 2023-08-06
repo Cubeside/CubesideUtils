@@ -4,6 +4,7 @@ import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface UtilsApi {
 
@@ -20,6 +21,10 @@ public interface UtilsApi {
     public abstract PasswordHandler getPasswordHandler(String key);
 
     public abstract boolean removePasswordKey(String key) throws SQLException;
+
+    public abstract PlayerData getPlayerData(UUID playerId);
+
+    public abstract int countActivePlayers(long lastSeenSince, long firstJoinUntil) throws SQLException;
 
     public abstract List<String> getRanks();
 
