@@ -99,4 +99,19 @@ public class StringUtilCore {
         }
         return sb != null ? sb.toString() : input;
     }
+
+    public static int findMatchingBrace(String s) {
+        int open = 1;
+        for (int i = 1; i < s.length(); i++) {
+            switch (s.charAt(i)) {
+                case '{' -> open++;
+                case '}' -> {
+                    if (--open == 0) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
 }
