@@ -12,6 +12,9 @@ public class SQLConfig {
 
     private String tableprefix = "CHANGETHIS";
 
+    public SQLConfig() {
+    }
+
     public SQLConfig(String host, String user, String password, String database, String tableprefix) {
         this.host = host == null ? this.host : host;
         this.user = user == null ? this.user : user;
