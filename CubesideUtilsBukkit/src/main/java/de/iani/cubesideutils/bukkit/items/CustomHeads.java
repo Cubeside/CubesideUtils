@@ -64,7 +64,6 @@ public enum CustomHeads {
     RAINBOW_ARROW_FORWARD_II("a090e767-c207-4f3b-a207-9671389c120f", "Rainbow Forward II", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkyMGYwZDRiMmUwMTBlODAxNTNhNjhiNDU1MDFkMDU0YzQzYmIyNDhmNDRiYjgzNzM2NDBlMzIzNTY3OWFjMyJ9fX0="),
     RAINBOW_BLANK("fb0cf49a-a3fd-4fd9-be63-0833bab9566e", "Rainbow Blank", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzJiNjczMjE5OWZhZjFiMjQ0NzcyNWU1NjgyOTA5MGZiY2ViNmMyYjUxNDk1Mzg2MmZmMDNjMTZiNTNmMzU5OSJ9fX0="),
 
-
     REDSTONE_BLOCK_0("a4ce51b7-af2c-4217-bd56-da49838ca16f", "Redstone Block 0", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRjNmIxOWEwMTQ0ZjYzZmQyNmE2OTBmMjAxNjQwYjRiMmYxNTFlZWY3MmNjNDliZmUwNjEyMDQ0Y2VhNTZlNyJ9fX0="),
     REDSTONE_BLOCK_1("c024d5ba-3692-41c4-b901-04e7d61a1c99", "Redstone Block 1", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM5Yzg0NmY2NWQ1ZjI3MmE4MzlmZDljMmFlYjExYmRjOGUzZjgyMjlmYmUzNTgzNDg2ZTc4ZjRjMjNjOGI1YiJ9fX0="),
     REDSTONE_BLOCK_2("4ae31ef1-df6f-4708-92fe-606308cd660e", "Redstone Block 2", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQxNWM0ZDBjN2I4MTQxNTAxOTQ5ZjczY2UwYzc4YjJiMWU5OTAyNTUzNzFhN2ZjNzE5OTk2MGM5YjAzN2Q1MSJ9fX0="),
@@ -105,6 +104,9 @@ public enum CustomHeads {
     }
 
     public static ItemStack createHead(UUID ownerUUID, String ownerName, String texturesProperty) {
+        if (ownerName == null) {
+            ownerName = ownerUUID.toString().substring(0, 16);
+        }
         ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) stack.getItemMeta();
         PlayerProfile profile = Bukkit.createProfile(ownerUUID, ownerName);
