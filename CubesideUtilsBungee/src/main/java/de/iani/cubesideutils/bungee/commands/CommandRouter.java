@@ -98,7 +98,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             }
             Collections.sort(optionsList);
         }
-        return optionsList;
+        return optionsList == null ? List.of() : optionsList;
     }
 
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
