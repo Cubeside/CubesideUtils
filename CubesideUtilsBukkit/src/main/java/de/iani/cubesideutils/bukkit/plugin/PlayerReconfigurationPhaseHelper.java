@@ -44,6 +44,10 @@ public class PlayerReconfigurationPhaseHelper implements Listener {
 
     private void runDelayedActions(Player player) {
         List<Consumer<? super Player>> delayedActions = delayedActionsForPlayersInReconfigurationPhase.remove(player.getUniqueId());
+        if (!player.isOnline()) {
+            return;
+        }
+
         for (Consumer<? super Player> action : delayedActions) {
             action.accept(player);
         }
@@ -51,9 +55,9 @@ public class PlayerReconfigurationPhaseHelper implements Listener {
 
     public void doActions(Player player, List<Consumer<? super Player>> actions) {
         List<Consumer<? super Player>> delayed = delayedActionsForPlayersInReconfigurationPhase.get(player.getUniqueId());
-        if (delayed == null) {
+        if (delayed == null && player.isOnline()) {
             actions.forEach(a -> a.accept(player));
-        } else {
+        } else if (delayed != null) {
             delayed.addAll(actions);
         }
     }
