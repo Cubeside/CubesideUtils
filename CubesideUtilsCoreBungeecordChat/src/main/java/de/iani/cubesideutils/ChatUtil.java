@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -57,9 +58,14 @@ public abstract class ChatUtil {
         public void sendMessage(BaseComponent... message);
     }
 
-    public static interface Sendable<T> {
+    public static interface Sendable<T> extends Consumer<T> {
 
         public void send(T recipient);
+
+        @Override
+        public default void accept(T t) {
+            send(t);
+        }
     }
 
     public static class StringMsg implements Sendable<MessageReceiver> {

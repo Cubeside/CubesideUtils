@@ -6,6 +6,7 @@ import de.iani.cubesideutils.plugin.api.UtilsApi;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -25,6 +26,7 @@ public interface UtilsApiBukkit extends UtilsApi {
 
     public abstract PlayerDataBukkit getPlayerData(OfflinePlayer player);
 
+    @Override
     public abstract PlayerDataBukkit getPlayerData(UUID playerId);
 
     public abstract List<OfflinePlayer> searchPlayersByPartialName(String partialName);
@@ -44,5 +46,9 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message);
 
     public abstract void sendPlayerOptions(CommandSender sender, OfflinePlayer player);
+
+    public abstract void doAfterReconfigurationPhase(Player player, List<Consumer<? super Player>> actions);
+
+    public abstract void doAfterReconfigurationPhase(Player player, Consumer<? super Player> action);
 
 }

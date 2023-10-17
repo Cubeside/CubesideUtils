@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -81,6 +82,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     private UtilsGlobalDataHelperBukkit globalDataHelper;
 
     private InventoryInputManagerImpl inventoryInputManager;
+    private PlayerReconfigurationPhaseHelper reconfigurationPhaseHelper;
 
     private String defaultDisplayName;
     private Map<String, String> worldDisplayNames;
@@ -118,6 +120,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         this.globalDataHelper = new UtilsGlobalDataHelperBukkit(this.plugin);
 
         this.inventoryInputManager = new InventoryInputManagerImpl();
+        this.reconfigurationPhaseHelper = new PlayerReconfigurationPhaseHelper();
 
         this.database.registerRealServer();
 
@@ -173,8 +176,13 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         return this.globalDataHelper;
     }
 
+    @Override
     public InventoryInputManagerImpl getInventoryInputManager() {
         return this.inventoryInputManager;
+    }
+
+    public PlayerReconfigurationPhaseHelper getReconfigurationPhaseHelper() {
+        return this.reconfigurationPhaseHelper;
     }
 
     @Override
@@ -264,6 +272,14 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
             PlayerDataBukkit playerData = getPlayerData(player);
             sender.sendMessage(new TextComponent("  "), new TextComponent(TextComponent.fromLegacyText(playerData.getRankPrefix() + player.getName())), new TextComponent(": "), new TextComponent(options));
         }
+    }
+
+    public void doAfterReconfigurationPhase(Player player, List<Consumer<? super Player>> actions) {
+        this.reconfigurationPhaseHelper.doActions(player, actions);
+    }
+
+    public void doAfterReconfigurationPhase(Player player, Consumer<? super Player> action) {
+        this.reconfigurationPhaseHelper.doAction(player, action);
     }
 
 }
