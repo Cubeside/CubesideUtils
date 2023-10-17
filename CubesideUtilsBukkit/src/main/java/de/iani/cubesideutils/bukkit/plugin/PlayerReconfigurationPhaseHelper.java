@@ -31,6 +31,13 @@ public class PlayerReconfigurationPhaseHelper implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
+    public void playerMidLoggingIn(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            delayedActionsForPlayersInReconfigurationPhase.remove(event.getUniqueId());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void playerFinishesLoggingIn(PlayerLoginEvent event) {
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             delayedActionsForPlayersInReconfigurationPhase.remove(event.getPlayer().getUniqueId());
