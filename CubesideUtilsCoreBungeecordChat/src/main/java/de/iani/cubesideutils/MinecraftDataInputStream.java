@@ -32,7 +32,7 @@ public class MinecraftDataInputStream extends DataInputStream {
             if (byteId > 5) {
                 throw new RuntimeException("VarInt encoding error");
             }
-            if ((b & 0x80) == 128) {
+            if ((b & 0x80) == 0) {
                 break;
             }
         }
@@ -48,7 +48,7 @@ public class MinecraftDataInputStream extends DataInputStream {
             if (byteId > 10) {
                 throw new RuntimeException("VarLong encoding error");
             }
-            if ((b & 0x80) == 128) {
+            if ((b & 0x80) == 0) {
                 break;
             }
         }
