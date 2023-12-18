@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
+import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +22,7 @@ public class PlayerReconfigurationPhaseHelper implements Listener {
 
     private Map<UUID, List<Consumer<? super Player>>> delayedActionsForPlayersInReconfigurationPhase;
 
-    public PlayerReconfigurationPhaseHelper() {
+    PlayerReconfigurationPhaseHelper() {
         this.delayedActionsForPlayersInReconfigurationPhase = new ConcurrentHashMap<>();
         Bukkit.getPluginManager().registerEvents(this, CubesideUtilsBukkit.getInstance().getPlugin());
     }
@@ -56,7 +58,11 @@ public class PlayerReconfigurationPhaseHelper implements Listener {
         }
 
         for (Consumer<? super Player> action : delayedActions) {
-            action.accept(player);
+            try {
+                action.accept(player);
+            } catch (Exception e) {
+                CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Delayed action for player in reconfiguration phase threw an exception.", e);
+            }
         }
     }
 
