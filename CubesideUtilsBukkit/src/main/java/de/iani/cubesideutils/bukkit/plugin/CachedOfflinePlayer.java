@@ -1,5 +1,8 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -239,6 +242,26 @@ public class CachedOfflinePlayer implements OfflinePlayer {
 
     @Override
     public @Nullable Location getLastDeathLocation() {
+        return null;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return false;
+    }
+
+    @Override
+    public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Date expires, @Nullable String source) {
+        return null;
+    }
+
+    @Override
+    public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Instant expires, @Nullable String source) {
+        return null;
+    }
+
+    @Override
+    public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source) {
         return null;
     }
 }

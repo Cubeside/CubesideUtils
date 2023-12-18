@@ -301,6 +301,12 @@ public class ItemGroups {
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
+        // 1.20.4
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.BREEZE_SPAWN_EGG, EntityType.BREEZE);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         for (Material m : Material.values()) {
             String name = m.name();
@@ -493,7 +499,7 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.ORANGE_TULIP);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PINK_TULIP);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.OXEYE_DAISY);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.GRASS);
+        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SHORT_GRASS);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.FERN);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DEAD_BUSH);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SWEET_BERRY_BUSH);
