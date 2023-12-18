@@ -22,7 +22,7 @@ public class PlayerReconfigurationPhaseHelper implements Listener {
 
     private Map<UUID, List<Consumer<? super Player>>> delayedActionsForPlayersInReconfigurationPhase;
 
-    public PlayerReconfigurationPhaseHelper() {
+    PlayerReconfigurationPhaseHelper() {
         this.delayedActionsForPlayersInReconfigurationPhase = new ConcurrentHashMap<>();
         Bukkit.getPluginManager().registerEvents(this, CubesideUtilsBukkit.getInstance().getPlugin());
     }
