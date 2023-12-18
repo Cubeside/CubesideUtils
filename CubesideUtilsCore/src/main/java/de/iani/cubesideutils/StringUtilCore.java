@@ -127,6 +127,10 @@ public class StringUtilCore {
         return string.length() >= prefix.length() && string.regionMatches(true, 0, prefix, 0, prefix.length());
     }
 
+    public static boolean startsWithIgnoreCase(final String string, final int start, final String prefix) {
+        return string.length() >= prefix.length() && string.regionMatches(true, start, prefix, 0, prefix.length());
+    }
+
     public static final char COLOR_CHAR = '§';
     public static final Pattern COLOR_CHAR_PATTERN = Pattern.compile("\\" + COLOR_CHAR);
     public static final Pattern COLOR_CODES_PATTERN = Pattern.compile("\\" + COLOR_CHAR + "([0-9a-fk-or]|(x(" + COLOR_CHAR + "[0-9a-f]){6}))", Pattern.CASE_INSENSITIVE);
