@@ -499,7 +499,11 @@ public class ItemGroups {
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.ORANGE_TULIP);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PINK_TULIP);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.OXEYE_DAISY);
-        SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SHORT_GRASS);
+        try {
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SHORT_GRASS);
+        } catch (NoSuchFieldError e) {
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.valueOf("GRASS"));
+        }
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.FERN);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.DEAD_BUSH);
         SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SWEET_BERRY_BUSH);
