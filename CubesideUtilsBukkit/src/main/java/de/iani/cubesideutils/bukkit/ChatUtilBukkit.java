@@ -3,7 +3,6 @@ package de.iani.cubesideutils.bukkit;
 import de.cubeside.connection.GlobalPlayer;
 import de.iani.cubesideutils.ChatUtil;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
-import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
 import de.iani.cubesideutils.conditions.Condition;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.AbstractList;
@@ -31,31 +30,16 @@ public class ChatUtilBukkit extends ChatUtil {
 
         @Override
         public void sendMessage(String message) {
-            if (original instanceof Player player) {
-                UtilsApiBukkit.getInstance().doAfterReconfigurationPhase(player, p -> p.sendMessage(message));
-            } else {
-                original.sendMessage(message);
-            }
+            original.sendMessage(message);
         }
 
         @Override
         public void sendMessage(BaseComponent... message) {
-            if (original instanceof Player player) {
-                UtilsApiBukkit.getInstance().doAfterReconfigurationPhase(player, p -> {
-                    try {
-                        player.sendMessage(message);
-                    } catch (NoSuchMethodError e) {
-                        // spigot compatibility
-                        player.spigot().sendMessage(message);
-                    }
-                });
-            } else {
-                try {
-                    original.sendMessage(message);
-                } catch (NoSuchMethodError e) {
-                    // spigot compatibility
-                    original.sendMessage(BaseComponent.toLegacyText(message));
-                }
+            try {
+                original.sendMessage(message);
+            } catch (NoSuchMethodError e) {
+                // spigot compatibility
+                original.sendMessage(BaseComponent.toLegacyText(message));
             }
         }
     }
