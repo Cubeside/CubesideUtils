@@ -264,4 +264,14 @@ public class CachedOfflinePlayer implements OfflinePlayer {
     public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source) {
         return null;
     }
+
+    @Override
+    public Location getRespawnLocation() {
+        return null;
+    }
+
+    @Override
+    public Location getLocation() {
+        return null;
+    }
 }
