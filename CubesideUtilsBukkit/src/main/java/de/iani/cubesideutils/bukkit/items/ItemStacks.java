@@ -26,6 +26,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 
 public class ItemStacks {
     private ItemStacks() {
@@ -85,6 +86,16 @@ public class ItemStacks {
         return itemStack;
     }
 
+    public static ItemStack potion(ItemStack itemStack, PotionType potion) {
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta instanceof PotionMeta potionMeta) {
+            potionMeta.setBasePotionType(potion);
+        }
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    @Deprecated(forRemoval = true)
     public static ItemStack potion(ItemStack itemStack, PotionData potion) {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta instanceof PotionMeta) {
