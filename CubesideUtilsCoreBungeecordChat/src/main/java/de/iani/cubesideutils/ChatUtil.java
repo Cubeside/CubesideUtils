@@ -307,7 +307,7 @@ public abstract class ChatUtil {
             }
         }
 
-        if (Arrays.stream(messageParts).anyMatch(o -> o != null && o.getClass().isArray())) {
+        if (Arrays.stream(messageParts).anyMatch(o -> o != null && o.getClass().isArray() && !(o instanceof BaseComponent[]))) {
             CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage.", new Throwable());
             messageParts = Arrays.stream(messageParts).flatMap(o -> (o != null && o.getClass().isArray()) ? arrayStream(o) : Stream.of(o)).toArray();
         }
