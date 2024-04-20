@@ -134,8 +134,12 @@ public class ComponentUtil {
                             this.currentComponent.setStrikethrough(true);
                         } else if (color == ChatColor.UNDERLINE) {
                             this.currentComponent.setUnderlined(true);
-                        } else {
+                        } else if (color == ChatColor.RESET) {
+                            this.currentComponent.setReset(true);
+                        } else if (color.getColor() != null) {
                             this.currentComponent.setColor(color);
+                        } else {
+                            throw new RuntimeException("Unexpected ChatColor: " + color);
                         }
                         continue;
                     }
