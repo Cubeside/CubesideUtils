@@ -9,21 +9,21 @@ public class DataUpdater {
     }
 
     /**
-     * Performs updates to the given ItemStack. The given stack may be changed in the process or a new ItemStack may be created.
+     * Performs updates to the given ItemStack. The given stack is not changed but a new ItemStack is creatied if something has to be updated.
      * Plugins can register to update ItemStacks by using the {@link ItemStackUpdateEvent}.
      * Use the result to get the updated stack.
      *
      * @param stack
      *            a ItemStack that should be updated if required
-     * @return an UpdatedItemStack that contains the stack and a boolean to check if the ItemStack was changed.
+     * @return the new created updated ItemStack or the unmodified old ItemStack if nothing changed.
      */
-    public static UpdatedItemStack updateItemStack(ItemStack stack) {
+    public static ItemStack updateItemStack(ItemStack stack) {
         if (stack == null) {
-            return new UpdatedItemStack(null, false);
+            return null;
         }
         ItemStackUpdateEvent event = new ItemStackUpdateEvent(stack);
         event.callEvent();
-        return new UpdatedItemStack(event.getStack(), event.isChanged());
+        return event.getStack();
     }
 
     /**
