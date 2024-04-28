@@ -107,6 +107,9 @@ public enum CustomHeads {
         if (ownerName == null) {
             ownerName = ownerUUID.toString().substring(0, 16);
         }
+        if (ownerName.length() > 16) {
+            ownerName = ownerName.substring(0, 16);
+        }
         ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) stack.getItemMeta();
         PlayerProfile profile = Bukkit.createProfile(ownerUUID, ownerName);
