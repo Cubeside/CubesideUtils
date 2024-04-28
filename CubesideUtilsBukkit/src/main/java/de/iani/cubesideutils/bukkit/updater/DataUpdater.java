@@ -1,7 +1,13 @@
 package de.iani.cubesideutils.bukkit.updater;
 
 import de.iani.cubesideutils.bukkit.MinecraftVersion;
+import java.util.Objects;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class DataUpdater {
     private DataUpdater() {
@@ -23,7 +29,38 @@ public class DataUpdater {
         }
         ItemStackUpdateEvent event = new ItemStackUpdateEvent(stack);
         event.callEvent();
-        return event.getStack();
+        stack = event.getStack();
+
+        ItemMeta meta = stack.getItemMeta();
+        if (meta instanceof BlockStateMeta blockStateMeta) {
+            if (blockStateMeta.hasBlockState()) {
+                BlockState blockState = blockStateMeta.getBlockState();
+                if (blockState != null) {
+                    if (blockState instanceof Container container) {
+                        Inventory inv = container.getSnapshotInventory();
+                        ItemStack[] contents = inv.getContents();
+                        boolean modified = false;
+                        for (int i = 0; i < contents.length; i++) {
+                            ItemStack oldContent = contents[i];
+                            if (oldContent != null) {
+                                ItemStack newContent = updateItemStack(oldContent);
+                                if (!Objects.equals(oldContent, newContent)) {
+                                    contents[i] = newContent;
+                                    modified = true;
+                                }
+                            }
+                        }
+                        if (modified) {
+                            inv.setContents(contents);
+                            blockStateMeta.setBlockState(blockState);
+                            stack = stack.clone();
+                            stack.setItemMeta(blockStateMeta);
+                        }
+                    }
+                }
+            }
+        }
+        return stack;
     }
 
     /**
