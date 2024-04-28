@@ -173,6 +173,7 @@ public class DataUpdater {
             case "SPELL" -> "EFFECT";
             case "SPELL_INSTANT" -> "INSTANT_EFFECT";
             case "SPELL_MOB" -> "ENTITY_EFFECT";
+            case "SPELL_MOB_AMBIENT" -> "ENTITY_EFFECT";
             case "SPELL_WITCH" -> "WITCH";
             case "DRIP_WATER" -> "DRIPPING_WATER";
             case "DRIP_LAVA" -> "DRIPPING_LAVA";
