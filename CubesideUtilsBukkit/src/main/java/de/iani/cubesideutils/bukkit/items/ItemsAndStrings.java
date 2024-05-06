@@ -20,8 +20,8 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionType;
 
 public class ItemsAndStrings {
     private ItemsAndStrings() {
@@ -125,14 +125,13 @@ public class ItemsAndStrings {
 
         builder.append(StringUtil.capitalizeFirstLetter(item.getType().name(), true));
 
-        if (meta instanceof PotionMeta) {
-            PotionMeta potionMeta = (PotionMeta) meta;
-            PotionData data = potionMeta.getBasePotionData();
-            builder.append(" of ").append(StringUtil.capitalizeFirstLetter(data.getType().name(), true));
-            builder.append(data.isUpgraded() ? " II" : " I");
-            if (data.isExtended()) {
-                builder.append(" (verlängert)");
-            }
+        if (meta instanceof PotionMeta potionMeta) {
+            PotionType data = potionMeta.getBasePotionType();
+            builder.append(" of ").append(StringUtil.capitalizeFirstLetter(data.name(), true));
+            // builder.append(data.isUpgraded() ? " II" : " I");
+            // if (data.isExtended()) {
+            // builder.append(" (verlängert)");
+            // }
 
             int index = 0;
             for (PotionEffect effect : potionMeta.getCustomEffects()) {

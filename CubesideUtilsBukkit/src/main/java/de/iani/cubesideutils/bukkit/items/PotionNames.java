@@ -17,20 +17,19 @@ public class PotionNames {
 
         addPotion(PotionType.AWKWARD, "Awkward Potion");
         addPotion(PotionType.FIRE_RESISTANCE, "Potion of Fire Resistance");
-        addPotion(PotionType.INSTANT_DAMAGE, "Potion of Harming");
-        addPotion(PotionType.INSTANT_HEAL, "Potion of Healing");
+        addPotion(PotionType.HARMING, "Potion of Harming");
+        addPotion(PotionType.HEALING, "Potion of Healing");
         addPotion(PotionType.INVISIBILITY, "Potion of Invisibility");
-        addPotion(PotionType.JUMP, "Potion of Leaping");
+        addPotion(PotionType.LEAPING, "Potion of Leaping");
         addPotion(PotionType.LUCK, "Potion of Luck");
         addPotion(PotionType.MUNDANE, "Mundane Potion");
         addPotion(PotionType.NIGHT_VISION, "Potion of Night Vision");
         addPotion(PotionType.POISON, "Potion of Poison");
-        addPotion(PotionType.REGEN, "Potion of Regeneration");
+        addPotion(PotionType.REGENERATION, "Potion of Regeneration");
         addPotion(PotionType.SLOWNESS, "Potion of Slowness");
-        addPotion(PotionType.SPEED, "Potion of Swiftness");
+        addPotion(PotionType.SWIFTNESS, "Potion of Swiftness");
         addPotion(PotionType.STRENGTH, "Potion of Strength");
         addPotion(PotionType.THICK, "Thick Potion");
-        addPotion(PotionType.UNCRAFTABLE, "Uncraftable Potion");
         addPotion(PotionType.WATER, "Water Bottle");
         addPotion(PotionType.WATER_BREATHING, "Potion of Water Breathing");
         addPotion(PotionType.WEAKNESS, "Potion of Weakness");

@@ -220,7 +220,7 @@ public class ItemGroups {
         SPAWN_EGGS_INTERNAL.put(Material.HUSK_SPAWN_EGG, EntityType.HUSK);
         SPAWN_EGGS_INTERNAL.put(Material.LLAMA_SPAWN_EGG, EntityType.LLAMA);
         SPAWN_EGGS_INTERNAL.put(Material.MAGMA_CUBE_SPAWN_EGG, EntityType.MAGMA_CUBE);
-        SPAWN_EGGS_INTERNAL.put(Material.MOOSHROOM_SPAWN_EGG, EntityType.MUSHROOM_COW);
+        SPAWN_EGGS_INTERNAL.put(Material.MOOSHROOM_SPAWN_EGG, EntityType.MOOSHROOM);
         SPAWN_EGGS_INTERNAL.put(Material.MULE_SPAWN_EGG, EntityType.MULE);
         SPAWN_EGGS_INTERNAL.put(Material.OCELOT_SPAWN_EGG, EntityType.OCELOT);
         SPAWN_EGGS_INTERNAL.put(Material.PARROT_SPAWN_EGG, EntityType.PARROT);
@@ -289,7 +289,7 @@ public class ItemGroups {
         try {
             SPAWN_EGGS_INTERNAL.put(Material.ENDER_DRAGON_SPAWN_EGG, EntityType.ENDER_DRAGON);
             SPAWN_EGGS_INTERNAL.put(Material.WITHER_SPAWN_EGG, EntityType.WITHER);
-            SPAWN_EGGS_INTERNAL.put(Material.SNOW_GOLEM_SPAWN_EGG, EntityType.SNOWMAN);
+            SPAWN_EGGS_INTERNAL.put(Material.SNOW_GOLEM_SPAWN_EGG, EntityType.SNOW_GOLEM);
             SPAWN_EGGS_INTERNAL.put(Material.IRON_GOLEM_SPAWN_EGG, EntityType.IRON_GOLEM);
             SPAWN_EGGS_INTERNAL.put(Material.CAMEL_SPAWN_EGG, EntityType.CAMEL);
         } catch (NoSuchFieldError e) {

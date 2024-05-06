@@ -25,7 +25,6 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 public class ItemStacks {
@@ -46,7 +45,7 @@ public class ItemStacks {
 
     public static ItemStack hideProperties(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_UNBREAKABLE);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP, ItemFlag.HIDE_UNBREAKABLE);
         itemStack.setItemMeta(meta);
         return itemStack;
     }
@@ -90,16 +89,6 @@ public class ItemStacks {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta instanceof PotionMeta potionMeta) {
             potionMeta.setBasePotionType(potion);
-        }
-        itemStack.setItemMeta(meta);
-        return itemStack;
-    }
-
-    @Deprecated(forRemoval = true)
-    public static ItemStack potion(ItemStack itemStack, PotionData potion) {
-        ItemMeta meta = itemStack.getItemMeta();
-        if (meta instanceof PotionMeta) {
-            ((PotionMeta) meta).setBasePotionData(potion);
         }
         itemStack.setItemMeta(meta);
         return itemStack;
@@ -317,13 +306,13 @@ public class ItemStacks {
             return false;
         }
 
-        if (!Objects.equals(m1.getDestroyableKeys(), m2.getDestroyableKeys())) {
-            return false;
-        }
-
-        if (!Objects.equals(m1.getPlaceableKeys(), m2.getPlaceableKeys())) {
-            return false;
-        }
+        // if (!Objects.equals(m1.getDestroyableKeys(), m2.getDestroyableKeys())) {
+        // return false;
+        // }
+        //
+        // if (!Objects.equals(m1.getPlaceableKeys(), m2.getPlaceableKeys())) {
+        // return false;
+        // }
 
         if (m1.hasCustomModelData() != m2.hasCustomModelData()) {
             return false;

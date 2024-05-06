@@ -29,9 +29,9 @@ public class ComponentUtilBukkit {
         Material m = stack.getType();
         if (m == Material.TIPPED_ARROW || m == Material.POTION || m == Material.SPLASH_POTION || m == Material.LINGERING_POTION) {
             ItemMeta meta = stack.getItemMeta();
-            if (meta instanceof PotionMeta) {
+            if (meta instanceof PotionMeta potionMeta) {
                 String key = m.getKey().getKey();
-                PotionType type = ((PotionMeta) meta).getBasePotionData().getType();
+                PotionType type = potionMeta.getBasePotionType();
                 return new TranslatableComponent("item.minecraft." + key + ".effect." + getInternalPotionName(type));
             }
         }
@@ -51,22 +51,7 @@ public class ComponentUtilBukkit {
     }
 
     private static String getInternalPotionName(PotionType t) {
-        switch (t) {
-            case UNCRAFTABLE:
-                return "empty";
-            case JUMP:
-                return "leaping";
-            case SPEED:
-                return "swiftness";
-            case INSTANT_HEAL:
-                return "healing";
-            case INSTANT_DAMAGE:
-                return "harming";
-            case REGEN:
-                return "regeneration";
-            default:
-                return t.name().toLowerCase();
-        }
+        return t.name().toLowerCase();
     }
 
 }

@@ -22,7 +22,7 @@ public class Particles {
     public static void spawnParticles(Player player, Particle particle, double amount, double x, double y, double z, double offsetX, double offsetY, double offsetZ, double extra, Object data) {
         int intAmount = (int) Math.floor(amount) + (Math.random() < amount - Math.floor(amount) ? 1 : 0);
 
-        boolean randomColor = particle == Particle.REDSTONE && data == null;
+        boolean randomColor = particle == Particle.DUST && data == null;
         for (int i = 0; i < intAmount; i++) {
             double newX = x + (2 * Math.random() * offsetX) - offsetX;
             double newY = y + (2 * Math.random() * offsetY) - offsetY;
@@ -46,11 +46,11 @@ public class Particles {
 
     // color null bedeuted bunt.
     public static void spawnColoredDust(Player player, double amount, double x, double y, double z, double offsetX, double offsetY, double offsetZ, Color color) {
-        spawnParticles(player, Particle.REDSTONE, amount, x, y, z, offsetX, offsetY, offsetZ, 1.0f, color == null ? null : new DustOptions(color, 1.0f));
+        spawnParticles(player, Particle.DUST, amount, x, y, z, offsetX, offsetY, offsetZ, 1.0f, color == null ? null : new DustOptions(color, 1.0f));
     }
 
     public static void spawnColoredDust(Player player, double amount, Location location, double offsetX, double offsetY, double offsetZ, Color color) {
-        spawnParticles(player, Particle.REDSTONE, amount, location, offsetX, offsetY, offsetZ, 1.0f, color == null ? null : new DustOptions(color, 1.0f));
+        spawnParticles(player, Particle.DUST, amount, location, offsetX, offsetY, offsetZ, 1.0f, color == null ? null : new DustOptions(color, 1.0f));
     }
 
     // numberOfTicks < 0 bedeuted unendlich.
@@ -105,7 +105,7 @@ public class Particles {
                 datas[i] = colors[i] == null ? null : new DustOptions(colors[i], 1.0f);
             }
         }
-        return spawnParticles(plugin, player, Particle.REDSTONE, amountPerTick, numberOfTicks, location, offsetX, offsetY, offsetZ, 1.0f, datas);
+        return spawnParticles(plugin, player, Particle.DUST, amountPerTick, numberOfTicks, location, offsetX, offsetY, offsetZ, 1.0f, datas);
     }
 
     // color null bedeuted bunt, numberOfTicks < 0 bedeuted unendlich.
