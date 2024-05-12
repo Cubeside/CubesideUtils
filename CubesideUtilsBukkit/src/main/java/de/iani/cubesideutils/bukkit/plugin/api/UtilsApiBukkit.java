@@ -50,5 +50,4 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract void doAfterReconfigurationPhase(Player player, List<Consumer<? super Player>> actions);
 
     public abstract void doAfterReconfigurationPhase(Player player, Consumer<? super Player> action);
-
 }

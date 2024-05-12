@@ -325,9 +325,9 @@ public class StringUtilBukkit {
     public static OfflinePlayer parseOfflinePlayer(String playerString) {
         try {
             UUID playerId = UUID.fromString(playerString);
-            return CubesideUtilsBukkit.getInstance().getPlayerUUIDCache().getPlayer(playerId);
+            return CubesideUtilsBukkit.getInstance().getCachedOfflinePlayer(playerId);
         } catch (IllegalArgumentException e) {
-            return CubesideUtilsBukkit.getInstance().getPlayerUUIDCache().getPlayer(playerString);
+            return CubesideUtilsBukkit.getInstance().getCachedOfflinePlayer(playerString);
         }
     }
 
@@ -336,7 +336,7 @@ public class StringUtilBukkit {
     }
 
     public static String getPlayerString(UUID playerId) {
-        OfflinePlayer player = CubesideUtilsBukkit.getInstance().getPlayerUUIDCache().getPlayer(playerId);
+        OfflinePlayer player = CubesideUtilsBukkit.getInstance().getCachedOfflinePlayer(playerId);
         if (player == null || player.getName() == null) {
             return playerId.toString();
         }

@@ -25,8 +25,6 @@ import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.serialization.NullWrapper;
 import de.iani.cubesideutils.serialization.StringSerialization;
-import de.iani.playerUUIDCache.PlayerUUIDCache;
-import de.iani.playerUUIDCache.PlayerUUIDCacheAPI;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -77,7 +75,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     private UtilsDatabaseBukkit database;
     private PlayerDataCache playerDataCache;
-    private PlayerUUIDCacheAPI playerUUIDCache;
+    private PlayerUUIDCacheWrapper playerUUIDCache;
     private GlobalClientPlugin globalClientPlugin;
     private UtilsGlobalDataHelperBukkit globalDataHelper;
 
@@ -115,9 +113,13 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         new EventListener();
         new AfkManager();
 
-        this.playerUUIDCache = JavaPlugin.getPlugin(PlayerUUIDCache.class);
-        this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
-        this.globalDataHelper = new UtilsGlobalDataHelperBukkit(this.plugin);
+        if (this.plugin.getServer().getPluginManager().isPluginEnabled("PlayerUUIDCache")) {
+            this.playerUUIDCache = new PlayerUUIDCacheWrapper(this.plugin);
+        }
+        if (this.plugin.getServer().getPluginManager().isPluginEnabled("GlobalClient")) {
+            this.globalClientPlugin = JavaPlugin.getPlugin(GlobalClientPlugin.class);
+            this.globalDataHelper = new UtilsGlobalDataHelperBukkit(this.plugin);
+        }
 
         this.inventoryInputManager = new InventoryInputManagerImpl();
         this.reconfigurationPhaseHelper = new PlayerReconfigurationPhaseHelper();
@@ -144,8 +146,14 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         return plugin;
     }
 
-    public PlayerUUIDCacheAPI getPlayerUUIDCache() {
-        return this.playerUUIDCache;
+    public OfflinePlayer getCachedOfflinePlayer(String name) {
+        OfflinePlayer p = this.playerUUIDCache != null ? this.playerUUIDCache.getPlayer(name) : plugin.getServer().getOfflinePlayerIfCached(name);
+        return p == null || p.getName() == null ? null : p;
+    }
+
+    public OfflinePlayer getCachedOfflinePlayer(UUID uuid) {
+        OfflinePlayer p = this.playerUUIDCache != null ? this.playerUUIDCache.getPlayer(uuid) : plugin.getServer().getOfflinePlayer(uuid);
+        return p == null || p.getName() == null ? null : p;
     }
 
     public GlobalClientPlugin getGlobalClientPlugin() {
@@ -153,7 +161,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     }
 
     @Override
-    public ConnectionAPI getConnectionApi() {
+    protected ConnectionAPI getConnectionApi() {
         return this.globalClientPlugin.getConnectionAPI();
     }
 
@@ -274,10 +282,12 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         }
     }
 
+    @Override
     public void doAfterReconfigurationPhase(Player player, List<Consumer<? super Player>> actions) {
         this.reconfigurationPhaseHelper.doActions(player, actions);
     }
 
+    @Override
     public void doAfterReconfigurationPhase(Player player, Consumer<? super Player> action) {
         this.reconfigurationPhaseHelper.doAction(player, action);
     }

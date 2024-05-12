@@ -84,7 +84,7 @@ public abstract class CubesideUtils implements UtilsApi {
 
     public abstract Logger getLogger();
 
-    public abstract ConnectionAPI getConnectionApi();
+    protected abstract ConnectionAPI getConnectionApi();
 
     public abstract UtilsDatabase<?> getDatabase();
 
