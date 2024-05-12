@@ -6,18 +6,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -355,4 +359,83 @@ public class ItemStacks {
         return countItems(i1).equals(countItems(i2));
     }
 
+    public static ItemStack prepareForSerialization(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+        ItemStackPrepareForSerializationEvent event = new ItemStackPrepareForSerializationEvent(stack);
+        event.callEvent();
+        stack = event.getStack();
+
+        ItemMeta meta = stack.getItemMeta();
+        if (meta instanceof BlockStateMeta blockStateMeta) {
+            if (blockStateMeta.hasBlockState()) {
+                BlockState blockState = blockStateMeta.getBlockState();
+                if (blockState != null) {
+                    if (blockState instanceof Container container) {
+                        Inventory inv = container.getSnapshotInventory();
+                        ItemStack[] contents = inv.getContents();
+                        boolean modified = false;
+                        for (int i = 0; i < contents.length; i++) {
+                            ItemStack oldContent = contents[i];
+                            if (oldContent != null) {
+                                ItemStack newContent = prepareForSerialization(oldContent);
+                                if (!Objects.equals(oldContent, newContent)) {
+                                    contents[i] = newContent;
+                                    modified = true;
+                                }
+                            }
+                        }
+                        if (modified) {
+                            inv.setContents(contents);
+                            blockStateMeta.setBlockState(blockState);
+                            stack = stack.clone();
+                            stack.setItemMeta(blockStateMeta);
+                        }
+                    }
+                }
+            }
+        }
+        return stack;
+    }
+
+    public static ItemStack restoreAfterDeserialization(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+        ItemStackRestoreAfterDeserializationEvent event = new ItemStackRestoreAfterDeserializationEvent(stack);
+        event.callEvent();
+        stack = event.getStack();
+
+        ItemMeta meta = stack.getItemMeta();
+        if (meta instanceof BlockStateMeta blockStateMeta) {
+            if (blockStateMeta.hasBlockState()) {
+                BlockState blockState = blockStateMeta.getBlockState();
+                if (blockState != null) {
+                    if (blockState instanceof Container container) {
+                        Inventory inv = container.getSnapshotInventory();
+                        ItemStack[] contents = inv.getContents();
+                        boolean modified = false;
+                        for (int i = 0; i < contents.length; i++) {
+                            ItemStack oldContent = contents[i];
+                            if (oldContent != null) {
+                                ItemStack newContent = restoreAfterDeserialization(oldContent);
+                                if (!Objects.equals(oldContent, newContent)) {
+                                    contents[i] = newContent;
+                                    modified = true;
+                                }
+                            }
+                        }
+                        if (modified) {
+                            inv.setContents(contents);
+                            blockStateMeta.setBlockState(blockState);
+                            stack = stack.clone();
+                            stack.setItemMeta(blockStateMeta);
+                        }
+                    }
+                }
+            }
+        }
+        return stack;
+    }
 }
