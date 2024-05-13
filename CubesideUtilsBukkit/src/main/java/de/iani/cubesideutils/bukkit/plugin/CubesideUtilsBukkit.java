@@ -8,6 +8,7 @@ import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.conditions.HasCustomPlayerDataValueCondition;
 import de.iani.cubesideutils.bukkit.conditions.HasPermissionCondition;
+import de.iani.cubesideutils.bukkit.inventory.WindowManager;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.UtilsApiBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerOptionsRetrievedEvent;
@@ -112,6 +113,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         this.playerDataCache = new PlayerDataCache();
         new EventListener();
         new AfkManager();
+        new WindowManager();
 
         if (this.plugin.getServer().getPluginManager().isPluginEnabled("PlayerUUIDCache")) {
             this.playerUUIDCache = new PlayerUUIDCacheWrapper(this.plugin);
