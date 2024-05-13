@@ -84,6 +84,10 @@ public abstract class AbstractWindow implements Window {
         WindowManager.getInstance().registerOpenWindow(this);
     }
 
+    @Override
+    public void onInventoryClose(InventoryCloseEvent event) {
+    }
+
     protected abstract void rebuildInventory();
 
 }
