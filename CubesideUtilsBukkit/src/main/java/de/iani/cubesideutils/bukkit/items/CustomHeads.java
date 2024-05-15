@@ -103,13 +103,39 @@ public enum CustomHeads {
         return stack;
     }
 
+    public static String cleanProfileName(String in) {
+        if (in == null) {
+            return null;
+        }
+        StringBuilder sb = null;
+        int length = in.length();
+        for (int i = 0; i < length; i++) {
+            char c = in.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+                if (sb != null) {
+                    sb.append(c);
+                    if (sb.length() == 16) {
+                        return sb.toString();
+                    }
+                } else {
+                    if (i >= 16) {
+                        return in.substring(0, 16);
+                    }
+                }
+            } else {
+                if (sb == null) {
+                    if (i >= 16) {
+                        return in.substring(0, 16);
+                    }
+                    sb = new StringBuilder(in.substring(0, i));
+                }
+            }
+        }
+        return sb == null ? (in.length() <= 16 ? in : in.substring(0, 16)) : sb.toString();
+    }
+
     public static ItemStack createHead(UUID ownerUUID, String ownerName, String texturesProperty) {
-        if (ownerName == null) {
-            ownerName = ownerUUID.toString().substring(0, 16);
-        }
-        if (ownerName.length() > 16) {
-            ownerName = ownerName.substring(0, 16);
-        }
+        ownerName = cleanProfileName(ownerName);
         ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) stack.getItemMeta();
         PlayerProfile profile = Bukkit.createProfile(ownerUUID, ownerName);
