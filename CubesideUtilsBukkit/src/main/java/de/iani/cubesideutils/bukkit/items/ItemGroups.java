@@ -308,6 +308,14 @@ public class ItemGroups {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
 
+        // 1.20.6
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.BOGGED_SPAWN_EGG, EntityType.BOGGED);
+            SPAWN_EGGS_INTERNAL.put(Material.ARMADILLO_SPAWN_EGG, EntityType.ARMADILLO);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
+
         for (Material m : Material.values()) {
             String name = m.name();
             if (!name.startsWith("LEGACY_")) {
