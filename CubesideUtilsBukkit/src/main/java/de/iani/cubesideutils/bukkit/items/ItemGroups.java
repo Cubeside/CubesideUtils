@@ -766,6 +766,7 @@ public class ItemGroups {
         DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_LEGGINGS);
         DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_BOOTS);
         DYEABLE_ITEMS_INTERNAL.add(Material.LEATHER_HORSE_ARMOR);
+        DYEABLE_ITEMS_INTERNAL.add(Material.WOLF_ARMOR);
     }
 
     /**
