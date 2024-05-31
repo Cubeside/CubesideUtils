@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import java.util.Arrays;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -30,8 +31,18 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder displayName(Component displayName) {
+        meta.displayName(displayName);
+        return this;
+    }
+
     public ItemBuilder lore(String... lore) {
         meta.setLore(Arrays.asList(lore));
+        return this;
+    }
+
+    public ItemBuilder lore(Component... lore) {
+        meta.lore(Arrays.asList(lore));
         return this;
     }
 
@@ -72,8 +83,8 @@ public class ItemBuilder {
     public ItemBuilder clean() {
         item.removeItemFlags(item.getItemFlags().toArray(new ItemFlag[0]));
         item.getEnchantments().keySet().forEach(item::removeEnchantment);
-        meta.setLore(null);
-        meta.setDisplayName(null);
+        meta.lore(null);
+        meta.displayName(null);
         return this;
     }
 

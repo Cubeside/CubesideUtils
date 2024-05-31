@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import java.util.Arrays;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -98,6 +99,21 @@ public enum CustomHeads {
         meta.setDisplayName(displayName);
         if (lore != null && lore.length > 0) {
             meta.setLore(Arrays.asList(lore));
+        }
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    public ItemStack getHead(Component displayName) {
+        return getHead(displayName, (Component[]) null);
+    }
+
+    public ItemStack getHead(Component displayName, Component... lore) {
+        ItemStack stack = getHead();
+        ItemMeta meta = stack.getItemMeta();
+        meta.displayName(displayName);
+        if (lore != null && lore.length > 0) {
+            meta.lore(Arrays.asList(lore));
         }
         stack.setItemMeta(meta);
         return stack;
