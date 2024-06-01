@@ -127,7 +127,9 @@ public class ItemsAndStrings {
 
         if (meta instanceof PotionMeta potionMeta) {
             PotionType data = potionMeta.getBasePotionType();
-            builder.append(" of ").append(StringUtil.capitalizeFirstLetter(data.name(), true));
+            if (data != null) {
+                builder.append(" of ").append(StringUtil.capitalizeFirstLetter(data.name(), true));
+            }
             // builder.append(data.isUpgraded() ? " II" : " I");
             // if (data.isExtended()) {
             // builder.append(" (verlängert)");
