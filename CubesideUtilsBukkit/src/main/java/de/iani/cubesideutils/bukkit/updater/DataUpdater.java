@@ -95,6 +95,7 @@ public class DataUpdater {
             case "ARROW_FIRE" -> "FLAME";
             case "ARROW_INFINITE" -> "INFINITY";
             case "LUCK" -> "LUCK_OF_THE_SEA";
+            case "SWEEPING" -> "SWEEPING_EDGE";
             default -> name;
         };
     }
