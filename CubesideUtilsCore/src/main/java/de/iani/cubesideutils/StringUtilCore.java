@@ -105,15 +105,25 @@ public class StringUtilCore {
     }
 
     public static int findMatchingBrace(String s) {
+        return findMatchingCharacter(s, '{', '}', '\\');
+    }
+
+    public static int findMatchingCharacter(String s, char opening, char closing, char escaping) {
+        if (s.charAt(0) != opening) {
+            throw new IllegalArgumentException("string doesn't start with opening");
+        }
+
         int open = 1;
         for (int i = 1; i < s.length(); i++) {
-            switch (s.charAt(i)) {
-                case '{' -> open++;
-                case '}' -> {
-                    if (--open == 0) {
-                        return i;
-                    }
+            char current = s.charAt(i);
+            if (current == opening) {
+                open++;
+            } else if (current == closing) {
+                if (--open == 0) {
+                    return i;
                 }
+            } else if (current == escaping) {
+                i++;
             }
         }
         return -1;
