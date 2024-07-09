@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bukkit.plugin;
 
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
+import de.iani.cubesideutils.bukkit.events.PlayerMadeUnknownActionEvent;
 import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerPermissionsChangedEvent;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import org.bukkit.Bukkit;
@@ -191,4 +192,8 @@ public final class EventListener implements Listener {
         madeAction((Player) event.getPlayer());
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerMadeAnyAction(PlayerMadeUnknownActionEvent event) {
+        madeAction(event.getPlayer());
+    }
 }
