@@ -8,12 +8,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -79,7 +82,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         } catch (LoadingPlayerDataFailedException e) {
             CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load " + this.valueLoggingName + " for player " + playerId + ".", e);
             CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Denying join for player " + playerId + " because of an internal error.");
-            event.disallow(Result.KICK_OTHER, e.getKickMessage());
+            event.disallow(Result.KICK_OTHER, LegacyComponentSerializer.legacySection().deserialize(e.getKickMessage()));
             return;
         }
         if (value != null) {
@@ -170,7 +173,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
     }
 
     protected void playerJoinedAfterTimeout(Player player) {
-        Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> player.kickPlayer("Timeout between login and join."));
+        Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> player.kick(Component.text("Timeout between login and join."), PlayerKickEvent.Cause.TIMEOUT));
     }
 
     protected void playerQuitting(Player player) {

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -58,14 +60,32 @@ public class ItemStacks {
 
     public static ItemStack lore(ItemStack itemStack, String... lore) {
         ItemMeta meta = itemStack.getItemMeta();
-        meta.setLore((lore == null || lore.length == 0) ? null : List.of(lore));
+        if (lore == null || lore.length == 0) {
+            meta.lore(null);
+        } else {
+            meta.lore(List.of(lore).stream().map(s -> LegacyComponentSerializer.legacySection().deserialize(s)).toList());
+        }
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    public static ItemStack lore(ItemStack itemStack, Component... lore) {
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.lore((lore == null || lore.length == 0) ? null : List.of(lore));
         itemStack.setItemMeta(meta);
         return itemStack;
     }
 
     public static ItemStack rename(ItemStack itemStack, String name) {
         ItemMeta meta = itemStack.getItemMeta();
-        meta.setDisplayName(name);
+        meta.displayName(LegacyComponentSerializer.legacySection().deserialize(name));
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    public static ItemStack rename(ItemStack itemStack, Component name) {
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.displayName(name);
         itemStack.setItemMeta(meta);
         return itemStack;
     }

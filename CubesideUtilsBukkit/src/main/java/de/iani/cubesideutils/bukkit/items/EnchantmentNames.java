@@ -1,6 +1,8 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import de.iani.cubesideutils.StringUtil;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import org.bukkit.ChatColor;
@@ -66,7 +68,7 @@ public class EnchantmentNames {
 
         Enchantment result = null;
         try {
-            result = Enchantment.getByKey(NamespacedKey.minecraft(name));
+            result = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(NamespacedKey.minecraft(name));
         } catch (Exception e) {
             // ignore
         }
