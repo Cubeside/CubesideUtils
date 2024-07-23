@@ -1,15 +1,14 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.UUID;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
@@ -17,7 +16,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -33,8 +32,8 @@ public class ItemStacks {
         // prevents instances
     }
 
-    private static final UUID attackSpeedUUID = UUID.fromString("34f5963d-3fc6-474b-a576-c4f05c2af419");
-    private static final UUID attackDamageUUID = UUID.fromString("ea434c08-d745-4b5c-858e-1db76cc70088");
+    private static final NamespacedKey attackSpeedKey = NamespacedKey.fromString("cubesideutils:attackspeed");
+    private static final NamespacedKey attackDamageKey = NamespacedKey.fromString("cubesideutils:attackdamage");
 
     public static ItemStack unbreakable(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
@@ -115,34 +114,11 @@ public class ItemStacks {
             addDamage = 7;
         }
         if (!Double.isNaN(addDamage)) {
-            boolean attackModifierExists = false;
-            if (meta.hasAttributeModifiers()) {
-                Collection<AttributeModifier> attackSpeedModifiers = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_SPEED);
-                if (attackSpeedModifiers != null) {
-                    for (AttributeModifier m : attackSpeedModifiers) {
-                        if (m.getUniqueId().equals(attackSpeedUUID)) {
-                            attackModifierExists = true;
-                        }
-                    }
-                }
-            }
-            if (!attackModifierExists) {
-                meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(attackSpeedUUID, "1.8-attackspeed", 1.5, Operation.ADD_NUMBER, EquipmentSlot.HAND));
-            }
-            boolean attackDamageExists = false;
-            if (meta.hasAttributeModifiers()) {
-                Collection<AttributeModifier> attackDamageModifiers = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
-                if (attackDamageModifiers != null) {
-                    for (AttributeModifier m : attackDamageModifiers) {
-                        if (m.getUniqueId().equals(attackDamageUUID)) {
-                            attackDamageExists = true;
-                        }
-                    }
-                }
-            }
-            if (!attackDamageExists) {
-                meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(attackDamageUUID, "1.8-attackdamage", addDamage, Operation.ADD_NUMBER, EquipmentSlot.HAND));
-            }
+            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_SPEED);
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(attackSpeedKey, 1.5, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
+
+            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE);
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(attackDamageKey, addDamage, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
         }
         itemStack.setItemMeta(meta);
         return itemStack;
