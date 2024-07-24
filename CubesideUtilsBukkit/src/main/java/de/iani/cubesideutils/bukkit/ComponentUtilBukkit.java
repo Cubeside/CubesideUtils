@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
+@Deprecated(forRemoval = true)
 public class ComponentUtilBukkit {
     private ComponentUtilBukkit() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
