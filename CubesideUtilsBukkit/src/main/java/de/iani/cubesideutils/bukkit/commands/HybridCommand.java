@@ -58,7 +58,7 @@ public abstract class HybridCommand extends SubCommand implements CommandExecuto
                 throw new NoPermissionException(null, sender, command, alias, this, args, this.getRequiredPermission());
             }
 
-            if (onCommand(sender, command, alias, "/" + alias, new ArgsParser(args))) {
+            if (onCommand(sender, command, alias, "/" + alias + " ", new ArgsParser(args))) {
                 return true;
             } else {
                 throw new IllegalSyntaxException(null, sender, command, alias, this, args);
