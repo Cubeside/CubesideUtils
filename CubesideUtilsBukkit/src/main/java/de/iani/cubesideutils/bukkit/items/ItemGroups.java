@@ -982,8 +982,8 @@ public class ItemGroups {
         return WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.get(m);
     }
 
-    public static Material getWorkstationForVillagerProfession(EntityType e) {
-        return SPAWNEGG_FOR_ENTITY.get(e);
+    public static Material getWorkstationForVillagerProfession(Villager.Profession e) {
+        return VILLAGER_PROFESSION_TO_WORKSTATION.get(e);
     }
 
     public static boolean isDoubleBlockPlant(Material m) {
