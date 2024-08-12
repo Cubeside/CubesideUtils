@@ -80,6 +80,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder enchantmentGlintOverride(Boolean glintOverride) {
+        meta.setEnchantmentGlintOverride(glintOverride);
+        return this;
+    }
+
     public ItemBuilder clean() {
         item.removeItemFlags(item.getItemFlags().toArray(new ItemFlag[0]));
         item.getEnchantments().keySet().forEach(item::removeEnchantment);
