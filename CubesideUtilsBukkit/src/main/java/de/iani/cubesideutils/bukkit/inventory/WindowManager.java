@@ -72,6 +72,7 @@ public class WindowManager implements Listener {
         }
 
         window.closed();
+        window.onInventoryClose(event);
         this.openWindows.remove(event.getPlayer().getUniqueId());
     }
 

@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemGroups {
@@ -147,6 +148,12 @@ public class ItemGroups {
 
     private static final HashMap<EntityType, Material> SPAWNEGG_FOR_ENTITY_INTERNAL = new HashMap<>();
     public static final Map<EntityType, Material> SPAWNEGG_FOR_ENTITY = Collections.unmodifiableMap(SPAWNEGG_FOR_ENTITY_INTERNAL);
+
+    private static final HashMap<Material, Villager.Profession> WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL = new HashMap<>();
+    public static final Map<Material, Villager.Profession> WORKSTATION_TO_VILLAGER_PROFESSION = Collections.unmodifiableMap(WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL);
+
+    private static final HashMap<Villager.Profession, Material> VILLAGER_PROFESSION_TO_WORKSTATION_INTERNAL = new HashMap<>();
+    public static final Map<Villager.Profession, Material> VILLAGER_PROFESSION_TO_WORKSTATION = Collections.unmodifiableMap(VILLAGER_PROFESSION_TO_WORKSTATION_INTERNAL);
 
     private static final Map<DyeColor, Material> DYE_COLOR_TO_DYE = new HashMap<>();
     private static final Map<DyeColor, Material> DYE_COLOR_TO_WOOL = new HashMap<>();
@@ -314,6 +321,27 @@ public class ItemGroups {
             SPAWN_EGGS_INTERNAL.put(Material.ARMADILLO_SPAWN_EGG, EntityType.ARMADILLO);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
+
+
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.BLAST_FURNACE, Villager.Profession.ARMORER);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.SMOKER, Villager.Profession.BUTCHER);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.CARTOGRAPHY_TABLE, Villager.Profession.CARTOGRAPHER);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.BREWING_STAND, Villager.Profession.CLERIC);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.COMPOSTER, Villager.Profession.FARMER);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.BARREL, Villager.Profession.FISHERMAN);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.CAULDRON, Villager.Profession.LEATHERWORKER);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.STONECUTTER, Villager.Profession.MASON);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.LOOM, Villager.Profession.SHEPHERD);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.SMITHING_TABLE, Villager.Profession.TOOLSMITH);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.GRINDSTONE, Villager.Profession.WEAPONSMITH);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.FLETCHING_TABLE, Villager.Profession.FLETCHER);
+        WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.LECTERN, Villager.Profession.LIBRARIAN);
+
+        for (Entry<Material, Villager.Profession> e : WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.entrySet()) {
+            if (e.getValue() != null) {
+                VILLAGER_PROFESSION_TO_WORKSTATION_INTERNAL.put(e.getValue(), e.getKey());
+            }
         }
 
         for (Material m : Material.values()) {
@@ -944,6 +972,18 @@ public class ItemGroups {
 
     public static Material getSpawnEggForEntity(EntityType e) {
         return SPAWNEGG_FOR_ENTITY.get(e);
+    }
+
+    public static boolean isVillagerWorkstation(Material m) {
+        return WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.containsKey(m);
+    }
+
+    public static Villager.Profession getVillagerProfessionForWorkStation(Material m) {
+        return WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.get(m);
+    }
+
+    public static Material getWorkstationForVillagerProfession(Villager.Profession e) {
+        return VILLAGER_PROFESSION_TO_WORKSTATION.get(e);
     }
 
     public static boolean isDoubleBlockPlant(Material m) {
