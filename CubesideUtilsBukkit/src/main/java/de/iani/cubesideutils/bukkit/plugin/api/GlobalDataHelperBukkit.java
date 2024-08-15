@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -25,11 +26,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDataHelperImpl<T> implements PlayerMessageAPI, PlayerPropertiesAPI, Listener {
 
-    private PlayerMessageAPI playerMsgApi;
-    private PlayerPropertiesAPI playerPropertiesApi;
+    private final PlayerMessageAPI playerMsgApi;
+    private final PlayerPropertiesAPI playerPropertiesApi;
+    protected final JavaPlugin plugin;
 
     public GlobalDataHelperBukkit(Class<T> messageTypeClass, String channel, JavaPlugin plugin) {
         super(messageTypeClass, channel);
+        this.plugin = plugin;
 
         GlobalClientPlugin globalClientPlugin = CubesideUtilsBukkit.getInstance().getGlobalClientPlugin();
         this.playerMsgApi = globalClientPlugin.getMessageAPI();
@@ -217,8 +220,13 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         }
 
         DataInputStream data = new DataInputStream(event.getData());
-        T messageType = fromOrdinal(data.readInt());
-        handleMessage(messageType, event.getSource(), data);
+        int messageTypeId = data.readInt();
+        T messageType = fromOrdinal(messageTypeId);
+        if (messageType == null) {
+            plugin.getLogger().log(Level.WARNING, "Unknown data type for DataHelper " + getMessageTypeClass().getName() + ": " + messageTypeId);
+        } else {
+            handleMessage(messageType, event.getSource(), data);
+        }
     }
 
 }

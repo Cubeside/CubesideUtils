@@ -14,13 +14,13 @@ public class MinecraftMapColorTable implements IndexedColorTable {
     private MinecraftMapColorTable() {
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "removal" })
     @Override
     public int getNearestIndex(int rgb) {
         return MapPalette.matchColor(new Color(rgb, true));
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "removal" })
     @Override
     public int getRGBForIndex(int index) {
         try {

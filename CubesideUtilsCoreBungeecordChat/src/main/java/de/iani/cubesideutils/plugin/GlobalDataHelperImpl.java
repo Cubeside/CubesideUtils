@@ -33,11 +33,13 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
     private final ConnectionAPI connectionAPI;
 
     private final String channel;
+    private Class<T> messageTypeClass;
     private final T[] messageTypes;
 
     public GlobalDataHelperImpl(Class<T> messageTypeClass, String channel) {
         this.connectionAPI = CubesideUtils.getInstance().getConnectionApi();
         this.channel = channel;
+        this.messageTypeClass = messageTypeClass;
         this.messageTypes = messageTypeClass.getEnumConstants();
     }
 
@@ -346,7 +348,11 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
     }
 
     protected T fromOrdinal(int ordinal) {
-        return messageTypes[ordinal];
+        return ordinal < messageTypes.length ? messageTypes[ordinal] : null;
+    }
+
+    public Class<T> getMessageTypeClass() {
+        return messageTypeClass;
     }
 
     protected abstract void handleMessage(T messageType, GlobalServer source, DataInputStream data) throws IOException;

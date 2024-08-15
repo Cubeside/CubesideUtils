@@ -3,6 +3,7 @@ package de.iani.cubesideutils.bukkit.plugin;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.plugin.api.GlobalDataHelperBukkit;
+import de.iani.cubesideutils.bukkit.sound.SoundSequence;
 import de.iani.cubesideutils.conditions.Condition;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper;
@@ -36,7 +37,7 @@ public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageT
                     pData.customDataChanged();
                 }
                 break;
-            case SEND_MESSAGE:
+            case SEND_MESSAGE: {
                 Condition<? super Player> seeMsgCondition = readStringSerializable(data);
                 boolean componentMsg = data.readBoolean();
                 if (componentMsg) {
@@ -47,6 +48,13 @@ public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageT
                     ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
                 }
                 break;
+            }
+            case SOUND_SEQUENCE: {
+                Condition<? super Player> hearSoundCondition = readStringSerializable(data);
+                SoundSequence sequence = readStringSerializable(data);
+                sequence.playToAll(hearSoundCondition, plugin);
+                break;
+            }
             default:
                 break;
         }

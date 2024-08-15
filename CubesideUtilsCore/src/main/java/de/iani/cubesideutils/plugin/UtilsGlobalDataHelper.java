@@ -11,6 +11,7 @@ public interface UtilsGlobalDataHelper extends GlobalDataHelper<MessageType> {
         GENERAL_DATA_CHANGED,
         PLAYER_DATA_CHANGED,
         CUSTOM_PLAYER_DATA_CHANGED,
-        SEND_MESSAGE;
+        SEND_MESSAGE,
+        SOUND_SEQUENCE;
     }
 }

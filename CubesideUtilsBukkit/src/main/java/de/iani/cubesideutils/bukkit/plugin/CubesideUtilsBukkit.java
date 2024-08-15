@@ -19,6 +19,7 @@ import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
 import de.iani.cubesideutils.bukkit.serialization.SerializableComponent;
 import de.iani.cubesideutils.bukkit.serialization.SerializablePair;
 import de.iani.cubesideutils.bukkit.serialization.SerializableTriple;
+import de.iani.cubesideutils.bukkit.sound.SoundSequence;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.conditions.Condition;
 import de.iani.cubesideutils.plugin.CubesideUtils;
@@ -65,6 +66,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         StringSerialization.register(GlobalLocationWrapper.SERIALIZATION_TYPE, GlobalLocationWrapper::deserialize);
         StringSerialization.register(HasPermissionCondition.SERIALIZATION_TYPE, HasPermissionCondition::deserialize);
         StringSerialization.register(HasCustomPlayerDataValueCondition.SERIALIZATION_TYPE, HasCustomPlayerDataValueCondition::deserialize);
+        StringSerialization.register(SoundSequence.SERIALIZATION_TYPE, SoundSequence::deserialize);
 
         // trigger registration of serializable classes
         new SerializablePair<>(null, null);
@@ -268,6 +270,12 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
     public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
         this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, true, message);
+    }
+
+    @Override
+    public void sendSoundSequenceToPlayersAllServers(Condition<? super Player> hearSoundCondition, SoundSequence soundSequence) {
+        soundSequence.playToAll(hearSoundCondition, plugin);
+        this.globalDataHelper.sendData(MessageType.SOUND_SEQUENCE, hearSoundCondition == null ? NullWrapper.INSTANCE : hearSoundCondition, soundSequence);
     }
 
     @Override
