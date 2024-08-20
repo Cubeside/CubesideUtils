@@ -102,7 +102,7 @@ public class FontUtil {
         return pos != stringLength && lastSpace != -1 && lastSpace < pos ? lastSpace : pos;
     }
 
-    private static int getCharWidth(char c) {
+    public static int getCharWidth(char c) {
         return charWidth[c];
     }
 
