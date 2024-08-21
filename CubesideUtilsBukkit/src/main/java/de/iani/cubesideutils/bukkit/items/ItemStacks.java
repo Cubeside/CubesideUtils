@@ -147,9 +147,73 @@ public class ItemStacks {
     public static ItemStack[] deepCopy(ItemStack[] of) {
         ItemStack[] result = new ItemStack[of.length];
         for (int i = 0; i < result.length; i++) {
-            result[i] = of[i] == null ? null : new ItemStack(of[i]);
+            result[i] = of[i] == null ? null : of[i].clone();
         }
         return result;
+    }
+
+    public static boolean removeFromInventoryIfContainsAll(Inventory inventory, ItemStackAndAmount... items) {
+        ItemStack[] contents = deepCopy(inventory.getStorageContents());
+        for (ItemStackAndAmount item : items) {
+            if (item != null && item.stack() != null && !ItemGroups.isAir(item.stack().getType())) {
+                int remaining = item.amount();
+                int firstSimilar = -1;
+                while (remaining > 0) {
+                    firstSimilar = getFirstSimilar(item.stack(), contents, firstSimilar + 1);
+                    if (firstSimilar < 0) {
+                        return false;
+                    }
+                    ItemStack content = contents[firstSimilar];
+                    int here = content.getAmount();
+                    if (here > remaining) {
+                        content.setAmount(here - remaining);
+                        remaining = 0;
+                    } else {
+                        contents[firstSimilar] = null;
+                        remaining -= here;
+                    }
+                }
+            }
+        }
+        inventory.setStorageContents(contents);
+        return true;
+    }
+
+    public static boolean addToInventoryIfFits(Inventory inventory, ItemStackAndAmount... items) {
+        ItemStack[] contents = deepCopy(inventory.getStorageContents());
+        for (ItemStackAndAmount item : items) {
+            if (item != null && item.stack() != null && !ItemGroups.isAir(item.stack().getType())) {
+                int remaining = item.amount();
+                // fill partial stacks
+                int firstPartial = -1;
+                while (remaining > 0) {
+                    firstPartial = getFirstPartial(item.stack(), contents, firstPartial + 1);
+                    if (firstPartial < 0) {
+                        break;
+                    }
+                    ItemStack content = contents[firstPartial];
+                    int add = Math.min(content.getMaxStackSize() - content.getAmount(), remaining);
+                    content.setAmount(content.getAmount() + add);
+                    remaining -= add;
+                }
+                // create new stacks
+                int firstFree = -1;
+                while (remaining > 0) {
+                    firstFree = getFirstFree(contents, firstFree + 1);
+                    if (firstFree < 0) {
+                        return false; // no free place found
+                    }
+                    ItemStack content = new ItemStack(item.stack());
+                    contents[firstFree] = content;
+                    // max stack size might return -1, in this case assume 1
+                    int add = Math.min(Math.max(content.getMaxStackSize(), 1), remaining);
+                    content.setAmount(add);
+                    remaining -= add;
+                }
+            }
+        }
+        inventory.setStorageContents(contents);
+        return true;
     }
 
     public static boolean addToInventoryIfFits(Inventory inventory, ItemStack... items) {
@@ -187,6 +251,16 @@ public class ItemStacks {
         }
         inventory.setStorageContents(contents);
         return true;
+    }
+
+    private static int getFirstSimilar(ItemStack item, ItemStack[] contents, int start) {
+        for (int i = start; i < contents.length; i++) {
+            ItemStack content = contents[i];
+            if (content != null && content.isSimilar(item)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static int getFirstPartial(ItemStack item, ItemStack[] contents, int start) {
