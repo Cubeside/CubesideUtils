@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -202,15 +204,21 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         if (msg instanceof GlobalLocation) {
             GlobalLocationWrapper wrapper = new GlobalLocationWrapper((GlobalLocation) msg);
             sendMsgPart(msgout, wrapper);
-            return;
+        } else if (msg instanceof Component component) {
+            msgout.writeUTF(JSONComponentSerializer.json().serialize(component));
+        } else {
+            super.sendMsgPart(msgout, msg);
         }
-
-        super.sendMsgPart(msgout, msg);
     }
 
     protected GlobalLocation readGlobalLocation(DataInputStream msgin) throws IOException {
         GlobalLocationWrapper wrapper = readStringSerializable(msgin);
         return wrapper.original;
+    }
+
+    protected Component readAdventureComponent(DataInputStream msgin) throws IOException {
+        String serialized = msgin.readUTF();
+        return JSONComponentSerializer.json().deserialize(serialized);
     }
 
     @EventHandler

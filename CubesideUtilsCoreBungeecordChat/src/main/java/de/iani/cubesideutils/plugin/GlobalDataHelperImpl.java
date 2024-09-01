@@ -3,7 +3,6 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
-import de.iani.cubesideutils.ComponentUtil;
 import de.iani.cubesideutils.FunctionUtil;
 import de.iani.cubesideutils.plugin.api.GlobalDataHelper;
 import de.iani.cubesideutils.serialization.StringSerializable;
@@ -13,7 +12,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalDataHelper<T> {
 
@@ -292,14 +291,14 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
             StringSerializable serializable = (StringSerializable) msg;
             msgout.writeUTF(serializable.getSerializationType());
             msgout.writeUTF(serializable.serializeToString());
-        } else if (msg instanceof BaseComponent) {
-            msgout.writeUTF(ComponentUtil.serializeComponent((BaseComponent) msg));
+        } else if (msg instanceof BaseComponent component) {
+            msgout.writeUTF(ComponentSerializer.toString(component));
         } else if (msg instanceof BaseComponent[]) {
             BaseComponent[] bc = (BaseComponent[]) msg;
             if (bc.length == 1) {
                 sendMsgPart(msgout, bc[0]);
             } else {
-                msgout.writeUTF(ComponentUtil.serializeComponent(new TextComponent(bc)));
+                msgout.writeUTF(ComponentSerializer.toString(new TextComponent(bc)));
             }
         } else
         // simple stuff
@@ -340,11 +339,8 @@ public abstract class GlobalDataHelperImpl<T extends Enum<T>> implements GlobalD
 
     protected BaseComponent readComponent(DataInputStream msgin) throws IOException {
         String serialized = msgin.readUTF();
-        try {
-            return ComponentUtil.deserializeComponent(serialized);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        BaseComponent[] components = ComponentSerializer.parse(serialized);
+        return components.length == 1 ? components[0] : new TextComponent(components);
     }
 
     protected T fromOrdinal(int ordinal) {

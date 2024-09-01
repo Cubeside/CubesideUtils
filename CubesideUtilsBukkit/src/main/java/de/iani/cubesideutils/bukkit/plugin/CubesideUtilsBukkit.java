@@ -38,6 +38,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -268,6 +269,12 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
 
     @Override
     public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message) {
+        ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
+        this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, true, message);
+    }
+
+    @Override
+    public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, Component message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
         this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, true, message);
     }

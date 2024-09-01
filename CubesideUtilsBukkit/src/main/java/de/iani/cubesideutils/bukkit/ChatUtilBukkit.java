@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -40,6 +42,15 @@ public class ChatUtilBukkit extends ChatUtil {
             } catch (NoSuchMethodError e) {
                 // spigot compatibility
                 original.sendMessage(BaseComponent.toLegacyText(message));
+            }
+        }
+
+        public void sendMessage(Component message) {
+            try {
+                original.sendMessage(message);
+            } catch (NoSuchMethodError e) {
+                // spigot compatibility
+                original.sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
             }
         }
     }
@@ -116,7 +127,42 @@ public class ChatUtilBukkit extends ChatUtil {
         public Sendable<MessageReceiver> toGenericSendable() {
             return new ChatUtil.ComponentMsg(message);
         }
+    }
 
+    public static class AdventureComponentMsg implements BukkitSendable {
+
+        public final Component message;
+
+        public AdventureComponentMsg(Component message) {
+            this.message = message;
+        }
+
+        @Override
+        public void send(CommandSender recipient) {
+            recipient.sendMessage(message);
+        }
+
+        @Override
+        public Sendable<MessageReceiver> toGenericSendable() {
+            return new GenericAdventureComponentMsg(message);
+        }
+    }
+
+    public static class GenericAdventureComponentMsg implements Sendable<MessageReceiver> {
+        public final Component message;
+
+        public GenericAdventureComponentMsg(Component message) {
+            this.message = message;
+        }
+
+        @Override
+        public void send(MessageReceiver recipient) {
+            if (recipient instanceof CommandSenderWrapper commandSenderWrapper) {
+                commandSenderWrapper.sendMessage(this.message);
+            } else {
+                recipient.sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
+            }
+        }
     }
 
     public static List<BukkitSendable> stringToBukkitSendableList(List<String> messages) {
@@ -195,6 +241,10 @@ public class ChatUtilBukkit extends ChatUtil {
         sendMessageToPlayers(seeMsgCondition, new ComponentMsg(message));
     }
 
+    public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, Component message) {
+        sendMessageToPlayers(seeMsgCondition, new AdventureComponentMsg(message));
+    }
+
     public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, BukkitSendable message) {
         message.send(Bukkit.getConsoleSender());
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -215,5 +265,4 @@ public class ChatUtilBukkit extends ChatUtil {
     public static Integer toRGB(org.bukkit.ChatColor color) {
         return ChatUtil.toRGB(color.asBungee());
     }
-
 }

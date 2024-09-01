@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -45,6 +46,8 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, String message);
 
     public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message);
+
+    public abstract void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, Component message);
 
     public abstract void sendPlayerOptions(CommandSender sender, OfflinePlayer player);
 
