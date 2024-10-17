@@ -72,7 +72,7 @@ public class CommandUtil {
     }
 
     public static boolean registerCommand(Plugin plugin, String command, List<String> aliases, HybridCommand hybridCommand, boolean replaceExisting) {
-        return registerCommand(plugin, command, aliases, hybridCommand, hybridCommand, replaceExisting);
+        return registerCommand(plugin, command, aliases, hybridCommand, hybridCommand, hybridCommand.getRequiredPermission(), replaceExisting);
     }
 
     public static boolean registerCommand(Plugin plugin, String command, CommandExecutor executor, TabCompleter completer) {
