@@ -1,18 +1,13 @@
 package de.iani.cubesideutils.velocity.plugin;
 
-import com.google.inject.Inject;
-import com.velocitypowered.api.plugin.Dependency;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
-import de.iani.cubesideutils.bungee.plugin.api.UtilsApiBungee;
-import de.iani.cubesideutils.bungee.sql.SQLConfigBungee;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
-import java.io.File;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -20,15 +15,10 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import de.iani.cubesideutils.plugin.api.UtilsApi;
 import de.iani.cubesideutils.velocity.plugin.api.UtilsApiVelocity;
 import de.iani.cubesideutils.velocity.sql.SQLConfigVelocity;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 
 public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelocity {
@@ -66,29 +56,29 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
     @Override
     protected void onEnableInternal() throws Throwable {
         try {
-            saveDefaultConfig();
-            this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(this.plugin.getDataFolder(), "config.yml"));
+            Path configFile = dataDirectory.resolve("config.yml");
+            if (Files.notExists(dataDirectory)) {
+                Files.createDirectory(dataDirectory);
+                if (Files.notExists(configFile)) {
+                    try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("config.yml")) {
+                        Files.copy(stream, configFile);
+                    }
+                }
+            }
+
+            YamlConfigurationLoader loader = YamlConfigurationLoader.builder().path(configFile).build();
+            configuration = loader.load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("Error while loading config", e);
         }
 
-        this.database = new UtilsDatabaseVelocity(new SQLConfigVelocity(this.config.getSection("database")));
+        this.database = new UtilsDatabaseVelocity(new SQLConfigVelocity(this.configuration.node("database")));
         this.playerDataCache = new PlayerDataCache();
 
-        this.globalClientPlugin = (GlobalClientPlugin) ProxyServer.getInstance().getPluginManager().getPlugin("GlobalClient");
-        this.globalDataHelper = new UtilsGlobalDataHelperVelocity(this.plugin);
+        this.globalClientPlugin = (GlobalClientPlugin) server.getPluginManager().getPlugin("GlobalClient").orElseThrow();
+        this.globalDataHelper = new UtilsGlobalDataHelperVelocity(this);
 
         updateRankInformation();
-    }
-
-    private void saveDefaultConfig() throws IOException {
-        File config = new File(this.plugin.getDataFolder(), "config.yml");
-        if (config.exists()) {
-            return;
-        }
-        InputStream defaultConfig = getClass().getClassLoader().getResourceAsStream("config.yml");
-        this.plugin.getDataFolder().mkdirs();
-        Files.copy(defaultConfig, config.toPath());
     }
 
     @Override
