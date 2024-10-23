@@ -3,8 +3,8 @@ package de.iani.cubesideutils.velocity.commands;
 import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 
-public class CommandRouterCommand extends Command implements TabExecutor {
-    private CommandRouter router;
+public class CommandRouterCommand { //extends Command implements TabExecutor {
+    /*private CommandRouter router;
 
     public CommandRouterCommand(CommandRouter router, String name) {
         super(name);
@@ -24,5 +24,5 @@ public class CommandRouterCommand extends Command implements TabExecutor {
     @Override
     public Iterable<String> onTabComplete(CommandSource sender, String[] args) {
         return router.onTabComplete(sender, this, getName(), args);
-    }
+    }*/
 }

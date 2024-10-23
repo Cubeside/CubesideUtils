@@ -1,18 +1,7 @@
 package de.iani.cubesideutils.velocity;
 
-import com.velocitypowered.api.command.CommandSource;
-import de.iani.cubesideutils.ChatUtil;
-import de.iani.cubesideutils.ChatUtil.MessageReceiver;
-import de.iani.cubesideutils.ChatUtil.Sendable;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.BaseComponent;
-
 public class ChatUtilsVelocity {
-    private ChatUtilsVelocity() {
+    /*private ChatUtilsVelocity() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
@@ -123,6 +112,6 @@ public class ChatUtilsVelocity {
 
     protected static void sendMessagesPaged(CommandSource recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
-    }
+    }*/
 
 }
