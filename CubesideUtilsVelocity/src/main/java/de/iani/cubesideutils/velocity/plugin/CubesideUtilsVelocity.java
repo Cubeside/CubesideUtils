@@ -75,7 +75,7 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
         this.database = new UtilsDatabaseVelocity(new SQLConfigVelocity(this.configuration.node("database")));
         this.playerDataCache = new PlayerDataCache();
 
-        this.globalClientPlugin = (GlobalClientPlugin) server.getPluginManager().getPlugin("GlobalClient").orElseThrow();
+        this.globalClientPlugin = (GlobalClientPlugin) server.getPluginManager().getPlugin("globalconnectionvelocity").orElseThrow().getInstance().orElseThrow();
         this.globalDataHelper = new UtilsGlobalDataHelperVelocity(this);
 
         updateRankInformation();

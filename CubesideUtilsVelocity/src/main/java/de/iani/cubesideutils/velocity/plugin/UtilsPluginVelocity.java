@@ -10,7 +10,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 
 import java.nio.file.Path;
 
-@Plugin(id = "cubesideutils", name = "CubesideUtils", version = "1.16-SNAPSHOT", url = "https://cubeside.de", description = "CubesideUtils", authors = {"Brokkonaut", "Starjon"}, dependencies = {@Dependency(id = "GlobalClient")})
+@Plugin(id = "cubesideutils", name = "CubesideUtils", version = "1.16-SNAPSHOT", url = "https://cubeside.de", description = "CubesideUtils", authors = {"Brokkonaut", "Starjon"}, dependencies = {@Dependency(id = "globalconnectionvelocity")})
 public class UtilsPluginVelocity {
     private CubesideUtilsVelocity core;
 
