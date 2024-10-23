@@ -17,6 +17,7 @@
         <module>CubesideUtilsCoreBungeecordChat</module>
         <module>CubesideUtilsBukkit</module>
         <module>CubesideUtilsBungee</module>
+        <module>CubesideUtilsVelocity</module>
     </modules>
     <repositories>
         <repository>
