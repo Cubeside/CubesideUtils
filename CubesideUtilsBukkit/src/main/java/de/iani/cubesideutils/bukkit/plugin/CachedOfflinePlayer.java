@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -242,36 +243,41 @@ public class CachedOfflinePlayer implements OfflinePlayer {
 
     @Override
     public @Nullable Location getLastDeathLocation() {
-        return null;
+        return getBukkitOfflinePlayer().getLastDeathLocation();
     }
 
     @Override
     public boolean isConnected() {
-        return false;
+        return getBukkitOfflinePlayer().isConnected();
     }
 
     @Override
     public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Date expires, @Nullable String source) {
-        return null;
+        return getBukkitOfflinePlayer().ban(reason, expires, source);
     }
 
     @Override
     public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Instant expires, @Nullable String source) {
-        return null;
+        return getBukkitOfflinePlayer().ban(reason, expires, source);
     }
 
     @Override
     public <E extends BanEntry<? super PlayerProfile>> @Nullable E ban(@Nullable String reason, @Nullable Duration duration, @Nullable String source) {
-        return null;
+        return getBukkitOfflinePlayer().ban(reason, duration, source);
     }
 
     @Override
     public Location getRespawnLocation() {
-        return null;
+        return getBukkitOfflinePlayer().getRespawnLocation();
     }
 
     @Override
     public Location getLocation() {
-        return null;
+        return getBukkitOfflinePlayer().getLocation();
+    }
+
+    @Override
+    public @NotNull PersistentDataContainerView getPersistentDataContainer() {
+        return getBukkitOfflinePlayer().getPersistentDataContainer();
     }
 }
