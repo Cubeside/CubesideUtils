@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -507,5 +508,19 @@ public class ItemStacks {
             }
         }
         return stack;
+    }
+
+    public static String getBase64StringFromItemStack(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+        return Base64.getEncoder().encodeToString(stack.serializeAsBytes());
+    }
+
+    public static ItemStack getItemStackFromBase64(String itemString) {
+        if (itemString == null) {
+            return null;
+        }
+        return ItemStack.deserializeBytes(Base64.getDecoder().decode(itemString));
     }
 }
