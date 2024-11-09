@@ -1,7 +1,11 @@
 package de.iani.cubesideutils.bukkit.items;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -26,6 +30,7 @@ public class ItemBuilder {
         return fromItem(new ItemStack(material));
     }
 
+    @Deprecated
     public ItemBuilder displayName(String displayName) {
         meta.setDisplayName(displayName);
         return this;
@@ -36,6 +41,7 @@ public class ItemBuilder {
         return this;
     }
 
+    @Deprecated
     public ItemBuilder lore(String... lore) {
         meta.setLore(Arrays.asList(lore));
         return this;
@@ -90,6 +96,24 @@ public class ItemBuilder {
         item.getEnchantments().keySet().forEach(item::removeEnchantment);
         meta.lore(null);
         meta.displayName(null);
+        return this;
+    }
+
+    public ItemBuilder removeItalicFromDisplayName() {
+        Component displayName = meta.displayName();
+        if (displayName != null) {
+            meta.displayName(displayName.decoration(TextDecoration.ITALIC, false));
+        }
+        return this;
+    }
+
+    public ItemBuilder removeItalicFromLore() {
+        List<Component> loreList = meta.lore();
+        if (loreList != null) {
+            List<Component> newLore = new ArrayList<>();
+            loreList.forEach(component -> newLore.add(component.decoration(TextDecoration.ITALIC, false)));
+            meta.lore(newLore);
+        }
         return this;
     }
 
