@@ -64,14 +64,34 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         this.playerMsgApi.sendMessage(player, message);
     }
 
+    public void sendMessage(OfflinePlayer player, Component message) {
+        sendMessage(getPlayer(player), message);
+    }
+
+    public void sendMessage(UUID playerId, Component message) {
+        sendMessage(getPlayer(playerId), message);
+    }
+
+    public void sendMessage(String playerName, Component message) {
+        sendMessage(getPlayer(playerName), message);
+    }
+
+    @Override
+    public void sendMessage(GlobalPlayer player, Component message) {
+        this.playerMsgApi.sendMessage(player, message);
+    }
+
+    @Deprecated
     public void sendMessage(OfflinePlayer player, BaseComponent... message) {
         sendMessage(getPlayer(player), message);
     }
 
+    @Deprecated
     public void sendMessage(UUID playerId, BaseComponent... message) {
         sendMessage(getPlayer(playerId), message);
     }
 
+    @Deprecated
     public void sendMessage(String playerName, BaseComponent... message) {
         sendMessage(getPlayer(playerName), message);
     }

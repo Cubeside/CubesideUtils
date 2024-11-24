@@ -45,13 +45,9 @@ public class ChatUtilBukkit extends ChatUtil {
             }
         }
 
+        @Override
         public void sendMessage(Component message) {
-            try {
-                original.sendMessage(message);
-            } catch (NoSuchMethodError e) {
-                // spigot compatibility
-                original.sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
-            }
+            original.sendMessage(message);
         }
     }
 
@@ -75,7 +71,7 @@ public class ChatUtilBukkit extends ChatUtil {
         }
 
         @Override
-        public void sendMessage(BaseComponent... message) {
+        public void sendMessage(Component message) {
             CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
         }
 
@@ -125,7 +121,7 @@ public class ChatUtilBukkit extends ChatUtil {
 
         @Override
         public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.ComponentMsg(message);
+            return new ChatUtil.BaseComponentMsg(message);
         }
     }
 

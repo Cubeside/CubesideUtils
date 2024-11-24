@@ -5,12 +5,12 @@
     <properties>
         <mainClass>de.iani.cubesideutils.bungee.plugin.UtilsPluginBungee</mainClass>
     </properties>
-	<parent>
-		<groupId>de.iani.cubeside</groupId>
-		<artifactId>CubesideUtils</artifactId>
-		<version>1.16-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> 
-	</parent> 
+    <parent>
+        <groupId>de.iani.cubeside</groupId>
+        <artifactId>CubesideUtils</artifactId>
+        <version>1.16-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath> 
+    </parent> 
     <dependencies>
         <dependency>
             <groupId>de.iani.cubeside</groupId>
@@ -30,6 +30,21 @@
             <version>1.19-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+        	<version>4.17.0</version>
+    	</dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-gson</artifactId>
+            <version>4.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-legacy</artifactId>
+            <version>4.17.0</version>
         </dependency>
     </dependencies>
     <build>

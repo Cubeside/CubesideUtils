@@ -6,9 +6,12 @@ import de.iani.cubesideutils.ChatUtil.Sendable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ChatUtilsBungee {
     private ChatUtilsBungee() {
@@ -33,6 +36,12 @@ public class ChatUtilsBungee {
         public void sendMessage(BaseComponent... message) {
             original.sendMessage(message);
         }
+
+        @Override
+        public void sendMessage(Component message) {
+            sendMessage(ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(message)));
+        }
+
     }
 
     public static interface BungeeSendable extends Sendable<CommandSender> {
@@ -76,7 +85,7 @@ public class ChatUtilsBungee {
 
         @Override
         public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.ComponentMsg(message);
+            return new ChatUtil.BaseComponentMsg(message);
         }
     }
 
