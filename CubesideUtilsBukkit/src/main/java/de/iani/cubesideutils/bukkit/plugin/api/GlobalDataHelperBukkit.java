@@ -81,6 +81,11 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         this.playerMsgApi.sendMessage(player, message);
     }
 
+    @Override
+    public void sendMessage(GlobalPlayer player, Component message) {
+        this.playerMsgApi.sendMessage(player, message);
+    }
+
     public void sendActionBarMessage(OfflinePlayer player, String message) {
         sendActionBarMessage(getPlayer(player), message);
     }
