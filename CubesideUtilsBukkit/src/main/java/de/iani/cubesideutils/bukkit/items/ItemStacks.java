@@ -135,11 +135,11 @@ public class ItemStacks {
             addDamage = 7;
         }
         if (!Double.isNaN(addDamage)) {
-            meta.removeAttributeModifier(Attribute.ATTACK_SPEED);
-            meta.addAttributeModifier(Attribute.ATTACK_SPEED, new AttributeModifier(attackSpeedKey, 1.5, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
+            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_SPEED);
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(attackSpeedKey, 1.5, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
 
-            meta.removeAttributeModifier(Attribute.ATTACK_DAMAGE);
-            meta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(attackDamageKey, addDamage, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
+            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE);
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(attackDamageKey, addDamage, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
         }
         itemStack.setItemMeta(meta);
         return itemStack;
