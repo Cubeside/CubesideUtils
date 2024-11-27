@@ -226,21 +226,25 @@ public abstract class ChatUtil {
     public static final int PAGE_LENGTH = 10;
 
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
+        sendMessagesPaged(recipient, messages, page, Component.text(name), openPageCommandPrefix);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         sendMessagesPaged(recipient, messages, page, new ComponentBuilder(name).create(), openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
@@ -249,6 +253,14 @@ public abstract class ChatUtil {
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
         sendMessagesPaged(recipient, messages, page, convertBaseComponents(name), openPageCommandPrefix, convertLegacy(pluginPrefix), convertStyle(normalColor.toString()), convertStyle(warningColor.toString()));
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, Component name, String openPageCommandPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, null);
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, Component name, String openPageCommandPrefix, Component pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, Style.style(NamedTextColor.GREEN), Style.style(NamedTextColor.GOLD));
     }
 
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, Component name, String openPageCommandPrefix, Component pluginPrefix, Style normalStyle, Style warningStyle) {
