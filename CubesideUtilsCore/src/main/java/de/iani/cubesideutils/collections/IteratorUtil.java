@@ -3,6 +3,8 @@ package de.iani.cubesideutils.collections;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class IteratorUtil {
     private IteratorUtil() {
@@ -18,7 +20,7 @@ public class IteratorUtil {
     @SuppressWarnings("unchecked")
     public static <T> Iterable<T> concat(Iterable<? extends T>... iterables) {
         return () -> {
-            return new Iterator<T>() {
+            return new Iterator<>() {
 
                 private Iterator<T>[] iterators = Arrays.stream(iterables).map(iterable -> iterable.iterator()).toArray(i -> new Iterator[iterables.length]);
                 private int index = 0;
@@ -70,7 +72,7 @@ public class IteratorUtil {
     @SuppressWarnings("unchecked")
     public static <T> Iterable<T> concatUnmodifiable(Iterable<? extends T>... iterables) {
         return () -> {
-            return new Iterator<T>() {
+            return new Iterator<>() {
 
                 private Iterator<T>[] iterators = Arrays.stream(iterables).map(iterable -> iterable.iterator()).toArray(i -> new Iterator[iterables.length]);
                 private int index = 0;
@@ -103,5 +105,9 @@ public class IteratorUtil {
 
             };
         };
+    }
+
+    public static <T> Stream<T> stream(Iterable<T> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false);
     }
 }

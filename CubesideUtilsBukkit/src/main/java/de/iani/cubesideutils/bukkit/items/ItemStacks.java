@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,11 +135,11 @@ public class ItemStacks {
             addDamage = 7;
         }
         if (!Double.isNaN(addDamage)) {
-            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_SPEED);
-            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new AttributeModifier(attackSpeedKey, 1.5, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
+            meta.removeAttributeModifier(Attribute.ATTACK_SPEED);
+            meta.addAttributeModifier(Attribute.ATTACK_SPEED, new AttributeModifier(attackSpeedKey, 1.5, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
 
-            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE);
-            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier(attackDamageKey, addDamage, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
+            meta.removeAttributeModifier(Attribute.ATTACK_DAMAGE);
+            meta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(attackDamageKey, addDamage, Operation.ADD_NUMBER, EquipmentSlotGroup.MAINHAND));
         }
         itemStack.setItemMeta(meta);
         return itemStack;
@@ -507,5 +508,19 @@ public class ItemStacks {
             }
         }
         return stack;
+    }
+
+    public static String getBase64StringFromItemStack(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+        return Base64.getEncoder().encodeToString(stack.serializeAsBytes());
+    }
+
+    public static ItemStack getItemStackFromBase64(String itemString) {
+        if (itemString == null) {
+            return null;
+        }
+        return ItemStack.deserializeBytes(Base64.getDecoder().decode(itemString));
     }
 }
