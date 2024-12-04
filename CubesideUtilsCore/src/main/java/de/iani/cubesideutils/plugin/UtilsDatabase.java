@@ -92,6 +92,11 @@ public abstract class UtilsDatabase<T extends PlayerDataImpl> {
 
     public UtilsDatabase(SQLConfig sqlConfig) throws SQLException {
         this.tablePrefix = sqlConfig.getTablePrefix();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Cannot find the driver in the classpath!", e);
+        }
         this.connection = new MySQLConnection(sqlConfig.getHost(), sqlConfig.getDatabase(), sqlConfig.getUser(), sqlConfig.getPassword());
 
         this.generalDataTableName = this.tablePrefix + "_generalData";

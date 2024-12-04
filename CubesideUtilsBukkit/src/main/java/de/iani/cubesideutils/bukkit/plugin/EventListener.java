@@ -39,6 +39,9 @@ public final class EventListener implements Listener {
     }
 
     private void madeAction(Player player) {
+        if (!player.isOnline()) {
+            return;
+        }
         PlayerDataImplBukkit data = core.getPlayerDataCache().get(player.getUniqueId());
         OnlinePlayerDataImpl onlineData = (data.getOnlineData());
         if (onlineData == null) {

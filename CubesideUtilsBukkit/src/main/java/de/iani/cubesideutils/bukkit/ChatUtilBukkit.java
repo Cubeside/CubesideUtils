@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ public class ChatUtilBukkit extends ChatUtil {
             original.sendMessage(message);
         }
 
+        @Deprecated
         @Override
         public void sendMessage(BaseComponent... message) {
             try {
@@ -45,13 +47,9 @@ public class ChatUtilBukkit extends ChatUtil {
             }
         }
 
+        @Override
         public void sendMessage(Component message) {
-            try {
-                original.sendMessage(message);
-            } catch (NoSuchMethodError e) {
-                // spigot compatibility
-                original.sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
-            }
+            original.sendMessage(message);
         }
     }
 
@@ -75,7 +73,7 @@ public class ChatUtilBukkit extends ChatUtil {
         }
 
         @Override
-        public void sendMessage(BaseComponent... message) {
+        public void sendMessage(Component message) {
             CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
         }
 
@@ -106,6 +104,7 @@ public class ChatUtilBukkit extends ChatUtil {
         }
     }
 
+    @Deprecated
     public static class ComponentMsg implements BukkitSendable {
 
         public final BaseComponent[] message;
@@ -125,7 +124,7 @@ public class ChatUtilBukkit extends ChatUtil {
 
         @Override
         public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.ComponentMsg(message);
+            return new ChatUtil.BaseComponentMsg(message);
         }
     }
 
@@ -144,24 +143,7 @@ public class ChatUtilBukkit extends ChatUtil {
 
         @Override
         public Sendable<MessageReceiver> toGenericSendable() {
-            return new GenericAdventureComponentMsg(message);
-        }
-    }
-
-    public static class GenericAdventureComponentMsg implements Sendable<MessageReceiver> {
-        public final Component message;
-
-        public GenericAdventureComponentMsg(Component message) {
-            this.message = message;
-        }
-
-        @Override
-        public void send(MessageReceiver recipient) {
-            if (recipient instanceof CommandSenderWrapper commandSenderWrapper) {
-                commandSenderWrapper.sendMessage(this.message);
-            } else {
-                recipient.sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
-            }
+            return new ChatUtil.AdventureComponentMsg(message);
         }
     }
 
@@ -198,37 +180,57 @@ public class ChatUtilBukkit extends ChatUtil {
     }
 
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, String name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
+        sendMessagesPaged(recipient, messages, page, Component.text(name), openPageCommandPrefix);
     }
 
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, Component name, String openPageCommandPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, null);
+    }
+
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, Component name, String openPageCommandPrefix, Component pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, Style.style(NamedTextColor.GREEN), Style.style(NamedTextColor.GOLD));
+    }
+
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, Component name, String openPageCommandPrefix, Component pluginPrefix, Style normalStyle, Style warningStyle) {
+        ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalStyle, warningStyle);
+    }
+
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent name, String openPageCommandPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, new BaseComponent[] { name }, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged((MessageReceiver) new CommandSenderWrapper(recipient), (List<? extends Sendable<MessageReceiver>>) convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
@@ -237,6 +239,7 @@ public class ChatUtilBukkit extends ChatUtil {
         sendMessageToPlayers(seeMsgCondition, new StringMsg(message));
     }
 
+    @Deprecated
     public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, BaseComponent... message) {
         sendMessageToPlayers(seeMsgCondition, new ComponentMsg(message));
     }
@@ -254,14 +257,25 @@ public class ChatUtilBukkit extends ChatUtil {
         }
     }
 
+    public static void sendMessage(CommandSender receiver, Component pluginPrefix, Style style, Object... messageParts) {
+        ChatUtil.sendMessage(new CommandSenderWrapper(receiver), pluginPrefix, style, messageParts);
+    }
+
+    public static void sendMessage(UUID playerId, Component pluginPrefix, Style style, Object... messageParts) {
+        ChatUtil.sendMessage(new GlobalPlayerWrapper(playerId), pluginPrefix, style, messageParts);
+    }
+
+    @Deprecated
     public static void sendMessage(CommandSender receiver, String pluginPrefix, String colors, Object... messageParts) {
         ChatUtil.sendMessage(new CommandSenderWrapper(receiver), pluginPrefix, colors, messageParts);
     }
 
+    @Deprecated
     public static void sendMessage(UUID playerId, String pluginPrefix, String colors, Object... messageParts) {
         ChatUtil.sendMessage(new GlobalPlayerWrapper(playerId), pluginPrefix, colors, messageParts);
     }
 
+    @Deprecated
     public static Integer toRGB(org.bukkit.ChatColor color) {
         return ChatUtil.toRGB(color.asBungee());
     }
