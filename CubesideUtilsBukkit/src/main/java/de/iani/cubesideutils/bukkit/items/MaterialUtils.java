@@ -23,6 +23,9 @@ public class MaterialUtils {
                 }
             }
         }
+        // add missing items
+        PLACED_AS_BLOCK.computeIfAbsent(Material.BAMBOO, placement2 -> new HashSet<>()).add(Material.BAMBOO_SAPLING);
+
         for (Entry<Material, Set<Material>> e : PLACED_AS_BLOCK.entrySet()) {
             e.setValue(Set.of(e.getValue().toArray(Material[]::new)));
         }
