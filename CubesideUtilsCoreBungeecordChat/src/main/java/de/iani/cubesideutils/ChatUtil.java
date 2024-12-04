@@ -1,9 +1,12 @@
 package de.iani.cubesideutils;
 
+import static net.kyori.adventure.text.Component.empty;
+import static net.kyori.adventure.text.Component.space;
+import static net.kyori.adventure.text.Component.text;
+
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,14 +16,17 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.logging.Level;
-import java.util.stream.Stream;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public abstract class ChatUtil {
     protected ChatUtil() {
@@ -55,7 +61,12 @@ public abstract class ChatUtil {
 
         public void sendMessage(String message);
 
-        public void sendMessage(BaseComponent... message);
+        public void sendMessage(Component message);
+
+        @Deprecated
+        public default void sendMessage(BaseComponent... message) {
+            sendMessage(convertBaseComponents(message));
+        }
     }
 
     public static interface Sendable<T> extends Consumer<T> {
@@ -68,12 +79,34 @@ public abstract class ChatUtil {
         }
     }
 
-    public static class StringMsg implements Sendable<MessageReceiver> {
+    public record StringMsg(String message) implements Sendable<MessageReceiver> {
 
-        public final String message;
+        @Override
+        public void send(MessageReceiver recipient) {
+            recipient.sendMessage(this.message);
+        }
+    }
 
-        public StringMsg(String message) {
+    public record AdventureComponentMsg(Component message) implements Sendable<MessageReceiver> {
+
+        @Override
+        public void send(MessageReceiver recipient) {
+            recipient.sendMessage(this.message);
+        }
+
+    }
+
+    @Deprecated
+    public static class BaseComponentMsg implements Sendable<MessageReceiver> {
+
+        public final BaseComponent[] message;
+
+        public BaseComponentMsg(BaseComponent... message) {
             this.message = message;
+        }
+
+        public BaseComponentMsg(BaseComponent message) {
+            this.message = new BaseComponent[] { message };
         }
 
         @Override
@@ -82,22 +115,24 @@ public abstract class ChatUtil {
         }
     }
 
-    public static class ComponentMsg implements Sendable<MessageReceiver> {
+    @Deprecated
+    public static Component convertBaseComponent(BaseComponent bc) {
+        return GsonComponentSerializer.gson().deserialize(ComponentSerializer.toString(bc));
+    }
 
-        public final BaseComponent[] message;
+    @Deprecated
+    public static Component convertBaseComponents(BaseComponent... bc) {
+        return GsonComponentSerializer.gson().deserialize(ComponentSerializer.toString(bc));
+    }
 
-        public ComponentMsg(BaseComponent... message) {
-            this.message = message;
-        }
+    @Deprecated
+    public static Component convertLegacy(String s) {
+        return LegacyComponentSerializer.legacySection().deserialize(s);
+    }
 
-        public ComponentMsg(BaseComponent message) {
-            this.message = new BaseComponent[] { message };
-        }
-
-        @Override
-        public void send(MessageReceiver recipient) {
-            recipient.sendMessage(this.message);
-        }
+    @Deprecated
+    public static Style convertStyle(String colorString) {
+        return convertLegacy(colorString).style();
     }
 
     public static List<Sendable<MessageReceiver>> stringToSendableList(List<String> messages) {
@@ -108,10 +143,19 @@ public abstract class ChatUtil {
         return result;
     }
 
+    public static List<Sendable<MessageReceiver>> componentToSendableList(List<Component> messages) {
+        List<Sendable<MessageReceiver>> result = new ArrayList<>(messages.size());
+        for (Component msg : messages) {
+            result.add(new AdventureComponentMsg(msg));
+        }
+        return result;
+    }
+
+    @Deprecated
     public static List<Sendable<MessageReceiver>> bcToSendableList(List<BaseComponent[]> messages) {
         List<Sendable<MessageReceiver>> result = new ArrayList<>(messages.size());
         for (BaseComponent[] msg : messages) {
-            result.add(new ComponentMsg(msg));
+            result.add(new BaseComponentMsg(msg));
         }
         return result;
     }
@@ -182,44 +226,57 @@ public abstract class ChatUtil {
     public static final int PAGE_LENGTH = 10;
 
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
+        sendMessagesPaged(recipient, messages, page, Component.text(name), openPageCommandPrefix);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         sendMessagesPaged(recipient, messages, page, new ComponentBuilder(name).create(), openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
+        //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
+        sendMessagesPaged(recipient, messages, page, convertBaseComponents(name), openPageCommandPrefix, convertLegacy(pluginPrefix), convertStyle(normalColor.toString()), convertStyle(warningColor.toString()));
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, Component name, String openPageCommandPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, null);
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, Component name, String openPageCommandPrefix, Component pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, Style.style(NamedTextColor.GREEN), Style.style(NamedTextColor.GOLD));
+    }
+
+    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, Component name, String openPageCommandPrefix, Component pluginPrefix, Style normalStyle, Style warningStyle) {
         try {
             if (page < 0) {
-                sendMessage(recipient, pluginPrefix, warningColor.toString(), "Bitte gib die Seitenzahl als positive ganze Zahl an.");
+                sendMessage(recipient, pluginPrefix, warningStyle, "Bitte gib die Seitenzahl als positive ganze Zahl an.");
                 return;
             }
 
-            TextComponent prefixComponent = new TextComponent(pluginPrefix.isEmpty() ? "" : (pluginPrefix + " "));
-            TextComponent nameComponent = new TextComponent(name);
+            Component prefixComponent = pluginPrefix == null ? empty() : pluginPrefix.append(space());
 
             int listSize = messages.size();
             int numPages = (int) Math.ceil(listSize / (double) PAGE_LENGTH);
             if (page >= numPages && page > 0) {
-                ComponentBuilder builder = new ComponentBuilder(pluginPrefix);
-                if (!pluginPrefix.isEmpty()) {
-                    builder.append(" ");
-                }
-                builder.append(nameComponent).color(warningColor).append(" hat keine Seite ").append(String.valueOf(page + 1));
-                recipient.sendMessage(builder.create());
+                Component result = empty().style(warningStyle).append(prefixComponent).append(name).append(text(" hat keine Seite " + (page + 1)));
+                recipient.sendMessage(result);
                 return;
             }
 
@@ -228,17 +285,15 @@ public abstract class ChatUtil {
             }
 
             if (numPages > 1) {
-                ComponentBuilder builder = new ComponentBuilder(prefixComponent);
-                builder.append(nameComponent).color(normalColor).append(" (Seite ").append(String.valueOf(page + 1)).append("/").append(String.valueOf(numPages)).append("):");
-                recipient.sendMessage(builder.create());
+                Component result = empty().style(normalStyle).append(prefixComponent).append(name).append(text(" (Seite " + (page + 1) + "/" + numPages + "):"));
+                recipient.sendMessage(result);
             } else {
-                ComponentBuilder builder = new ComponentBuilder(prefixComponent);
-                builder.append(nameComponent).color(normalColor).append(":");
-                recipient.sendMessage(builder.create());
+                Component result = empty().style(normalStyle).append(prefixComponent).append(name).append(text(":"));
+                recipient.sendMessage(result);
             }
 
             if (listSize == 0) {
-                recipient.sendMessage(ChatColor.GRAY + " -- keine --");
+                recipient.sendMessage(text(" -- keine --").color(NamedTextColor.GRAY));
             }
 
             int index = page * PAGE_LENGTH;
@@ -250,86 +305,94 @@ public abstract class ChatUtil {
             }
 
             if (numPages > 1) {
-                sendMessage(recipient, pluginPrefix, normalColor.toString(), "Seite x anzeigen: ", openPageCommandPrefix, " x");
-                ComponentBuilder builder = new ComponentBuilder(pluginPrefix).append(" << vorherige");
+                sendMessage(recipient, pluginPrefix, normalStyle, "Seite x anzeigen: ", openPageCommandPrefix, " x");
+
+                Component prevComponent = text(" << vorherige");
                 if (page > 0) {
-                    builder.color(ChatColor.BLUE);
+                    prevComponent = prevComponent.color(NamedTextColor.BLUE);
 
-                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + page + " anzeigen").create()));
-                    ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + page);
+                    HoverEvent<Component> he = HoverEvent.showText(text("Seite " + page + " anzeigen"));
+                    ClickEvent ce = ClickEvent.runCommand(openPageCommandPrefix + " " + page);
 
-                    builder.event(he).event(ce);
+                    prevComponent = prevComponent.hoverEvent(he).clickEvent(ce);
                 } else {
-                    builder.color(ChatColor.GRAY);
+                    prevComponent = prevComponent.color(NamedTextColor.GRAY);
 
-                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite 1").create()));
+                    HoverEvent<Component> he = HoverEvent.showText(text("Bereits auf Seite 1"));
 
-                    builder.event(he);
+                    prevComponent = prevComponent.hoverEvent(he);
                 }
 
-                builder.append("   ").reset().append("nächste >>");
+                Component nextComponent = text("nächste >>");
 
                 if (page + 1 < numPages) {
-                    builder.color(ChatColor.BLUE);
+                    nextComponent = nextComponent.color(NamedTextColor.BLUE);
 
-                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Seite " + (page + 2) + " anzeigen").create()));
-                    ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, openPageCommandPrefix + " " + (page + 2));
+                    HoverEvent<Component> he = HoverEvent.showText(text("Seite " + (page + 2) + " anzeigen"));
+                    ClickEvent ce = ClickEvent.runCommand(openPageCommandPrefix + " " + (page + 2));
 
-                    builder.event(he).event(ce);
+                    nextComponent = nextComponent.hoverEvent(he).clickEvent(ce);
                 } else {
-                    builder.color(ChatColor.GRAY);
+                    nextComponent = nextComponent.color(NamedTextColor.GRAY);
 
-                    HoverEvent he = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new ComponentBuilder("Bereits auf Seite " + numPages).create()));
+                    HoverEvent<Component> he = HoverEvent.showText(text("Bereits auf Seite " + numPages));
 
-                    builder.event(he);
+                    nextComponent = nextComponent.hoverEvent(he);
                 }
 
-                recipient.sendMessage(builder.create());
+                Component result = empty().append(pluginPrefix).append(prevComponent).append(text("   ")).append(nextComponent);
+                recipient.sendMessage(result);
             }
         } catch (AbortPageSendException e) {
             return;
         }
     }
 
+    @Deprecated
     public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object... messageParts) {
-        TextComponent builder = new TextComponent();
-        if (!pluginPrefix.isEmpty()) {
-            builder.addExtra(new TextComponent(TextComponent.fromLegacyText(pluginPrefix)));
-            builder.addExtra(" ");
+        //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
+        sendMessage(receiver, convertLegacy(pluginPrefix), convertStyle(colors), messageParts);
+    }
+
+    public static void sendMessage(MessageReceiver receiver, Component pluginPrefix, Style style, Object... messageParts) {
+        Component result = empty().style(style);
+        if (pluginPrefix != null) {
+            result = result.append(pluginPrefix).append(space());
         }
 
-        if (colors != null && !colors.isEmpty()) {
-            BaseComponent[] colorComponents = TextComponent.fromLegacyText(colors);
-            if (colorComponents.length == 1) {
-                builder.copyFormatting(colorComponents[0]);
-            } else {
-                CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage (colors-String).", new Throwable());
-            }
+        if (style != null) {
+            result = result.style(style);
         }
 
-        if (Arrays.stream(messageParts).anyMatch(o -> o != null && o.getClass().isArray() && !(o instanceof BaseComponent[]))) {
-            CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage.", new Throwable());
-            messageParts = Arrays.stream(messageParts).flatMap(o -> (o != null && o.getClass().isArray()) ? arrayStream(o) : Stream.of(o)).toArray();
-        }
-
+        int outdated = 0;
         for (Object s : messageParts) {
             if (s instanceof BaseComponent[] bc) {
-                builder.addExtra(new TextComponent(bc));
+                result = result.append(convertBaseComponents(bc));
+                outdated |= (1 << 0);
             } else if (s instanceof BaseComponent bc) {
-                builder.addExtra(bc);
+                result = result.append(convertBaseComponent(bc));
+                outdated |= (1 << 1);
+            } else if (s instanceof Component cmp) {
+                result = result.append(cmp);
             } else {
                 String stringObject = Objects.toString(s);
-                builder.addExtra(new TextComponent(TextComponent.fromLegacyText(stringObject != null ? stringObject : "null")));
+                if (stringObject.contains("§")) {
+                    outdated |= (1 << 2);
+                    result = result.append(LegacyComponentSerializer.legacySection().deserialize(stringObject));
+                } else {
+                    result = result.append(text(stringObject));
+                }
             }
         }
-        receiver.sendMessage(builder);
+
+        if (outdated > 0) {
+            //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage, flags: " + outdated + ".", new Throwable());
+        }
+
+        receiver.sendMessage(result);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> Stream<T> arrayStream(Object array) {
-        return Arrays.stream((T[]) array);
-    }
-
+    @Deprecated
     public static Integer toRGB(ChatColor color) {
         String colorString = color.toString();
         if (colorString != null && colorString.length() > 2 && colorString.charAt(1) == 'x') {
