@@ -251,7 +251,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
-        CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
+        //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
         sendMessagesPaged(recipient, messages, page, convertBaseComponents(name), openPageCommandPrefix, convertLegacy(pluginPrefix), convertStyle(normalColor.toString()), convertStyle(warningColor.toString()));
     }
 
@@ -350,7 +350,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object... messageParts) {
-        CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
+        //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
         sendMessage(receiver, convertLegacy(pluginPrefix), convertStyle(colors), messageParts);
     }
 
@@ -386,7 +386,7 @@ public abstract class ChatUtil {
         }
 
         if (outdated > 0) {
-            CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage, flags: " + outdated + ".", new Throwable());
+            //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage, flags: " + outdated + ".", new Throwable());
         }
 
         receiver.sendMessage(result);
