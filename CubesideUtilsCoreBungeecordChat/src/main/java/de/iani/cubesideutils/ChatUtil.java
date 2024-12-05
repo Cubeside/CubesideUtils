@@ -4,7 +4,6 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 
-import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +14,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
-import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -35,6 +33,8 @@ public abstract class ChatUtil {
     }
 
     private static final Map<ChatColor, Integer> CHATCOLOR_TO_RGB;
+    private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).extractUrls().useUnusualXRepeatedCharacterHexFormat().build();
+
     static {
         Map<ChatColor, Integer> chatcolorToColor = new HashMap<>();
         chatcolorToColor.put(ChatColor.BLACK, 0x000000);
@@ -127,7 +127,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static Component convertLegacy(String s) {
-        return LegacyComponentSerializer.legacySection().deserialize(s);
+        return LEGACY_COMPONENT_SERIALIZER.deserialize(s);
     }
 
     @Deprecated
@@ -251,7 +251,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
-        //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
+        // CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
         sendMessagesPaged(recipient, messages, page, convertBaseComponents(name), openPageCommandPrefix, convertLegacy(pluginPrefix), convertStyle(normalColor.toString()), convertStyle(warningColor.toString()));
     }
 
@@ -350,7 +350,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static void sendMessage(MessageReceiver receiver, String pluginPrefix, String colors, Object... messageParts) {
-        //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
+        // CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessagesPaged.", new Throwable());
         sendMessage(receiver, convertLegacy(pluginPrefix), convertStyle(colors), messageParts);
     }
 
@@ -386,7 +386,7 @@ public abstract class ChatUtil {
         }
 
         if (outdated > 0) {
-            //CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage, flags: " + outdated + ".", new Throwable());
+            // CubesideUtils.getInstance().getLogger().log(Level.WARNING, "Outdatet call to sendMessage, flags: " + outdated + ".", new Throwable());
         }
 
         receiver.sendMessage(result);
