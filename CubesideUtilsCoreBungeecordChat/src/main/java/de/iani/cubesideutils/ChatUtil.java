@@ -378,10 +378,11 @@ public abstract class ChatUtil {
                 String stringObject = Objects.toString(s);
                 if (stringObject.contains("§")) {
                     outdated |= (1 << 2);
-                    result = result.append(LegacyComponentSerializer.legacySection().deserialize(stringObject));
-                } else {
-                    result = result.append(text(stringObject));
                 }
+                result = result.append(LEGACY_COMPONENT_SERIALIZER.deserialize(stringObject));
+                // } else {
+                // result = result.append(text(stringObject));
+                // }
             }
         }
 
