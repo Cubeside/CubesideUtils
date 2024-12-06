@@ -1,10 +1,10 @@
 package de.iani.cubesideutils;
 
-import java.util.Arrays;
-import java.util.List;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.format.TextDecoration.State;
 
 public class HtmlUtil {
     public final static String COLOR_BLACK_HEX = "#000000";
@@ -47,71 +47,78 @@ public class HtmlUtil {
     }
 
     public static String toHTML(String message) {
-        return toHTML(TextComponent.fromLegacyText(message));
+        return toHTML(ComponentUtil.getLegacyComponentSerializer().deserialize(message));
     }
 
-    public static String toHTML(BaseComponent... message) {
+    public static String toHTML(Component message) {
         StringBuilder stringBuilder = new StringBuilder();
-        toHTML(stringBuilder, false, false, Arrays.asList(message));
+        toHTML(stringBuilder, false, false, message);
         return stringBuilder.toString();
     }
 
-    private static void toHTML(StringBuilder stringBuilder, boolean parentStrikethrough, boolean parentUnderlined, List<BaseComponent> message) {
-        for (BaseComponent component : message) {
-            if (component instanceof TextComponent) {
-                ChatColor color = component.getColorRaw();
-                Integer colorRGB = color == null ? null : ChatUtil.toRGB(color);
-                Boolean bold = component.isBoldRaw();
-                Boolean italic = component.isItalicRaw();
-                Boolean strikethrough = component.isStrikethroughRaw();
-                Boolean underlined = component.isUnderlinedRaw();
-                boolean anyFormat = colorRGB != null || bold != null || italic != null || strikethrough != null || underlined != null;
-                if (anyFormat) {
-                    stringBuilder.append("<span style='");
-                    if (colorRGB != null) {
-                        stringBuilder.append("color:").append(colorToHex(colorRGB)).append(";");
-                    }
-                    if (bold != null) {
-                        stringBuilder.append("font-weight:").append(bold ? "bold" : "normal").append(";");
-                    }
-                    if (italic != null) {
-                        stringBuilder.append("font-style:").append(italic ? "italic" : "normal").append(";");
-                    }
-                    if (strikethrough != null || underlined != null) {
-                        if (strikethrough == null) {
-                            strikethrough = parentStrikethrough;
-                        }
-                        if (underlined == null) {
-                            underlined = parentUnderlined;
-                        }
-                        stringBuilder.append("text-decoration:");
-                        if (strikethrough) {
-                            stringBuilder.append("line-through");
-                        }
-                        if (underlined) {
-                            if (strikethrough) {
-                                stringBuilder.append(" ");
-                            }
-                            stringBuilder.append("underline");
-                        } else if (!strikethrough) {
-                            stringBuilder.append("none");
-                        }
-                        stringBuilder.append(";");
-                    }
-                    stringBuilder.append("'>");
-                }
+    private static Boolean stateToBoolean(TextDecoration.State state) {
+        return state == null || state == TextDecoration.State.NOT_SET ? null : state == State.TRUE;
+    }
 
-                escapeHtml(stringBuilder, ((TextComponent) component).getText());
-                if (component.getExtra() != null && !component.getExtra().isEmpty()) {
-                    toHTML(stringBuilder, strikethrough != null ? strikethrough : parentStrikethrough, underlined != null ? underlined : parentUnderlined, component.getExtra());
-                }
+    private static void toHTML(StringBuilder stringBuilder, boolean parentStrikethrough, boolean parentUnderlined, Component message) {
+        TextComponent component = null;
+        if (message instanceof TextComponent textComponent) {
+            component = textComponent;
+        } else {
+            component = ComponentUtil.getLegacyComponentSerializer().deserialize(ComponentUtil.getLegacyComponentSerializer().serialize(message));
+        }
 
-                if (anyFormat) {
-                    stringBuilder.append("</span>");
-                }
-            } else {
-                toHTML(stringBuilder, parentStrikethrough, parentUnderlined, Arrays.asList(TextComponent.fromLegacyText(component.toLegacyText())));
+        TextColor color = message.color();
+        String colorRgbHex = color == null ? null : color.asHexString();
+        Boolean bold = stateToBoolean(component.decoration(TextDecoration.BOLD));
+        Boolean italic = stateToBoolean(component.decoration(TextDecoration.ITALIC));
+        Boolean strikethrough = stateToBoolean(component.decoration(TextDecoration.STRIKETHROUGH));
+        Boolean underlined = stateToBoolean(component.decoration(TextDecoration.UNDERLINED));
+        boolean anyFormat = colorRgbHex != null || bold != null || italic != null || strikethrough != null || underlined != null;
+        if (anyFormat) {
+            stringBuilder.append("<span style='");
+            if (colorRgbHex != null) {
+                stringBuilder.append("color:").append(colorRgbHex).append(";");
             }
+            if (bold != null) {
+                stringBuilder.append("font-weight:").append(bold ? "bold" : "normal").append(";");
+            }
+            if (italic != null) {
+                stringBuilder.append("font-style:").append(italic ? "italic" : "normal").append(";");
+            }
+            if (strikethrough != null || underlined != null) {
+                if (strikethrough == null) {
+                    strikethrough = parentStrikethrough;
+                }
+                if (underlined == null) {
+                    underlined = parentUnderlined;
+                }
+                stringBuilder.append("text-decoration:");
+                if (strikethrough) {
+                    stringBuilder.append("line-through");
+                }
+                if (underlined) {
+                    if (strikethrough) {
+                        stringBuilder.append(" ");
+                    }
+                    stringBuilder.append("underline");
+                } else if (!strikethrough) {
+                    stringBuilder.append("none");
+                }
+                stringBuilder.append(";");
+            }
+            stringBuilder.append("'>");
+        }
+
+        escapeHtml(stringBuilder, component.content());
+        if (!component.children().isEmpty()) {
+            for (Component child : component.children()) {
+                toHTML(stringBuilder, strikethrough != null ? strikethrough : parentStrikethrough, underlined != null ? underlined : parentUnderlined, child);
+            }
+        }
+
+        if (anyFormat) {
+            stringBuilder.append("</span>");
         }
     }
 }

@@ -20,7 +20,6 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -33,7 +32,6 @@ public abstract class ChatUtil {
     }
 
     private static final Map<ChatColor, Integer> CHATCOLOR_TO_RGB;
-    private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).extractUrls().useUnusualXRepeatedCharacterHexFormat().build();
 
     static {
         Map<ChatColor, Integer> chatcolorToColor = new HashMap<>();
@@ -127,7 +125,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static Component convertLegacy(String s) {
-        return LEGACY_COMPONENT_SERIALIZER.deserialize(s);
+        return ComponentUtil.getLegacyComponentSerializer().deserialize(s);
     }
 
     @Deprecated
@@ -379,7 +377,7 @@ public abstract class ChatUtil {
                 if (stringObject.contains("§")) {
                     outdated |= (1 << 2);
                 }
-                result = result.append(LEGACY_COMPONENT_SERIALIZER.deserialize(stringObject));
+                result = result.append(ComponentUtil.getLegacyComponentSerializer().deserialize(stringObject));
                 // } else {
                 // result = result.append(text(stringObject));
                 // }

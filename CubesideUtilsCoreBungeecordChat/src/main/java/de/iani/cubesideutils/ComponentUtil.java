@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -44,10 +45,24 @@ public class ComponentUtil {
     // } while (!current.equals(next));
     // System.out.println(current);
     // }
+    private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER;
+    static {
+        LegacyComponentSerializer ser = null;
+        try {
+            ser = LegacyComponentSerializer.builder().character(LegacyComponentSerializer.SECTION_CHAR).extractUrls().useUnusualXRepeatedCharacterHexFormat().build();
+        } catch (Throwable t) {
+            ser = null;
+        }
+        LEGACY_COMPONENT_SERIALIZER = ser;
+    }
 
     private ComponentUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
+    }
+
+    public static LegacyComponentSerializer getLegacyComponentSerializer() {
+        return LEGACY_COMPONENT_SERIALIZER;
     }
 
     public static final boolean isColor(ChatColor color) {
