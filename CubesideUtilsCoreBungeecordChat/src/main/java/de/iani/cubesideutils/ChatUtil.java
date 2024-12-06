@@ -130,7 +130,7 @@ public abstract class ChatUtil {
 
     @Deprecated
     public static Style convertStyle(String colorString) {
-        return convertLegacy(colorString).style();
+        return colorString == null ? Style.empty() : convertLegacy(colorString).style();
     }
 
     public static List<Sendable<MessageReceiver>> stringToSendableList(List<String> messages) {
