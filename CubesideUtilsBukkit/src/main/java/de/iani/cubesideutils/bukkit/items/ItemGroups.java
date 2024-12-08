@@ -323,6 +323,12 @@ public class ItemGroups {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
 
+        // 1.21.4
+        try {
+            SPAWN_EGGS_INTERNAL.put(Material.CREAKING_SPAWN_EGG, EntityType.CREAKING);
+        } catch (NoSuchFieldError e) {
+            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
+        }
 
         WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.BLAST_FURNACE, Villager.Profession.ARMORER);
         WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.SMOKER, Villager.Profession.BUTCHER);
