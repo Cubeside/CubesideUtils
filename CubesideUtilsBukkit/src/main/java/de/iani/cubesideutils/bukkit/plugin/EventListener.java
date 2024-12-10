@@ -43,7 +43,10 @@ public final class EventListener implements Listener {
             return;
         }
         PlayerDataImplBukkit data = core.getPlayerDataCache().get(player.getUniqueId());
-        OnlinePlayerDataImpl onlineData = (data.getOnlineData());
+        if (!data.isOnlineHere()) {
+            return;
+        }
+        OnlinePlayerDataImpl onlineData = data.getOnlineData();
         if (onlineData == null) {
             return; // events can occure after PlayerQuitEvent
         }

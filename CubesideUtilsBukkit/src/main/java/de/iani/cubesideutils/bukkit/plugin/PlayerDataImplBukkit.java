@@ -4,7 +4,6 @@ import de.iani.cubesideutils.bukkit.plugin.api.OnlinePlayerData;
 import de.iani.cubesideutils.bukkit.plugin.api.PlayerDataBukkit;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.permissions.Permissible;
@@ -17,15 +16,7 @@ public class PlayerDataImplBukkit extends PlayerDataImpl implements PlayerDataBu
 
     @Override
     public boolean isOnlineHere() {
-        if (Bukkit.isPrimaryThread()) {
-            return Bukkit.getPlayer(getPlayerId()) != null;
-        }
-
-        try {
-            return Bukkit.getScheduler().callSyncMethod(CubesideUtilsBukkit.getInstance().getPlugin(), () -> (Bukkit.getPlayer(getPlayerId()) != null)).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return Bukkit.getPlayer(getPlayerId()) != null;
     }
 
     @Override
