@@ -104,6 +104,7 @@ public class AnvilGUI {
         if (openInventory == null) {
             return;
         }
+        openInventory.getTopInventory().clear();
         if (!fromCloseEvent && Objects.equals(player.getOpenInventory(), openInventory)) {
             openInventory.close();
         }
