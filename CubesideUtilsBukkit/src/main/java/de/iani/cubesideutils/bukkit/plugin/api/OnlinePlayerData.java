@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.bukkit.plugin.api;
 
+import de.iani.cubesideutils.bukkit.plugin.AnvilGUI;
 import org.bukkit.entity.Player;
 
 public interface OnlinePlayerData extends PlayerDataBukkit {
@@ -17,4 +18,6 @@ public interface OnlinePlayerData extends PlayerDataBukkit {
     public void checkRank();
 
     public String getHostName();
+
+    public AnvilGUI getOpenAnvilGUI();
 }

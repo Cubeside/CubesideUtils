@@ -1,11 +1,14 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
+import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
+import com.google.common.base.Objects;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
 import de.iani.cubesideutils.bukkit.events.PlayerMadeUnknownActionEvent;
 import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerPermissionsChangedEvent;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,6 +31,8 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.view.AnvilView;
 
 public final class EventListener implements Listener {
 
@@ -201,5 +206,42 @@ public final class EventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMadeAnyAction(PlayerMadeUnknownActionEvent event) {
         madeAction(event.getPlayer());
+    }
+
+    @EventHandler()
+    public void onPlayerInventoryClick(InventoryClickEvent e) {
+        if (e.getWhoClicked() instanceof Player player) {
+            AnvilGUI anvil = core.getPlayerData(player).getOpenAnvilGUI();
+            if (anvil != null && Objects.equal(anvil.getOpenInventory(), e.getView())) {
+                e.setCancelled(true);
+                if (e.getClickedInventory() instanceof AnvilInventory) {
+                    anvil.onInventoryClick(e.getSlot(), e.getCurrentItem(), e.isShiftClick());
+                }
+            }
+        }
+    }
+
+    @EventHandler()
+    public void onPlayerPrepareResult(PrepareResultEvent e) {
+        if (e.getView() instanceof AnvilView) {
+            for (HumanEntity viewer : e.getViewers()) {
+                if (viewer instanceof Player player) {
+                    AnvilGUI anvil = core.getPlayerData(player).getOpenAnvilGUI();
+                    if (anvil != null && Objects.equal(anvil.getOpenInventory(), e.getView())) {
+                        anvil.onUpdateAnvil(e);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler()
+    public void onPlayerCloseInventory(InventoryCloseEvent e) {
+        if (e.getView() instanceof AnvilView && e.getPlayer() instanceof Player player) {
+            AnvilGUI anvil = core.getPlayerData(player).getOpenAnvilGUI();
+            if (anvil != null && Objects.equal(anvil.getOpenInventory(), e.getView())) {
+                anvil.onInventoryClose();
+            }
+        }
     }
 }

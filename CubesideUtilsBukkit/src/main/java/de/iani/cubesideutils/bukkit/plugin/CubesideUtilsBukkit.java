@@ -309,4 +309,8 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         this.reconfigurationPhaseHelper.doAction(player, action);
     }
 
+    @Override
+    public AnvilGUI createAnvilGUI(Player player) {
+        return new AnvilGUI(this, player);
+    }
 }

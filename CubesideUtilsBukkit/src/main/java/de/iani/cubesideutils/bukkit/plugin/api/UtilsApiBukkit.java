@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.bukkit.plugin.api;
 
+import de.iani.cubesideutils.bukkit.plugin.AnvilGUI;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.bukkit.sound.SoundSequence;
 import de.iani.cubesideutils.conditions.Condition;
@@ -56,4 +57,6 @@ public interface UtilsApiBukkit extends UtilsApi {
     public abstract void doAfterReconfigurationPhase(Player player, Consumer<? super Player> action);
 
     public abstract void sendSoundSequenceToPlayersAllServers(Condition<? super Player> hearSoundCondition, SoundSequence soundSequence);
+
+    public abstract AnvilGUI createAnvilGUI(Player player);
 }
