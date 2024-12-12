@@ -338,7 +338,7 @@ public abstract class ChatUtil {
                     nextComponent = nextComponent.hoverEvent(he);
                 }
 
-                Component result = empty().append(pluginPrefix).append(prevComponent).append(text("   ")).append(nextComponent);
+                Component result = empty().append(prefixComponent).append(prevComponent).append(text("   ")).append(nextComponent);
                 recipient.sendMessage(result);
             }
         } catch (AbortPageSendException e) {
