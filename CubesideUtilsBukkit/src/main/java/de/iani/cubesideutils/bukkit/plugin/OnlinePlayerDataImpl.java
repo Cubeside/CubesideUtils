@@ -20,6 +20,7 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
     private boolean manuallySetAfk;
     private boolean locallyAfk;
     private String hostName;
+    private AnvilGUI openAnvilGUI;
 
     public OnlinePlayerDataImpl(UUID playerId, long firstJoin, long lastJoin, long lastSeen, boolean afk, long lastAction, boolean manuallySetAfk, String lastName, String rank) {
         super(playerId, firstJoin, lastJoin, lastSeen, afk, lastName, rank);
@@ -200,7 +201,17 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         this.hostName = hostName;
     }
 
+    @Override
     public String getHostName() {
         return hostName;
+    }
+
+    public void setOpenAnvilGUI(AnvilGUI anvilGUI) {
+        openAnvilGUI = anvilGUI;
+    }
+
+    @Override
+    public AnvilGUI getOpenAnvilGUI() {
+        return openAnvilGUI;
     }
 }
