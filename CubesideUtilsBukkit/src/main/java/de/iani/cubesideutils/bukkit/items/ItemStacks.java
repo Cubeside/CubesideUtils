@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -466,6 +468,24 @@ public class ItemStacks {
                     }
                 }
             }
+        } else if (meta instanceof BundleMeta bundleMeta) {
+            ItemStack[] contents = bundleMeta.getItems().toArray(ItemStack[]::new);
+            boolean modified = false;
+            for (int i = 0; i < contents.length; i++) {
+                ItemStack oldContent = contents[i];
+                if (oldContent != null) {
+                    ItemStack newContent = prepareForSerialization(oldContent);
+                    if (!Objects.equals(oldContent, newContent)) {
+                        contents[i] = newContent;
+                        modified = true;
+                    }
+                }
+            }
+            if (modified) {
+                bundleMeta.setItems(Arrays.asList(contents));
+                stack = stack.clone();
+                stack.setItemMeta(bundleMeta);
+            }
         }
         return stack;
     }
@@ -505,6 +525,24 @@ public class ItemStacks {
                         }
                     }
                 }
+            }
+        } else if (meta instanceof BundleMeta bundleMeta) {
+            ItemStack[] contents = bundleMeta.getItems().toArray(ItemStack[]::new);
+            boolean modified = false;
+            for (int i = 0; i < contents.length; i++) {
+                ItemStack oldContent = contents[i];
+                if (oldContent != null) {
+                    ItemStack newContent = restoreAfterDeserialization(oldContent);
+                    if (!Objects.equals(oldContent, newContent)) {
+                        contents[i] = newContent;
+                        modified = true;
+                    }
+                }
+            }
+            if (modified) {
+                bundleMeta.setItems(Arrays.asList(contents));
+                stack = stack.clone();
+                stack.setItemMeta(bundleMeta);
             }
         }
         return stack;
