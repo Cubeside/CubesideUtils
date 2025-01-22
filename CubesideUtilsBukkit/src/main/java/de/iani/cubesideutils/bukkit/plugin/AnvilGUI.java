@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit.plugin;
 
 import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
+import com.google.common.base.Preconditions;
 import de.iani.cubesideutils.bukkit.items.CustomHeads;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -11,8 +12,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MenuType;
 import org.bukkit.inventory.view.AnvilView;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,6 +30,7 @@ public class AnvilGUI {
     private boolean confirmed = false;
     private Function<AnvilGUI, Boolean> confirmHandler;
     private Consumer<AnvilGUI> cancelHandler;
+    private Component title = Component.text("Suchen");
 
     AnvilGUI(CubesideUtilsBukkit plugin, Player player) {
         this.plugin = plugin;
@@ -36,6 +38,10 @@ public class AnvilGUI {
 
         firstItem = CustomHeads.QUARTZ_QUESTION_MARK.getHead(Component.empty(), Component.text("Suchen", NamedTextColor.GRAY, TextDecoration.BOLD), Component.text("Gib deine Suchanfrage ein."));
         resultItem = CustomHeads.QUARTZ_ARROW_RIGHT.getHead(Component.text("Suche zurücksetzen!", NamedTextColor.GREEN));
+    }
+
+    public void setTitle(Component title) {
+        this.title = Preconditions.checkNotNull(title);
     }
 
     public AnvilGUI setFirstItem(ItemStack stack) {
@@ -76,13 +82,8 @@ public class AnvilGUI {
             throw new IllegalStateException("this inventory is already open");
         }
         confirmed = false;
-        InventoryView view = player.openAnvil(null, true);
-        if (view == null) {
-            return false;
-        }
-        if (!(view instanceof AnvilView anvilView)) {
-            throw new RuntimeException("expected AnvilView");
-        }
+        AnvilView anvilView = MenuType.ANVIL.builder().title(title).build(player);
+        player.openInventory(anvilView);
         openInventory = anvilView;
         openInventory.setRepairCost(0);
         inventory = openInventory.getTopInventory();
