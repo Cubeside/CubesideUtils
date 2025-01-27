@@ -26,6 +26,10 @@ import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.loot.LootTables;
 import org.bukkit.potion.PotionEffectType;
 
+/**
+ * @deprecated registries may contain the same keys with different values, and this api cannot reflect that.
+ */
+@Deprecated(forRemoval = true)
 public class KeyedUtil {
     private KeyedUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
