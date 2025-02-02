@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PublisStaticFieldMapLoader {
+public class PublicStaticFieldMapLoader {
     private static final ConcurrentHashMap<Pair<Class<?>, Class<?>>, Map<String, Object>> cachedFields = new ConcurrentHashMap<>();
 
     public static <T> Map<String, T> getFields(Class<T> searchInAndfieldClass) {
