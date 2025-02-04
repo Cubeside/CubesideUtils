@@ -15,6 +15,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
@@ -173,7 +174,9 @@ public class CommandUtil {
      * @return the plugin that owns the command if known, or null
      */
     public static Plugin getOwningPlugin(Command command) {
-        if (command instanceof PluginCommand pluginCommand) {
+        if (command instanceof PluginIdentifiableCommand pluginCommand) {
+            return pluginCommand.getPlugin();
+        } else if (command instanceof PluginCommand pluginCommand) {
             return pluginCommand.getPlugin();
         } else if (command instanceof DynamicPluginCommand pluginCommand) {
             return pluginCommand.getPlugin();
