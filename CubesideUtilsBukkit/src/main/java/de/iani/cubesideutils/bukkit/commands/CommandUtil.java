@@ -2,6 +2,7 @@ package de.iani.cubesideutils.bukkit.commands;
 
 import com.google.common.base.Preconditions;
 import de.iani.cubesideutils.bukkit.events.CommandActionFlagsCheckEvent;
+import de.iani.cubesideutils.bukkit.events.DetectCommandForLabelEvent;
 import de.iani.cubesideutils.collections.IteratorUtil;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class CommandUtil {
             cmd.setPermission(permission);
         }
 
-        boolean result = commandMap.register(plugin.getDescription().getName(), cmd);
+        boolean result = commandMap.register(plugin.getPluginMeta().getName(), cmd);
         resyncCommandTabCompletions();
 
         return result ? cmd : null;
@@ -163,7 +164,10 @@ public class CommandUtil {
         String commandLineTrimmed = commandLine.substring(1).trim();
         int space = commandLineTrimmed.indexOf(" ");
         String mainCommand = (space < 0 ? commandLineTrimmed : commandLineTrimmed.substring(0, space));
-        return Bukkit.getCommandMap().getCommand(mainCommand);
+        Command command = Bukkit.getCommandMap().getCommand(mainCommand);
+        DetectCommandForLabelEvent event = new DetectCommandForLabelEvent(commandLine, mainCommand, command);
+        event.callEvent();
+        return event.getCommand();
     }
 
     /**
@@ -174,15 +178,19 @@ public class CommandUtil {
      * @return the plugin that owns the command if known, or null
      */
     public static Plugin getOwningPlugin(Command command) {
-        if (command instanceof PluginIdentifiableCommand pluginCommand) {
-            return pluginCommand.getPlugin();
-        } else if (command instanceof PluginCommand pluginCommand) {
-            return pluginCommand.getPlugin();
-        } else if (command instanceof DynamicPluginCommand pluginCommand) {
-            return pluginCommand.getPlugin();
-        } else if (command != null && command.getClass().getClassLoader() instanceof PluginClassLoader pluginClassLoader && pluginClassLoader.getPlugin() != null) {
-            return pluginClassLoader.getPlugin();
+        if (command == null) {
+            return null;
         }
-        return null;
+        Plugin plugin = null;
+        if (command instanceof PluginIdentifiableCommand pluginCommand) {
+            plugin = pluginCommand.getPlugin();
+        } else if (command instanceof PluginCommand pluginCommand) {
+            plugin = pluginCommand.getPlugin();
+        } else if (command instanceof DynamicPluginCommand pluginCommand) {
+            plugin = pluginCommand.getPlugin();
+        } else if (command.getClass().getClassLoader() instanceof PluginClassLoader pluginClassLoader && pluginClassLoader.getPlugin() != null) {
+            plugin = pluginClassLoader.getPlugin();
+        }
+        return plugin;
     }
 }
