@@ -3,6 +3,7 @@ package de.iani.cubesideutils.bukkit.plugin;
 import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
 import com.google.common.base.Preconditions;
 import de.iani.cubesideutils.bukkit.items.CustomHeads;
+import de.iani.cubesideutils.bukkit.items.ItemStacks;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -169,9 +170,17 @@ public class AnvilGUI {
         }
         // player.sendMessage("update anvil search: " + searchForName);
         if (searchForName == null) {
-            event.setResult(CustomHeads.QUARTZ_ARROW_RIGHT.getHead(Component.text("Suche zurücksetzen!", NamedTextColor.GREEN)));
+            ItemStack eventResultItem = resultItem == null ? null : resultItem.clone();
+            if (eventResultItem != null) {
+                ItemStacks.rename(eventResultItem, Component.text("Suche zurücksetzen!", NamedTextColor.GREEN));
+            }
+            event.setResult(eventResultItem);
         } else {
-            event.setResult(CustomHeads.QUARTZ_ARROW_RIGHT.getHead(Component.text("Nach '" + searchForName + "' suchen!", NamedTextColor.GREEN)));
+            ItemStack eventResultItem = resultItem == null ? null : resultItem.clone();
+            if (eventResultItem != null) {
+                ItemStacks.rename(eventResultItem, Component.text("Nach '" + searchForName + "' suchen!", NamedTextColor.GREEN));
+            }
+            event.setResult(eventResultItem);
         }
     }
 
