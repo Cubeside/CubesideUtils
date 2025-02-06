@@ -31,14 +31,18 @@ public class AnvilGUI {
     private boolean confirmed = false;
     private Function<AnvilGUI, Boolean> confirmHandler;
     private Consumer<AnvilGUI> cancelHandler;
+    private Consumer<AnvilGUI> updateTextHandler;
+    private Consumer<AnvilGUI> updateResultItemHandler;
     private Component title = Component.text("Suchen");
+    private Component resultText = Component.text("Suche zurücksetzen!", NamedTextColor.GREEN);
+    private int inEvent;
 
     AnvilGUI(CubesideUtilsBukkit plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
 
         firstItem = CustomHeads.QUARTZ_QUESTION_MARK.getHead(Component.empty(), Component.text("Suchen", NamedTextColor.GRAY, TextDecoration.BOLD), Component.text("Gib deine Suchanfrage ein."));
-        resultItem = CustomHeads.QUARTZ_ARROW_RIGHT.getHead(Component.text("Suche zurücksetzen!", NamedTextColor.GREEN));
+        resultItem = CustomHeads.QUARTZ_ARROW_RIGHT.getHead(resultText);
     }
 
     public void setTitle(Component title) {
@@ -136,7 +140,11 @@ public class AnvilGUI {
     }
 
     public void setUpdateTextHandler(Consumer<AnvilGUI> handler) {
+        updateTextHandler = handler;
+    }
 
+    public void setUpdateResultItemHandler(Consumer<AnvilGUI> updateResultItemHandler) {
+        this.updateResultItemHandler = updateResultItemHandler;
     }
 
     void onInventoryClick(int slot, ItemStack currentItem, boolean shiftClick) {
@@ -168,19 +176,29 @@ public class AnvilGUI {
                 searchForName = null;
             }
         }
-        // player.sendMessage("update anvil search: " + searchForName);
-        if (searchForName == null) {
-            ItemStack eventResultItem = resultItem == null ? null : resultItem.clone();
-            if (eventResultItem != null) {
-                ItemStacks.rename(eventResultItem, Component.text("Suche zurücksetzen!", NamedTextColor.GREEN));
+        inEvent++;
+        try {
+            if (updateTextHandler != null) {
+                updateTextHandler.accept(this);
             }
-            event.setResult(eventResultItem);
-        } else {
-            ItemStack eventResultItem = resultItem == null ? null : resultItem.clone();
-            if (eventResultItem != null) {
-                ItemStacks.rename(eventResultItem, Component.text("Nach '" + searchForName + "' suchen!", NamedTextColor.GREEN));
+        } finally {
+            inEvent--;
+        }
+        updateResultInternal();
+        event.setResult(resultItem);
+    }
+
+    private void updateResultInternal() {
+        if (resultItem != null) {
+            resultItem = resultItem.clone();
+            if (searchForName == null) {
+                ItemStacks.rename(resultItem, Component.text("Suche zurücksetzen!", NamedTextColor.GREEN));
+            } else {
+                ItemStacks.rename(resultItem, Component.text("Nach '" + searchForName + "' suchen!", NamedTextColor.GREEN));
             }
-            event.setResult(eventResultItem);
+        }
+        if (updateResultItemHandler != null) {
+            updateResultItemHandler.accept(this);
         }
     }
 
@@ -191,5 +209,15 @@ public class AnvilGUI {
 
     public String getInputString() {
         return searchForName;
+    }
+
+    public void setInputString(String inputString) {
+        this.searchForName = inputString;
+        if (inEvent == 0) {
+            updateResultInternal();
+            if (openInventory != null) {
+                openInventory.getTopInventory().setResult(resultItem);
+            }
+        }
     }
 }
