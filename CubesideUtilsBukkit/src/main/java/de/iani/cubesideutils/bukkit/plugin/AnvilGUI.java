@@ -67,8 +67,10 @@ public class AnvilGUI {
 
     public AnvilGUI setResultItem(ItemStack stack) {
         resultItem = stack == null ? null : stack.clone();
-        if (openInventory != null) {
-            openInventory.getTopInventory().setResult(resultItem);
+        if (inEvent == 0) {
+            if (openInventory != null) {
+                openInventory.getTopInventory().setResult(resultItem);
+            }
         }
         return this;
     }
@@ -181,10 +183,10 @@ public class AnvilGUI {
             if (updateTextHandler != null) {
                 updateTextHandler.accept(this);
             }
+            updateResultInternal();
         } finally {
             inEvent--;
         }
-        updateResultInternal();
         event.setResult(resultItem);
     }
 
