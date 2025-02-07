@@ -212,14 +212,4 @@ public class AnvilGUI {
     public String getInputString() {
         return searchForName;
     }
-
-    public void setInputString(String inputString) {
-        this.searchForName = inputString;
-        if (inEvent == 0) {
-            updateResultInternal();
-            if (openInventory != null) {
-                openInventory.getTopInventory().setResult(resultItem);
-            }
-        }
-    }
 }
