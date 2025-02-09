@@ -72,9 +72,9 @@ public class ChatUtilsBungee {
 
     public static class ComponentMsg implements BungeeSendable {
 
-        public final BaseComponent[] message;
+        public final BaseComponent message;
 
-        public ComponentMsg(BaseComponent... message) {
+        public ComponentMsg(BaseComponent message) {
             this.message = message;
         }
 
@@ -83,6 +83,7 @@ public class ChatUtilsBungee {
             recipient.sendMessage(this.message);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public Sendable<MessageReceiver> toGenericSendable() {
             return new ChatUtil.BaseComponentMsg(message);
@@ -97,9 +98,9 @@ public class ChatUtilsBungee {
         return result;
     }
 
-    public static List<Sendable<CommandSender>> bcToSendableList(List<BaseComponent[]> messages) {
+    public static List<Sendable<CommandSender>> bcToSendableList(List<BaseComponent> messages) {
         List<Sendable<CommandSender>> result = new ArrayList<>(messages.size());
-        for (BaseComponent[] msg : messages) {
+        for (BaseComponent msg : messages) {
             result.add(new ComponentMsg(msg));
         }
         return result;
@@ -129,6 +130,7 @@ public class ChatUtilsBungee {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
+    @SuppressWarnings("deprecation")
     protected static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
