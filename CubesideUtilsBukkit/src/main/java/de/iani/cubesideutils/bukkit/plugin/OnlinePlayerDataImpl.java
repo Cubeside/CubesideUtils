@@ -10,8 +10,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements OnlinePlayerData {
@@ -120,7 +121,7 @@ public class OnlinePlayerDataImpl extends PlayerDataImplBukkit implements Online
         checkGloballyAfk();
 
         if (messagePlayer) {
-            getPlayer().sendMessage(ChatColor.GRAY + "* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.");
+            getPlayer().sendMessage(Component.text("* Du bist nun" + (this.locallyAfk ? "" : " nicht mehr") + " abwesend.", NamedTextColor.GRAY));
         }
     }
 

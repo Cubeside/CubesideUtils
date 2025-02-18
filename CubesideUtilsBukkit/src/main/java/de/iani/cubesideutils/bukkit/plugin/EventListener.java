@@ -7,6 +7,7 @@ import de.cubeside.connection.event.GlobalPlayerJoinedEvent;
 import de.iani.cubesideutils.bukkit.events.PlayerMadeUnknownActionEvent;
 import de.iani.cubesideutils.bukkit.plugin.api.events.PlayerPermissionsChangedEvent;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -16,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -130,7 +130,7 @@ public final class EventListener implements Listener {
     // AFK
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onAsynchPlayerChatEvent(AsyncPlayerChatEvent event) {
+    public void onAsynchPlayerChatEvent(AsyncChatEvent event) {
         madeAction(event.getPlayer());
     }
 

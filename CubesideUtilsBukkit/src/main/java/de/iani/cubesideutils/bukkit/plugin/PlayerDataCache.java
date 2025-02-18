@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -124,7 +125,7 @@ public class PlayerDataCache extends PlayerCacheMap<PlayerDataImplBukkit, Pair<B
         try {
             addToHardCache(player.getUniqueId(), loadOnLogin(player));
         } catch (LoadingPlayerDataFailedException e) {
-            player.kickPlayer(e.getKickMessage());
+            player.kick(Component.text(e.getKickMessage()));
         }
     }
 

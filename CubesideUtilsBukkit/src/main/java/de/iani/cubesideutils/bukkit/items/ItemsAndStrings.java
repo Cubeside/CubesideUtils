@@ -29,6 +29,7 @@ public class ItemsAndStrings {
         // prevents instances
     }
 
+    @Deprecated
     public static final String LORE_COLOR = "" + ChatColor.ITALIC + ChatColor.DARK_PURPLE;
 
     public static String toNiceString(ItemStack[] items) {

@@ -3,6 +3,7 @@ package de.iani.cubesideutils.bukkit.items;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -89,10 +90,12 @@ public enum CustomHeads {
         return new ItemStack(head);
     }
 
+    @Deprecated
     public ItemStack getHead(String displayName) {
         return getHead(displayName, (String[]) null);
     }
 
+    @Deprecated
     public ItemStack getHead(String displayName, String... lore) {
         ItemStack stack = getHead();
         ItemMeta meta = stack.getItemMeta();
@@ -109,11 +112,15 @@ public enum CustomHeads {
     }
 
     public ItemStack getHead(Component displayName, Component... lore) {
+        return getHead(displayName, lore != null && lore.length > 0 ? Arrays.asList(lore) : null);
+    }
+
+    public ItemStack getHead(Component displayName, List<Component> lore) {
         ItemStack stack = getHead();
         ItemMeta meta = stack.getItemMeta();
         meta.displayName(displayName);
-        if (lore != null && lore.length > 0) {
-            meta.lore(Arrays.asList(lore));
+        if (lore != null && lore.size() > 0) {
+            meta.lore(lore);
         }
         stack.setItemMeta(meta);
         return stack;
