@@ -67,6 +67,7 @@ public class ChatUtilBukkit extends ChatUtil {
             }
         }
 
+        @Deprecated
         @Override
         public void sendMessage(String message) {
             CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
