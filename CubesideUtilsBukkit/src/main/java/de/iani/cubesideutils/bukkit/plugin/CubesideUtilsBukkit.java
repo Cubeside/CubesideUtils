@@ -39,6 +39,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -267,6 +268,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         this.globalDataHelper.sendData(MessageType.SEND_MESSAGE, seeMsgCondition == null ? NullWrapper.INSTANCE : seeMsgCondition, false, message);
     }
 
+    @Deprecated
     @Override
     public void sendMessageToPlayersAllServers(Condition<? super Player> seeMsgCondition, BaseComponent... message) {
         ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
@@ -292,10 +294,10 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         if (event.isCancelled()) {
             return;
         }
-        BaseComponent[] options = event.getOptions();
-        if (options.length > 0) {
+        Component options = event.getOptions();
+        if (!options.children().isEmpty()) {
             PlayerDataBukkit playerData = getPlayerData(player);
-            sender.sendMessage(new TextComponent("  "), new TextComponent(TextComponent.fromLegacyText(playerData.getRankPrefix() + player.getName())), new TextComponent(": "), new TextComponent(options));
+            sender.sendMessage(Component.text("  ").append(LegacyComponentSerializer.legacySection().deserialize(playerData.getRankPrefix() + player.getName())).append(Component.text(": ")).append(options));
         }
     }
 

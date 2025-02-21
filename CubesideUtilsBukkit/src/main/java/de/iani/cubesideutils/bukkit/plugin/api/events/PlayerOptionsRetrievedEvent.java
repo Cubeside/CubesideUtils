@@ -1,12 +1,9 @@
 package de.iani.cubesideutils.bukkit.plugin.api.events;
 
 import de.iani.cubesideutils.Pair;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -25,7 +22,7 @@ public class PlayerOptionsRetrievedEvent extends Event implements Cancellable {
     private OfflinePlayer player;
 
     private boolean cancelled;
-    private TreeSet<Pair<Integer, BaseComponent[]>> options;
+    private TreeSet<Pair<Integer, Component>> options;
 
     public PlayerOptionsRetrievedEvent(CommandSender sender, OfflinePlayer playerData) {
         this.sender = Objects.requireNonNull(sender);
@@ -43,12 +40,19 @@ public class PlayerOptionsRetrievedEvent extends Event implements Cancellable {
         return this.player;
     }
 
-    public void addOptions(int priority, BaseComponent... options) {
-        this.options.add(new Pair<>(priority, new BaseComponent[] { new TextComponent(options), new TextComponent(" ") }));
+    public void addOptions(int priority, Component options) {
+        this.options.add(new Pair<>(priority, options));
     }
 
-    public BaseComponent[] getOptions() {
-        return this.options.stream().map(Pair::second).flatMap(Arrays::stream).collect(Collectors.toList()).toArray(new BaseComponent[0]);
+    public Component getOptions() {
+        Component main = Component.empty();
+        for (Pair<Integer, Component> option : options) {
+            if (!main.children().isEmpty()) {
+                main = main.append(Component.space());
+            }
+            main = main.append(option.second);
+        }
+        return main;
     }
 
     @Override

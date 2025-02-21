@@ -23,6 +23,10 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
+/**
+ * @deprecated Needs total component rewrite
+ */
+@Deprecated
 public class ItemsAndStrings {
     private ItemsAndStrings() {
         throw new UnsupportedOperationException("No instance for you, Sir!");

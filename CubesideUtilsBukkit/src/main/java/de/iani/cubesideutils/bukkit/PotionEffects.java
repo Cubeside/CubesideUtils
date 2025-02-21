@@ -66,6 +66,10 @@ public class PotionEffects {
         return res;
     }
 
+    /**
+     * @deprecated Needs component rewrite (effect.getType().translationKey())
+     */
+    @Deprecated
     public static String toNiceString(PotionEffect effect) {
         String result = StringUtil.capitalizeFirstLetter(effect.getType().getName(), true);
         if (effect.getAmplifier() != 0 || getMaxAmplifier(effect.getType()) != 0) {

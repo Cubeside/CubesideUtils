@@ -9,6 +9,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 
+/**
+ * @deprecated Use Enchantment.description() the get name or Registry to get by name
+ */
+@Deprecated
 public class EnchantmentNames {
     private EnchantmentNames() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
@@ -52,6 +56,10 @@ public class EnchantmentNames {
         enchantmentToName.put(enchantment, name);
     }
 
+    /**
+     * @deprecated Use Enchantment.description()
+     */
+    @Deprecated
     public static String getName(Enchantment enchantment) {
         if (enchantment == null) {
             return null;

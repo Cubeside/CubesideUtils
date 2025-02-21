@@ -150,6 +150,10 @@ public class StringUtilBukkit {
             this.sender = Objects.requireNonNull(sender);
         }
 
+        /**
+         * @deprecated Use component api
+         */
+        @Deprecated
         public void sendMessage(String pluginPrefix, ChatColor color) {
             ChatUtilBukkit.sendMessage(sender, pluginPrefix, color.toString(), getMessage());
         }
