@@ -196,16 +196,16 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
         }
     }
 
-    private GlobalDataHelperImpl<T> helper;
+    private GlobalDataHelperBaseImpl<T> helper;
     private Map<UUID, Request<?>> activeRequests;
 
-    public GlobalDataRequestManagerImpl(Pair<GlobalDataHelperImpl<T>, Delegator<T>> helperAndDelegator) {
+    public GlobalDataRequestManagerImpl(Pair<? extends GlobalDataHelperBaseImpl<T>, Delegator<T>> helperAndDelegator) {
         this.helper = helperAndDelegator.first;
         this.activeRequests = Collections.synchronizedMap(new HashMap<>());
         helperAndDelegator.second.setRequestManager(this);
     }
 
-    protected GlobalDataHelperImpl<T> getHelper() {
+    protected GlobalDataHelperBaseImpl<T> getHelper() {
         return this.helper;
     }
 

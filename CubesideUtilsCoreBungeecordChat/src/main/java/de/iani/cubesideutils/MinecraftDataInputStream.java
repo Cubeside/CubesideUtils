@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 
 /**
  * A data input stream that contains some additional methods to read data in minecraft format.
@@ -61,7 +61,7 @@ public class MinecraftDataInputStream extends DataInputStream {
         return new UUID(msb, lsb);
     }
 
-    public BaseComponent[] readText() throws IOException {
-        return ComponentSerializer.parse(readString());
+    public Component readText() throws IOException {
+        return JSONComponentSerializer.json().deserialize(readString());
     }
 }
