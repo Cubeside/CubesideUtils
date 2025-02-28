@@ -2,12 +2,12 @@ package de.iani.cubesideutils.velocity.plugin.api;
 
 import com.velocitypowered.api.event.Subscribe;
 import de.cubeside.connection.event.GlobalDataEvent;
-import de.iani.cubesideutils.plugin.GlobalDataHelperImpl;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
 import de.iani.cubesideutils.velocity.plugin.CubesideUtilsVelocity;
+import de.iani.cubesideutils.velocity.plugin.GlobalDataHelperImpl;
 
 public abstract class GlobalDataHelperVelocity<T extends Enum<T>> extends GlobalDataHelperImpl<T> {
     private final CubesideUtilsVelocity plugin;

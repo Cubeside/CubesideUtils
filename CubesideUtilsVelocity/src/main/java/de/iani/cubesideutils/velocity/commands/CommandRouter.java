@@ -4,7 +4,7 @@ import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import de.iani.cubesideutils.Pair;
-import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.StringUtilCore;
 import de.iani.cubesideutils.commands.AbstractCommandRouter;
 import de.iani.cubesideutils.commands.ArgsParser;
 import de.iani.cubesideutils.velocity.commands.exceptions.IllegalSyntaxException;
@@ -75,7 +75,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSour
         if (nr == args.length - 1 && currentMap.subCommands != null) {
             for (Entry<String, CommandMap> e : currentMap.subCommands.entrySet()) {
                 String key = e.getKey();
-                if (StringUtil.startsWithIgnoreCase(key, partial)) {
+                if (StringUtilCore.startsWithIgnoreCase(key, partial)) {
                     CommandMap subcmd = e.getValue();
                     if (isAnySubCommandDisplayable(sender, subcmd)) {
                         if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
@@ -92,7 +92,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSour
         if (options != null) {
             optionsList = new ArrayList<>();
             for (String option : options) {
-                if (StringUtil.startsWithIgnoreCase(option, partial)) {
+                if (StringUtilCore.startsWithIgnoreCase(option, partial)) {
                     optionsList.add(option);
                 }
             }
