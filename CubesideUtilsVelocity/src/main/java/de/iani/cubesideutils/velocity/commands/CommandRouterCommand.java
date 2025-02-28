@@ -1,28 +1,38 @@
 package de.iani.cubesideutils.velocity.commands;
 
-import com.velocitypowered.api.command.Command;
+import com.google.common.base.Preconditions;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
+import java.util.List;
 
-public class CommandRouterCommand { //extends Command implements TabExecutor {
-    /*private CommandRouter router;
+public class CommandRouterCommand implements SimpleCommand {
+    private final CommandRouter router;
 
-    public CommandRouterCommand(CommandRouter router, String name) {
-        super(name);
-        this.router = router;
-    }
+    public CommandRouterCommand(CommandRouter router) {
+        this.router = Preconditions.checkNotNull(router, "router");
 
-    public CommandRouterCommand(CommandRouter router, String name, String permission, String... aliases) {
-        super(name, permission, aliases);
-        this.router = router;
     }
 
     @Override
-    public void execute(CommandSource sender, String[] args) {
-        router.onCommand(sender, this, getName(), args);
+    public boolean hasPermission(Invocation invocation) {
+        return router.canExecuteAnySubCommand(invocation.source());
     }
 
     @Override
-    public Iterable<String> onTabComplete(CommandSource sender, String[] args) {
-        return router.onTabComplete(sender, this, getName(), args);
-    }*/
+    public void execute(Invocation invocation) {
+        CommandSource sender = invocation.source();
+        String alias = invocation.alias();
+        String[] args = invocation.arguments();
+
+        router.onCommand(sender, this, alias, args);
+    }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        CommandSource sender = invocation.source();
+        String alias = invocation.alias();
+        String[] args = invocation.arguments();
+
+        return router.onTabComplete(sender, this, alias, args);
+    }
 }

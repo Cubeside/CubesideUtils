@@ -41,6 +41,10 @@ public abstract class AbstractCommandRouter<ControllerT extends PermissionRequir
         this.caseInsensitive = caseInsensitive;
     }
 
+    protected CommandMap getMainCommandMap() {
+        return commands;
+    }
+
     public void addCommandMapping(ControllerT command, String... route) {
         if (route.length == 1) {
             if (route[0].isEmpty()) {

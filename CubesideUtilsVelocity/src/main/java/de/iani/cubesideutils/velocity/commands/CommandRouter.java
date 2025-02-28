@@ -7,7 +7,11 @@ import de.iani.cubesideutils.Pair;
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.commands.AbstractCommandRouter;
 import de.iani.cubesideutils.commands.ArgsParser;
-
+import de.iani.cubesideutils.velocity.commands.exceptions.IllegalSyntaxException;
+import de.iani.cubesideutils.velocity.commands.exceptions.InternalCommandException;
+import de.iani.cubesideutils.velocity.commands.exceptions.NoPermissionException;
+import de.iani.cubesideutils.velocity.commands.exceptions.NoPermissionForPathException;
+import de.iani.cubesideutils.velocity.commands.exceptions.RequiresPlayerException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,12 +19,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-
-import de.iani.cubesideutils.velocity.commands.exceptions.IllegalSyntaxException;
-import de.iani.cubesideutils.velocity.commands.exceptions.InternalCommandException;
-import de.iani.cubesideutils.velocity.commands.exceptions.NoPermissionException;
-import de.iani.cubesideutils.velocity.commands.exceptions.NoPermissionForPathException;
-import de.iani.cubesideutils.velocity.commands.exceptions.RequiresPlayerException;
 import net.kyori.adventure.text.Component;
 
 public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSource> {
@@ -194,6 +192,10 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSour
                 }
             }
         }
+    }
+
+    public boolean canExecuteAnySubCommand(CommandSource sender) {
+        return isAnySubCommandExecutable(sender, getMainCommandMap());
     }
 
     private boolean isAnySubCommandExecutable(CommandSource sender, CommandMap cmd) {
