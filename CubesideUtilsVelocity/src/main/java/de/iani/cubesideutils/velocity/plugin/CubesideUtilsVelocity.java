@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import de.iani.cubesideutils.velocity.plugin.api.UtilsApiVelocity;
@@ -55,6 +56,7 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
 
     @Override
     protected void onEnableInternal() throws Throwable {
+
         try {
             Path configFile = dataDirectory.resolve("config.yml");
             if (Files.notExists(dataDirectory)) {
@@ -76,9 +78,11 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
         this.playerDataCache = new PlayerDataCache();
 
         this.globalClientPlugin = (GlobalClientPlugin) server.getPluginManager().getPlugin("globalconnectionvelocity").orElseThrow().getInstance().orElseThrow();
-        this.globalDataHelper = new UtilsGlobalDataHelperVelocity(this);
 
-        updateRankInformation();
+        server.getScheduler().buildTask(plugin, () -> { //TODO ob das so gut ist das zu verzögern.
+            this.globalDataHelper = new UtilsGlobalDataHelperVelocity(this);
+            updateRankInformation();
+        }).delay(0L, TimeUnit.SECONDS);
     }
 
     @Override
