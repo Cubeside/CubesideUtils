@@ -495,6 +495,7 @@ public class ItemGroups {
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.TWISTING_VINES_PLANT);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.WEEPING_VINES);
         MULTI_BLOCK_PLANTS_INTERNAL.add(Material.WEEPING_VINES_PLANT);
+        MULTI_BLOCK_PLANTS_INTERNAL.add(Material.CACTUS);
         try {
             MULTI_BLOCK_PLANTS_INTERNAL.add(Material.CAVE_VINES);
             MULTI_BLOCK_PLANTS_INTERNAL.add(Material.CAVE_VINES_PLANT);
@@ -571,6 +572,11 @@ public class ItemGroups {
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.TORCHFLOWER);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PINK_PETALS);
             SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PITCHER_CROP);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.GLOW_LICHEN);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.SCULK_VEIN);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.PALE_HANGING_MOSS);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.OPEN_EYEBLOSSOM);
+            SINGLE_BLOCK_PLANTS_INTERNAL.add(Material.CLOSED_EYEBLOSSOM);
         } catch (NoSuchFieldError e) {
             Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
         }
