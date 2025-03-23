@@ -95,18 +95,6 @@
                 <configuration>
                     <filters>
                         <filter>
-                            <artifact>junit:junit</artifact>
-                            <excludes>
-                                <exclude>**</exclude>
-                            </excludes>
-                        </filter>
-                        <filter>
-                            <artifact>org.hamcrest:hamcrest-core</artifact>
-                            <excludes>
-                                <exclude>**</exclude>
-                            </excludes>
-                        </filter>
-                        <filter>
                             <artifact>com.googlecode.json-simple:json-simple</artifact>
                             <excludes>
                                 <exclude>META-INF/MANIFEST.MF</exclude>
