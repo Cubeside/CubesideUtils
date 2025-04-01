@@ -80,6 +80,10 @@ public class StringSerialization {
         }
     }
 
+    public static <T> T deserialize(Pair<String, String> serialized) {
+        return deserialize(serialized.first(), serialized.second());
+    }
+
     private StringSerialization() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevent instances
