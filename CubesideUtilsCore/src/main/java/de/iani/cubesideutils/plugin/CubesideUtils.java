@@ -3,7 +3,6 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalPlayer;
 import de.iani.cubesideutils.Triple;
-import de.iani.cubesideutils.collections.SimpleCacheMap;
 import de.iani.cubesideutils.conditions.BinaryCombinedCondition;
 import de.iani.cubesideutils.conditions.ConstantCondition;
 import de.iani.cubesideutils.conditions.NegatedCondition;
@@ -16,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -40,6 +40,7 @@ public abstract class CubesideUtils implements UtilsApi {
     private GeneralDataCache generalDataCache;
 
     private Map<String, PasswordHandlerImpl> passwordHandlers;
+    private Map<String, OtpHandlerImpl> otpHandlers;
 
     private ReadWriteLock rankLock;
     private List<String> ranks;
@@ -55,7 +56,8 @@ public abstract class CubesideUtils implements UtilsApi {
             instance = this;
         }
 
-        this.passwordHandlers = new SimpleCacheMap<>(16);
+        this.passwordHandlers = new LinkedHashMap<>();
+        this.otpHandlers = new LinkedHashMap<>();
 
         this.rankLock = new ReentrantReadWriteLock();
         this.ranks = Collections.emptyList();
@@ -107,6 +109,11 @@ public abstract class CubesideUtils implements UtilsApi {
     @Override
     public PasswordHandler getPasswordHandler(String key) {
         return this.passwordHandlers.computeIfAbsent(key, k -> new PasswordHandlerImpl(k));
+    }
+
+    @Override
+    public OtpHandler getOtpHandler(String key) {
+        return this.otpHandlers.computeIfAbsent(key, k -> new OtpHandlerImpl(k));
     }
 
     @Override

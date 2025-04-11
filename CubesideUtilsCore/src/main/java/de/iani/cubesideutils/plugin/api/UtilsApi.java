@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.plugin.api;
 
 import de.iani.cubesideutils.plugin.CubesideUtils;
+import de.iani.cubesideutils.plugin.OtpHandler;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public interface UtilsApi {
     public abstract boolean removePasswordKey(String key) throws SQLException;
 
     public abstract PlayerData getPlayerData(UUID playerId);
+
+    public abstract OtpHandler getOtpHandler(String key);
 
     public abstract int countActivePlayers(long lastSeenSince, long firstJoinUntil) throws SQLException;
 

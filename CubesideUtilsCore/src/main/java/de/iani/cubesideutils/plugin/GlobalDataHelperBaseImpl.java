@@ -308,18 +308,20 @@ public abstract class GlobalDataHelperBaseImpl<T extends Enum<T>> implements Glo
             msgout.writeBoolean((Boolean) msg);
         } else if (msg instanceof Character) {
             msgout.writeChar((Character) msg);
+        } else if (msg instanceof byte[]) {
+            msgout.write((byte[]) msg);
         } else {
             throw new IllegalArgumentException("Unsendable data object of type " + msg.getClass().getName() + ".");
         }
     }
 
-    protected UUID readUUID(DataInputStream msgin) throws IOException {
+    public static UUID readUUID(DataInputStream msgin) throws IOException {
         long first = msgin.readLong();
         long second = msgin.readLong();
         return new UUID(first, second);
     }
 
-    protected <S extends StringSerializable> S readStringSerializable(DataInputStream msgin) throws IOException {
+    public static <S extends StringSerializable> S readStringSerializable(DataInputStream msgin) throws IOException {
         String type = msgin.readUTF();
         String serialized = msgin.readUTF();
         return StringSerialization.deserialize(type, serialized);
