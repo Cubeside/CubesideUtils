@@ -1,6 +1,6 @@
 package de.iani.cubesideutils.velocity;
 
-public class ChatUtilsVelocity {
+public class ChatUtilVelocity {
     /*private ChatUtilsVelocity() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
