@@ -93,7 +93,8 @@ public class ChangeRankInformationCommand extends SubCommand {
         return set ? "<rank> <piority> <permission | -> [prefix]" : "<rank>";
     }
 
-    public String getPermission() {
+    @Override
+    public String getRequiredPermission() {
         return PERMISSION;
     }
 
