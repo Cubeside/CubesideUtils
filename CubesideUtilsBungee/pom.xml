@@ -21,6 +21,12 @@
         </dependency>
         <dependency>
             <groupId>de.iani.cubeside</groupId>
+            <artifactId>CubesideUtilsAdventure</artifactId>
+            <version>1.16-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.iani.cubeside</groupId>
             <artifactId>CubesideUtilsCoreBungeecordChat</artifactId>
             <version>1.16-SNAPSHOT</version>
             <scope>compile</scope>

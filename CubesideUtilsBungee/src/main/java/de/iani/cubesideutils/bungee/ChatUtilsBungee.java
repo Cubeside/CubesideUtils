@@ -1,8 +1,10 @@
 package de.iani.cubesideutils.bungee;
 
+import de.iani.cubesideutils.ChatUtilAdventure;
+import de.iani.cubesideutils.ChatUtilAdventure.AdventureComponentMsg;
+import de.iani.cubesideutils.ChatUtilAdventure.Sendable;
 import de.iani.cubesideutils.ChatUtil;
 import de.iani.cubesideutils.ChatUtil.MessageReceiver;
-import de.iani.cubesideutils.ChatUtil.Sendable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,7 @@ public class ChatUtilsBungee {
 
     public static interface BungeeSendable extends Sendable<CommandSender> {
 
-        public Sendable<MessageReceiver> toGenericSendable();
+        public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable();
 
     }
 
@@ -65,8 +67,8 @@ public class ChatUtilsBungee {
         }
 
         @Override
-        public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.StringMsg(message);
+        public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable() {
+            return new ChatUtilAdventure.StringMsg(message);
         }
     }
 
@@ -85,8 +87,8 @@ public class ChatUtilsBungee {
 
         @SuppressWarnings("deprecation")
         @Override
-        public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.BaseComponentMsg(message);
+        public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable() {
+            return new AdventureComponentMsg(ChatUtil.convertBaseComponent(message));
         }
     }
 
@@ -106,11 +108,11 @@ public class ChatUtilsBungee {
         return result;
     }
 
-    private static List<Sendable<MessageReceiver>> convertSendableList(List<? extends BungeeSendable> messages) {
+    private static List<Sendable<ChatUtilAdventure.MessageReceiver>> convertSendableList(List<? extends BungeeSendable> messages) {
         return new AbstractList<>() {
 
             @Override
-            public Sendable<MessageReceiver> get(int index) {
+            public Sendable<ChatUtilAdventure.MessageReceiver> get(int index) {
                 return messages.get(index).toGenericSendable();
             }
 

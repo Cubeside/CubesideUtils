@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>CubesideUtilsCoreBungeecordChat</artifactId>
+    <artifactId>CubesideUtilsAdventure</artifactId>
     <properties>
-        <mainClass>de.iani.cubesideutils.bungee.plugin.UtilsPluginBungee</mainClass>
+        <mainClass>de.iani.cubesideutils.bungee.plugin.UtilsPluginAdventureChat</mainClass>
     </properties>
     <parent>
         <groupId>de.iani.cubeside</groupId>
@@ -19,22 +19,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>de.iani.cubeside</groupId>
-            <artifactId>CubesideUtilsAdventure</artifactId>
-            <version>1.16-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>de.cubeside</groupId>
             <artifactId>globalconnectionclient</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -70,7 +57,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.9.0</version>
                 <configuration>
-                    <release>21</release>
+                    <release>17</release>
                 </configuration>
             </plugin>
         </plugins>
