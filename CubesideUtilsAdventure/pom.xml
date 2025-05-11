@@ -16,7 +16,7 @@
             <groupId>de.iani.cubeside</groupId>
             <artifactId>CubesideUtilsCore</artifactId>
             <version>1.16-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.cubeside</groupId>
