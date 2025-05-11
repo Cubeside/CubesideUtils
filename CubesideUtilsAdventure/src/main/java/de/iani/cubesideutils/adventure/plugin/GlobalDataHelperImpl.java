@@ -1,5 +1,6 @@
-package de.iani.cubesideutils.plugin;
+package de.iani.cubesideutils.adventure.plugin;
 
+import de.iani.cubesideutils.plugin.GlobalDataHelperBaseImpl;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

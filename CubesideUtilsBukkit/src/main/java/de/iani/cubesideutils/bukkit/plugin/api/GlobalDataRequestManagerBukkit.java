@@ -3,7 +3,7 @@ package de.iani.cubesideutils.bukkit.plugin.api;
 import de.cubeside.connection.GlobalServer;
 import de.cubeside.connection.util.GlobalLocation;
 import de.iani.cubesideutils.Pair;
-import de.iani.cubesideutils.plugin.GlobalDataHelperImpl;
+import de.iani.cubesideutils.adventure.plugin.GlobalDataHelperImpl;
 import de.iani.cubesideutils.plugin.GlobalDataRequestManagerImpl;
 import java.io.DataInputStream;
 import java.io.IOException;

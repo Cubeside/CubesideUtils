@@ -1,7 +1,7 @@
 package de.iani.cubesideutils.bungee.plugin.api;
 
 import de.cubeside.connection.event.GlobalDataEvent;
-import de.iani.cubesideutils.plugin.GlobalDataHelperImpl;
+import de.iani.cubesideutils.adventure.plugin.GlobalDataHelperImpl;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
