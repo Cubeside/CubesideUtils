@@ -17,7 +17,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 
-public abstract class ChatUtilAdventure {
+public class ChatUtilAdventure {
     protected ChatUtilAdventure() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances

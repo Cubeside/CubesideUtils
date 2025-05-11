@@ -18,7 +18,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
 
-public abstract class ChatUtil {
+public class ChatUtil {
     protected ChatUtil() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances

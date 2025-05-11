@@ -18,6 +18,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>de.iani.cubeside</groupId>
+            <artifactId>CubesideUtilsAdventure</artifactId>
+            <version>1.16-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
             <version>3.4.0-SNAPSHOT</version>

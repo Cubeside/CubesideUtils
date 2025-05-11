@@ -1,37 +1,51 @@
 package de.iani.cubesideutils.velocity;
 
+import com.velocitypowered.api.command.CommandSource;
+import de.iani.cubesideutils.ChatUtilAdventure;
+import de.iani.cubesideutils.ChatUtilAdventure.MessageReceiver;
+import de.iani.cubesideutils.ChatUtilAdventure.Sendable;
+import de.iani.cubesideutils.ComponentUtil;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+
 public class ChatUtilVelocity {
-    /*private ChatUtilsVelocity() {
+
+    private ChatUtilVelocity() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
 
-    public static class CommandSenderWrapper implements MessageReceiver {
+    public static class CommandSourceWrapper implements MessageReceiver {
+
         private final CommandSource original;
 
-        public CommandSenderWrapper(CommandSource original) {
+        public CommandSourceWrapper(CommandSource original) {
             this.original = original;
         }
 
         @Override
-        @SuppressWarnings("deprecation")
         public void sendMessage(String message) {
-            original.sendMessage(message);
+            this.original.sendMessage(ComponentUtil.getLegacyComponentSerializer().deserialize(message));
         }
 
         @Override
-        public void sendMessage(BaseComponent... message) {
-            original.sendMessage(message);
+        public void sendMessage(Component message) {
+            sendMessage(message);
         }
-    }
-
-    public static interface BungeeSendable extends Sendable<CommandSource> {
-
-        public Sendable<MessageReceiver> toGenericSendable();
 
     }
 
-    public static class StringMsg implements BungeeSendable {
+    public static interface VelocitySendable extends Sendable<CommandSource> {
+
+        public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable();
+
+    }
+
+    public static class StringMsg implements VelocitySendable {
 
         public final String message;
 
@@ -40,33 +54,32 @@ public class ChatUtilVelocity {
         }
 
         @Override
-        @SuppressWarnings("deprecation")
+        public void send(CommandSource recipient) {
+            recipient.sendMessage(ComponentUtil.getLegacyComponentSerializer().deserialize(this.message));
+        }
+
+        @Override
+        public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable() {
+            return new ChatUtilAdventure.StringMsg(this.message);
+        }
+    }
+
+    public static class AdventureComponentMsg implements VelocitySendable {
+
+        public final Component message;
+
+        public AdventureComponentMsg(Component message) {
+            this.message = message;
+        }
+
+        @Override
         public void send(CommandSource recipient) {
             recipient.sendMessage(this.message);
         }
 
         @Override
-        public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.StringMsg(message);
-        }
-    }
-
-    public static class ComponentMsg implements BungeeSendable {
-
-        public final BaseComponent[] message;
-
-        public ComponentMsg(BaseComponent... message) {
-            this.message = message;
-        }
-
-        @Override
-        public void send(CommandSender recipient) {
-            recipient.sendMessage(this.message);
-        }
-
-        @Override
-        public Sendable<MessageReceiver> toGenericSendable() {
-            return new ChatUtil.ComponentMsg(message);
+        public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable() {
+            return new ChatUtilAdventure.AdventureComponentMsg(this.message);
         }
     }
 
@@ -78,19 +91,20 @@ public class ChatUtilVelocity {
         return result;
     }
 
-    public static List<Sendable<CommandSource>> bcToSendableList(List<BaseComponent[]> messages) {
+    public static List<Sendable<CommandSource>> bcToSendableList(List<Component> messages) {
         List<Sendable<CommandSource>> result = new ArrayList<>(messages.size());
-        for (BaseComponent[] msg : messages) {
-            result.add(new ComponentMsg(msg));
+        for (Component msg : messages) {
+            result.add(new AdventureComponentMsg(msg));
         }
         return result;
     }
 
-    private static List<Sendable<MessageReceiver>> convertSendableList(List<? extends BungeeSendable> messages) {
+    private static List<Sendable<ChatUtilAdventure.MessageReceiver>> convertSendableList(
+            List<? extends VelocitySendable> messages) {
         return new AbstractList<>() {
 
             @Override
-            public Sendable<MessageReceiver> get(int index) {
+            public Sendable<ChatUtilAdventure.MessageReceiver> get(int index) {
                 return messages.get(index).toGenericSendable();
             }
 
@@ -102,16 +116,22 @@ public class ChatUtilVelocity {
         };
     }
 
-    protected static void sendMessagesPaged(CommandSource recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
+    public static void sendMessagesPaged(CommandSource recipient, List<? extends VelocitySendable> messages, int page,
+            Component name, String openPageCommandPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, Component.empty());
     }
 
-    protected static void sendMessagesPaged(CommandSource recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
+    public static void sendMessagesPaged(CommandSource recipient, List<? extends VelocitySendable> messages, int page,
+            Component name, String openPageCommandPrefix, Component pluginPrefix) {
+        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix,
+                Style.style(NamedTextColor.GREEN), Style.style(NamedTextColor.GOLD));
     }
 
-    protected static void sendMessagesPaged(CommandSource recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
-        ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
-    }*/
+    public static void sendMessagesPaged(CommandSource recipient, List<? extends VelocitySendable> messages, int page,
+            Component name, String openPageCommandPrefix, Component pluginPrefix, Style normalStyle,
+            Style warningStyle) {
+        ChatUtilAdventure.sendMessagesPaged(new CommandSourceWrapper(recipient), convertSendableList(messages), page,
+                name, openPageCommandPrefix, pluginPrefix, normalStyle, warningStyle);
+    }
 
 }

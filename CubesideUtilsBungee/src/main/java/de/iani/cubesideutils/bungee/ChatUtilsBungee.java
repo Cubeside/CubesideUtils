@@ -1,10 +1,10 @@
 package de.iani.cubesideutils.bungee;
 
+import de.iani.cubesideutils.ChatUtil;
+import de.iani.cubesideutils.ChatUtil.MessageReceiver;
 import de.iani.cubesideutils.ChatUtilAdventure;
 import de.iani.cubesideutils.ChatUtilAdventure.AdventureComponentMsg;
 import de.iani.cubesideutils.ChatUtilAdventure.Sendable;
-import de.iani.cubesideutils.ChatUtil;
-import de.iani.cubesideutils.ChatUtil.MessageReceiver;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,16 +124,16 @@ public class ChatUtilsBungee {
         };
     }
 
-    protected static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix) {
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
     }
 
-    protected static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
         sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
     @SuppressWarnings("deprecation")
-    protected static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
+    public static void sendMessagesPaged(CommandSender recipient, List<? extends BungeeSendable> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 

@@ -14,7 +14,7 @@
     </properties>
     <modules>
         <module>CubesideUtilsCore</module>
-        <module>CubesideUtilsAdventureChat</module>
+        <module>CubesideUtilsAdventure</module>
         <module>CubesideUtilsCoreBungeecordChat</module>
         <module>CubesideUtilsBukkit</module>
         <module>CubesideUtilsBungee</module>
