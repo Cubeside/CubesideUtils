@@ -10,7 +10,7 @@ public class FontUtil {
     private static byte[] charWidth = new byte[65536];
 
     static {
-        try (InputStream is = FontUtil.class.getClassLoader().getResourceAsStream("char_sizes.bin")) {
+        try (InputStream is = FontUtilAdventure.class.getClassLoader().getResourceAsStream("char_sizes.bin")) {
             is.read(charWidth);
         } catch (IOException e) {
             throw new RuntimeException(e);

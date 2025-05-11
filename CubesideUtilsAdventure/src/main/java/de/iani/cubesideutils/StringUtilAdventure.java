@@ -25,8 +25,8 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-public class StringUtil {
-    private StringUtil() {
+public class StringUtilAdventure {
+    private StringUtilAdventure() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
@@ -391,11 +391,11 @@ public class StringUtil {
                         ignoreColorsUntil = index + 2 + 12;
                     }
                     style = null;
-                } else if (ComponentUtil.COLOR_CHARS.containsKey(next)) {
-                    sty = Style.style(ComponentUtil.COLOR_CHARS.get(next));
+                } else if (ComponentUtilAdventure.COLOR_CHARS.containsKey(next)) {
+                    sty = Style.style(ComponentUtilAdventure.COLOR_CHARS.get(next));
                     style = null;
-                } else if (ComponentUtil.DECORATION_CHARS.containsKey(next)) {
-                    sty = Style.style(ComponentUtil.DECORATION_CHARS.get(next));
+                } else if (ComponentUtilAdventure.DECORATION_CHARS.containsKey(next)) {
+                    sty = Style.style(ComponentUtilAdventure.DECORATION_CHARS.get(next));
                 }
                 if (sty != null) {
                     style = (style == null ? sty : style.merge(sty));
@@ -472,7 +472,7 @@ public class StringUtil {
         if (style == null) {
             return length;
         }
-        String styleString = ComponentUtil.getLegacyComponentSerializer().serialize(Component.empty().style(style));
+        String styleString = ComponentUtilAdventure.getLegacyComponentSerializer().serialize(Component.empty().style(style));
         builder.append(styleString);
         length += styleString.length();
         return length;

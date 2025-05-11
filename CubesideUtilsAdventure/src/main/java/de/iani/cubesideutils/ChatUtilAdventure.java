@@ -59,7 +59,7 @@ public class ChatUtilAdventure {
 
     @Deprecated
     public static Component convertLegacy(String s) {
-        return ComponentUtil.getLegacyComponentSerializer().deserialize(s);
+        return ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(s);
     }
 
     @Deprecated
@@ -260,7 +260,7 @@ public class ChatUtilAdventure {
                 result = result.append(cmp);
             } else {
                 String stringObject = Objects.toString(s);
-                result = result.append(ComponentUtil.getLegacyComponentSerializer().deserialize(stringObject));
+                result = result.append(ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(stringObject));
             }
         }
 

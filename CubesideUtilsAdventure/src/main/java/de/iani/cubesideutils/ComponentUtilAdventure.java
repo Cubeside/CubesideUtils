@@ -1,6 +1,5 @@
 package de.iani.cubesideutils;
 
-import java.awt.TextComponent;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +18,7 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.KeybindComponent;
 import net.kyori.adventure.text.ScoreComponent;
 import net.kyori.adventure.text.SelectorComponent;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -32,7 +32,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.TextDecoration.State;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-public class ComponentUtil {
+public class ComponentUtilAdventure {
 
     private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER;
     static {
@@ -105,7 +105,7 @@ public class ComponentUtil {
         }
     }
 
-    private ComponentUtil() {
+    private ComponentUtilAdventure() {
         throw new UnsupportedOperationException("No instance for you, Sir!");
         // prevents instances
     }
@@ -172,7 +172,7 @@ public class ComponentUtil {
                             if (this.index + 2 + 6 > this.to) {
                                 throw new ParseException("illegal hex code", this.index);
                             }
-                            color = StringUtil.parseHexColor(this.text, this.index + 2);
+                            color = StringUtilAdventure.parseHexColor(this.text, this.index + 2);
                             if (color == null) {
                                 throw new ParseException("illegal hex code", this.index);
                             }
@@ -584,16 +584,16 @@ public class ComponentUtil {
         serializeFormatting(component, builder);
         serializeEvents(component, builder);
 
-        if (component instanceof TextComponent) {
-            serializeTextComponent((TextComponent) component, builder);
-        } else if (component instanceof TranslatableComponent) {
-            serializeTranslatableComponent((TranslatableComponent) component, builder);
-        } else if (component instanceof ScoreComponent) {
-            serializeScoreComponent((ScoreComponent) component, builder);
-        } else if (component instanceof SelectorComponent) {
-            serializeSelectorComponent((SelectorComponent) component, builder);
-        } else if (component instanceof KeybindComponent) {
-            serializeKeybindComponent((KeybindComponent) component, builder);
+        if (component instanceof TextComponent c) {
+            serializeTextComponent(c, builder);
+        } else if (component instanceof TranslatableComponent c) {
+            serializeTranslatableComponent(c, builder);
+        } else if (component instanceof ScoreComponent c) {
+            serializeScoreComponent(c, builder);
+        } else if (component instanceof SelectorComponent c) {
+            serializeSelectorComponent(c, builder);
+        } else if (component instanceof KeybindComponent c) {
+            serializeKeybindComponent(c, builder);
         } else {
             throw new IllegalArgumentException("unsupported component type " + component.getClass().getName());
         }
@@ -750,7 +750,7 @@ public class ComponentUtil {
     }
 
     private static void serializeTextComponent(TextComponent componet, StringBuilder builder) {
-        escapeString(componet.getText(), builder);
+        escapeString(componet.content(), builder);
     }
 
     private static void serializeTranslatableComponent(TranslatableComponent component, StringBuilder builder) {

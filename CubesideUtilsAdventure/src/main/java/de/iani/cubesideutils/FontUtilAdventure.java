@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import net.kyori.adventure.text.Component;
 
-public class FontUtil {
+public class FontUtilAdventure {
     public static final int BOOK_LINE_WIDTH = 110;// mojang: 116
 
     private static byte[] charWidth = new byte[65536];
 
     static {
-        try (InputStream is = FontUtil.class.getClassLoader().getResourceAsStream("char_sizes.bin")) {
+        try (InputStream is = FontUtilAdventure.class.getClassLoader().getResourceAsStream("char_sizes.bin")) {
             is.read(charWidth);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -23,7 +23,7 @@ public class FontUtil {
         }
         StringBuilder sb = new StringBuilder();
         for (Component c : text) {
-            sb.append(ComponentUtil.getLegacyComponentSerializer().serialize(c));
+            sb.append(ComponentUtilAdventure.getLegacyComponentSerializer().serialize(c));
         }
         return fitsSingleBookPage(sb.toString());
     }

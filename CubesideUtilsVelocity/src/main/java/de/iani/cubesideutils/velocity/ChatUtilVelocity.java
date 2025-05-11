@@ -4,7 +4,7 @@ import com.velocitypowered.api.command.CommandSource;
 import de.iani.cubesideutils.ChatUtilAdventure;
 import de.iani.cubesideutils.ChatUtilAdventure.MessageReceiver;
 import de.iani.cubesideutils.ChatUtilAdventure.Sendable;
-import de.iani.cubesideutils.ComponentUtil;
+import de.iani.cubesideutils.ComponentUtilAdventure;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ChatUtilVelocity {
 
         @Override
         public void sendMessage(String message) {
-            this.original.sendMessage(ComponentUtil.getLegacyComponentSerializer().deserialize(message));
+            this.original.sendMessage(ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(message));
         }
 
         @Override
@@ -55,7 +55,7 @@ public class ChatUtilVelocity {
 
         @Override
         public void send(CommandSource recipient) {
-            recipient.sendMessage(ComponentUtil.getLegacyComponentSerializer().deserialize(this.message));
+            recipient.sendMessage(ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(this.message));
         }
 
         @Override
@@ -83,16 +83,16 @@ public class ChatUtilVelocity {
         }
     }
 
-    public static List<Sendable<CommandSource>> stringToSendableList(List<String> messages) {
-        List<Sendable<CommandSource>> result = new ArrayList<>(messages.size());
+    public static List<VelocitySendable> stringToSendableList(List<String> messages) {
+        List<VelocitySendable> result = new ArrayList<>(messages.size());
         for (String msg : messages) {
             result.add(new StringMsg(msg));
         }
         return result;
     }
 
-    public static List<Sendable<CommandSource>> bcToSendableList(List<Component> messages) {
-        List<Sendable<CommandSource>> result = new ArrayList<>(messages.size());
+    public static List<VelocitySendable> componentToSendableList(List<Component> messages) {
+        List<VelocitySendable> result = new ArrayList<>(messages.size());
         for (Component msg : messages) {
             result.add(new AdventureComponentMsg(msg));
         }
@@ -132,6 +132,11 @@ public class ChatUtilVelocity {
             Style warningStyle) {
         ChatUtilAdventure.sendMessagesPaged(new CommandSourceWrapper(recipient), convertSendableList(messages), page,
                 name, openPageCommandPrefix, pluginPrefix, normalStyle, warningStyle);
+    }
+
+    public static void sendMessage(CommandSource receiver, Component pluginPrefix, Style style,
+            Object... messageParts) {
+        ChatUtilAdventure.sendMessage(new CommandSourceWrapper(receiver), pluginPrefix, style, messageParts);
     }
 
 }

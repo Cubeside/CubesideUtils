@@ -151,7 +151,7 @@ public class ChatUtil {
                 if (stringObject.contains("§")) {
                     outdated |= (1 << 2);
                 }
-                result = result.append(ComponentUtil.getLegacyComponentSerializer().deserialize(stringObject));
+                result = result.append(ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(stringObject));
             }
         }
 

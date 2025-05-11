@@ -47,7 +47,7 @@ public class HtmlUtil {
     }
 
     public static String toHTML(String message) {
-        return toHTML(ComponentUtil.getLegacyComponentSerializer().deserialize(message));
+        return toHTML(ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(message));
     }
 
     public static String toHTML(Component message) {
@@ -65,7 +65,7 @@ public class HtmlUtil {
         if (message instanceof TextComponent textComponent) {
             component = textComponent;
         } else {
-            component = ComponentUtil.getLegacyComponentSerializer().deserialize(ComponentUtil.getLegacyComponentSerializer().serialize(message));
+            component = ComponentUtilAdventure.getLegacyComponentSerializer().deserialize(ComponentUtilAdventure.getLegacyComponentSerializer().serialize(message));
         }
 
         TextColor color = message.color();
