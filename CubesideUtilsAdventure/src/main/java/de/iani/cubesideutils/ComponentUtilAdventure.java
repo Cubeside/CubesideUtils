@@ -250,7 +250,7 @@ public class ComponentUtilAdventure {
                         } else if (actionType == 'i') {
 
                             String[] itemStrings = this.text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
-                            Key itemKey = Key.key(itemStrings[0]);
+                            Key itemKey = Key.key(itemStrings[0].toLowerCase());
                             int itemCount;
                             try {
                                 itemCount = itemStrings.length < 2 || itemStrings[1].isEmpty() ? 1 : Integer.parseInt(itemStrings[1]);
@@ -264,7 +264,7 @@ public class ComponentUtilAdventure {
                         } else if (actionType == 'e') {
                             int nameStartIndex = this.text.substring(contentStartIndex, contentEndIndex).indexOf('{') + contentStartIndex;
                             String[] entityStrings = this.text.substring(contentStartIndex, nameStartIndex < 0 ? contentEndIndex : nameStartIndex).split("\\,", 2);
-                            Key entityKey = Key.key(entityStrings[0]);
+                            Key entityKey = Key.key(entityStrings[0].toLowerCase());
                             UUID entityId;
                             try {
                                 entityId = entityStrings.length < 2 || entityStrings[1].isEmpty() ? UUID.randomUUID() : UUID.fromString(entityStrings[1]);
@@ -347,7 +347,7 @@ public class ComponentUtilAdventure {
 
                         int fontStartIndex = this.index + 3;
                         int fontEndIndex = findMatchingRightBrace(this.index + 2, this.to);
-                        Key fontKey = Key.key(this.text.substring(fontStartIndex, fontEndIndex));
+                        Key fontKey = Key.key(this.text.substring(fontStartIndex, fontEndIndex).toLowerCase());
 
                         finishComponent();
                         this.currentComponent = this.currentComponent.font(fontKey);

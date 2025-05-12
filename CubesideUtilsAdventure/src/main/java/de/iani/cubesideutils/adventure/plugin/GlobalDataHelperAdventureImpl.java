@@ -7,17 +7,13 @@ import java.io.IOException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 
-public abstract class GlobalDataHelperImpl<T extends Enum<T>> extends GlobalDataHelperBaseImpl<T> {
-    public GlobalDataHelperImpl(Class<T> messageTypeClass, String channel) {
+public abstract class GlobalDataHelperAdventureImpl<T extends Enum<T>> extends GlobalDataHelperBaseImpl<T> {
+    public GlobalDataHelperAdventureImpl(Class<T> messageTypeClass, String channel) {
         super(messageTypeClass, channel);
     }
 
     @Override
     protected void sendMsgPart(DataOutputStream msgout, Object msg) throws IOException {
-        if (msg == null) {
-            throw new NullPointerException();
-        }
-
         if (msg instanceof Component component) {
             msgout.writeUTF(JSONComponentSerializer.json().serialize(component));
         } else {

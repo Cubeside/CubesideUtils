@@ -7,9 +7,9 @@ import de.cubeside.connection.PlayerMessageAPI;
 import de.cubeside.connection.PlayerPropertiesAPI;
 import de.cubeside.connection.event.GlobalDataEvent;
 import de.cubeside.connection.util.GlobalLocation;
-import de.iani.cubesideutils.adventure.plugin.GlobalDataHelperImpl;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
+import de.iani.cubesideutils.plugin.GlobalDataHelperImpl;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -247,8 +247,6 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         if (msg instanceof GlobalLocation) {
             GlobalLocationWrapper wrapper = new GlobalLocationWrapper((GlobalLocation) msg);
             sendMsgPart(msgout, wrapper);
-        } else if (msg instanceof Component component) {
-            msgout.writeUTF(JSONComponentSerializer.json().serialize(component));
         } else {
             super.sendMsgPart(msgout, msg);
         }

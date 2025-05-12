@@ -1,7 +1,7 @@
 package de.iani.cubesideutils.bungee.plugin.api;
 
 import de.cubeside.connection.event.GlobalDataEvent;
-import de.iani.cubesideutils.adventure.plugin.GlobalDataHelperImpl;
+import de.iani.cubesideutils.adventure.plugin.GlobalDataHelperAdventureImpl;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -10,7 +10,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 
-public abstract class GlobalDataHelperBungee<T extends Enum<T>> extends GlobalDataHelperImpl<T> implements Listener {
+public abstract class GlobalDataHelperBungee<T extends Enum<T>> extends GlobalDataHelperAdventureImpl<T> implements Listener {
     private final Plugin plugin;
 
     public GlobalDataHelperBungee(Class<T> messageTypeClass, String channel, Plugin plugin) {
