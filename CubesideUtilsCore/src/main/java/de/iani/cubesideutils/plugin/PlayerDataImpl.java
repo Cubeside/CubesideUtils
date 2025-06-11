@@ -58,6 +58,10 @@ public abstract class PlayerDataImpl implements PlayerData {
 
         ensureCustomDataPresent();
         String result = this.customData.put(key, value);
+        if (result.equals(value)) {
+            return result;
+        }
+
         try {
             CubesideUtils.getInstance().getDatabase().setCustomPlayerData(this.playerId, key, value);
         } catch (SQLException e) {
