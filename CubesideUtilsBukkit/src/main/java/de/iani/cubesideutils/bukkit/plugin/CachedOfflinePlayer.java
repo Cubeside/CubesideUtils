@@ -272,6 +272,11 @@ public class CachedOfflinePlayer implements OfflinePlayer {
     }
 
     @Override
+    public @org.jspecify.annotations.Nullable Location getRespawnLocation(boolean loadLocationAndValidate) {
+        return getBukkitOfflinePlayer().getRespawnLocation(loadLocationAndValidate);
+    }
+
+    @Override
     public Location getLocation() {
         return getBukkitOfflinePlayer().getLocation();
     }

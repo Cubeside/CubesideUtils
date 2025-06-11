@@ -4,14 +4,12 @@ import com.google.common.base.Preconditions;
 import de.iani.cubesideutils.bukkit.events.CommandActionFlagsCheckEvent;
 import de.iani.cubesideutils.bukkit.events.DetectCommandForLabelEvent;
 import de.iani.cubesideutils.collections.IteratorUtil;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +17,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.PluginClassLoader;
 
@@ -35,13 +34,8 @@ public class CommandUtil {
      * It recyncs the tab completions for the commands.
      */
     public static void resyncCommandTabCompletions() {
-        Server server = Bukkit.getServer();
-        try {
-            Method syncCommandsMethod = server.getClass().getDeclaredMethod("syncCommands");
-            syncCommandsMethod.setAccessible(true);
-            syncCommandsMethod.invoke(server);
-        } catch (Exception e) {
-            server.getLogger().log(Level.SEVERE, "Could not resync commands", e);
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            player.updateCommands();
         }
     }
 
