@@ -58,7 +58,7 @@ public abstract class PlayerDataImpl implements PlayerData {
 
         ensureCustomDataPresent();
         String result = this.customData.put(key, value);
-        if (result.equals(value)) {
+        if (Objects.equals(result, value)) {
             return result;
         }
 
