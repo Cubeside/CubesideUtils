@@ -43,4 +43,19 @@ public class RegistryUtil {
         List<T> valuesList = getRegistryValues(registry);
         return valuesList.isEmpty() ? null : RandomUtil.randomElement(valuesList);
     }
+
+    public static <T extends Keyed> T getNextRegistryEntry(RegistryKey<T> registryKey, T previous) {
+        return getNextRegistryEntry(RegistryAccess.registryAccess().getRegistry(registryKey), previous);
+    }
+
+    public static <T extends Keyed> T getNextRegistryEntry(Registry<T> registry, T previous) {
+        List<T> valuesList = getRegistryValues(registry);
+        int size = valuesList.size();
+        for (int i = 0; i < size; i++) {
+            if (valuesList.get(i).equals(previous)) {
+                return valuesList.get((i + 1) % size);
+            }
+        }
+        return valuesList.get(0);
+    }
 }
