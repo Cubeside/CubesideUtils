@@ -29,6 +29,7 @@ public class RegistryUtil {
                 ArrayList<T> valuesFinal = new ArrayList<>();
                 values = valuesFinal;
                 registry.forEach(t -> valuesFinal.add(t));
+                values.sort((v1, v2) -> v1.getKey().compareTo(v2.getKey()));
                 REGISTRY_ENTRIES.put(registry, Collections.unmodifiableList(values));
             }
         }
