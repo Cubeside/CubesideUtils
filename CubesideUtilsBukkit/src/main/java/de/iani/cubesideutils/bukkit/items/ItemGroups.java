@@ -1,5 +1,7 @@
 package de.iani.cubesideutils.bukkit.items;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +14,8 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
@@ -207,128 +211,17 @@ public class ItemGroups {
         AIRS_INTERNAL.add(Material.CAVE_AIR);
         AIRS_INTERNAL.add(Material.VOID_AIR);
 
-        SPAWN_EGGS_INTERNAL.put(Material.BAT_SPAWN_EGG, EntityType.BAT);
-        SPAWN_EGGS_INTERNAL.put(Material.BLAZE_SPAWN_EGG, EntityType.BLAZE);
-        SPAWN_EGGS_INTERNAL.put(Material.CAVE_SPIDER_SPAWN_EGG, EntityType.CAVE_SPIDER);
-        SPAWN_EGGS_INTERNAL.put(Material.CHICKEN_SPAWN_EGG, EntityType.CHICKEN);
-        SPAWN_EGGS_INTERNAL.put(Material.COD_SPAWN_EGG, EntityType.COD);
-        SPAWN_EGGS_INTERNAL.put(Material.COW_SPAWN_EGG, EntityType.COW);
-        SPAWN_EGGS_INTERNAL.put(Material.CREEPER_SPAWN_EGG, EntityType.CREEPER);
-        SPAWN_EGGS_INTERNAL.put(Material.DOLPHIN_SPAWN_EGG, EntityType.DOLPHIN);
-        SPAWN_EGGS_INTERNAL.put(Material.DONKEY_SPAWN_EGG, EntityType.DONKEY);
-        SPAWN_EGGS_INTERNAL.put(Material.DROWNED_SPAWN_EGG, EntityType.DROWNED);
-        SPAWN_EGGS_INTERNAL.put(Material.ELDER_GUARDIAN_SPAWN_EGG, EntityType.ELDER_GUARDIAN);
-        SPAWN_EGGS_INTERNAL.put(Material.ENDERMAN_SPAWN_EGG, EntityType.ENDERMAN);
-        SPAWN_EGGS_INTERNAL.put(Material.ENDERMITE_SPAWN_EGG, EntityType.ENDERMITE);
-        SPAWN_EGGS_INTERNAL.put(Material.EVOKER_SPAWN_EGG, EntityType.EVOKER);
-        SPAWN_EGGS_INTERNAL.put(Material.GHAST_SPAWN_EGG, EntityType.GHAST);
-        SPAWN_EGGS_INTERNAL.put(Material.GUARDIAN_SPAWN_EGG, EntityType.GUARDIAN);
-        SPAWN_EGGS_INTERNAL.put(Material.HORSE_SPAWN_EGG, EntityType.HORSE);
-        SPAWN_EGGS_INTERNAL.put(Material.HUSK_SPAWN_EGG, EntityType.HUSK);
-        SPAWN_EGGS_INTERNAL.put(Material.LLAMA_SPAWN_EGG, EntityType.LLAMA);
-        SPAWN_EGGS_INTERNAL.put(Material.MAGMA_CUBE_SPAWN_EGG, EntityType.MAGMA_CUBE);
-        SPAWN_EGGS_INTERNAL.put(Material.MOOSHROOM_SPAWN_EGG, EntityType.MOOSHROOM);
-        SPAWN_EGGS_INTERNAL.put(Material.MULE_SPAWN_EGG, EntityType.MULE);
-        SPAWN_EGGS_INTERNAL.put(Material.OCELOT_SPAWN_EGG, EntityType.OCELOT);
-        SPAWN_EGGS_INTERNAL.put(Material.PARROT_SPAWN_EGG, EntityType.PARROT);
-        SPAWN_EGGS_INTERNAL.put(Material.PHANTOM_SPAWN_EGG, EntityType.PHANTOM);
-        SPAWN_EGGS_INTERNAL.put(Material.PIG_SPAWN_EGG, EntityType.PIG);
-        SPAWN_EGGS_INTERNAL.put(Material.POLAR_BEAR_SPAWN_EGG, EntityType.POLAR_BEAR);
-        SPAWN_EGGS_INTERNAL.put(Material.PUFFERFISH_SPAWN_EGG, EntityType.PUFFERFISH);
-        SPAWN_EGGS_INTERNAL.put(Material.RABBIT_SPAWN_EGG, EntityType.RABBIT);
-        SPAWN_EGGS_INTERNAL.put(Material.SALMON_SPAWN_EGG, EntityType.SALMON);
-        SPAWN_EGGS_INTERNAL.put(Material.SHEEP_SPAWN_EGG, EntityType.SHEEP);
-        SPAWN_EGGS_INTERNAL.put(Material.SHULKER_SPAWN_EGG, EntityType.SHULKER);
-        SPAWN_EGGS_INTERNAL.put(Material.SILVERFISH_SPAWN_EGG, EntityType.SILVERFISH);
-        SPAWN_EGGS_INTERNAL.put(Material.SKELETON_HORSE_SPAWN_EGG, EntityType.SKELETON_HORSE);
-        SPAWN_EGGS_INTERNAL.put(Material.SKELETON_SPAWN_EGG, EntityType.SKELETON);
-        SPAWN_EGGS_INTERNAL.put(Material.SLIME_SPAWN_EGG, EntityType.SLIME);
-        SPAWN_EGGS_INTERNAL.put(Material.SPIDER_SPAWN_EGG, EntityType.SPIDER);
-        SPAWN_EGGS_INTERNAL.put(Material.SQUID_SPAWN_EGG, EntityType.SQUID);
-        SPAWN_EGGS_INTERNAL.put(Material.STRAY_SPAWN_EGG, EntityType.STRAY);
-        SPAWN_EGGS_INTERNAL.put(Material.TROPICAL_FISH_SPAWN_EGG, EntityType.TROPICAL_FISH);
-        SPAWN_EGGS_INTERNAL.put(Material.TURTLE_SPAWN_EGG, EntityType.TURTLE);
-        SPAWN_EGGS_INTERNAL.put(Material.VEX_SPAWN_EGG, EntityType.VEX);
-        SPAWN_EGGS_INTERNAL.put(Material.VILLAGER_SPAWN_EGG, EntityType.VILLAGER);
-        SPAWN_EGGS_INTERNAL.put(Material.VINDICATOR_SPAWN_EGG, EntityType.VINDICATOR);
-        SPAWN_EGGS_INTERNAL.put(Material.WITCH_SPAWN_EGG, EntityType.WITCH);
-        SPAWN_EGGS_INTERNAL.put(Material.WITHER_SKELETON_SPAWN_EGG, EntityType.WITHER_SKELETON);
-        SPAWN_EGGS_INTERNAL.put(Material.WOLF_SPAWN_EGG, EntityType.WOLF);
-        SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_HORSE_SPAWN_EGG, EntityType.ZOMBIE_HORSE);
+        for (EntityType e : RegistryAccess.registryAccess().getRegistry(RegistryKey.ENTITY_TYPE)) {
+            NamespacedKey entityTypeKey = e.getKey();
+            if (entityTypeKey != null) {
+                NamespacedKey spawnEggKey = NamespacedKey.fromString(entityTypeKey.getNamespace() + ":" + entityTypeKey.getKey() + "_spawn_egg");
+                Material spawnEgg = Registry.MATERIAL.get(spawnEggKey);
+                if (spawnEgg != null) {
+                    SPAWN_EGGS_INTERNAL.put(spawnEgg, e);
+                }
+            }
+        }
         // SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_PIGMAN_SPAWN_EGG, EntityType.PIG_ZOMBIE); - removed in 1.16
-        SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_SPAWN_EGG, EntityType.ZOMBIE);
-        SPAWN_EGGS_INTERNAL.put(Material.ZOMBIE_VILLAGER_SPAWN_EGG, EntityType.ZOMBIE_VILLAGER);
-        // 1.14
-        SPAWN_EGGS_INTERNAL.put(Material.CAT_SPAWN_EGG, EntityType.CAT);
-        SPAWN_EGGS_INTERNAL.put(Material.FOX_SPAWN_EGG, EntityType.FOX);
-        SPAWN_EGGS_INTERNAL.put(Material.PANDA_SPAWN_EGG, EntityType.PANDA);
-        SPAWN_EGGS_INTERNAL.put(Material.RAVAGER_SPAWN_EGG, EntityType.RAVAGER);
-        SPAWN_EGGS_INTERNAL.put(Material.PILLAGER_SPAWN_EGG, EntityType.PILLAGER);
-        SPAWN_EGGS_INTERNAL.put(Material.TRADER_LLAMA_SPAWN_EGG, EntityType.TRADER_LLAMA);
-        SPAWN_EGGS_INTERNAL.put(Material.WANDERING_TRADER_SPAWN_EGG, EntityType.WANDERING_TRADER);
-        // 1.15
-        SPAWN_EGGS_INTERNAL.put(Material.BEE_SPAWN_EGG, EntityType.BEE);
-        // 1.16
-        SPAWN_EGGS_INTERNAL.put(Material.ZOMBIFIED_PIGLIN_SPAWN_EGG, EntityType.ZOMBIFIED_PIGLIN);
-        SPAWN_EGGS_INTERNAL.put(Material.PIGLIN_SPAWN_EGG, EntityType.PIGLIN);
-        SPAWN_EGGS_INTERNAL.put(Material.HOGLIN_SPAWN_EGG, EntityType.HOGLIN);
-        SPAWN_EGGS_INTERNAL.put(Material.ZOGLIN_SPAWN_EGG, EntityType.ZOGLIN);
-        SPAWN_EGGS_INTERNAL.put(Material.STRIDER_SPAWN_EGG, EntityType.STRIDER);
-        SPAWN_EGGS_INTERNAL.put(Material.PIGLIN_BRUTE_SPAWN_EGG, EntityType.PIGLIN_BRUTE);
-        // 1.17
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.AXOLOTL_SPAWN_EGG, EntityType.AXOLOTL);
-            SPAWN_EGGS_INTERNAL.put(Material.GLOW_SQUID_SPAWN_EGG, EntityType.GLOW_SQUID);
-            SPAWN_EGGS_INTERNAL.put(Material.GOAT_SPAWN_EGG, EntityType.GOAT);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
-        // 1.19
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.ALLAY_SPAWN_EGG, EntityType.ALLAY);
-            SPAWN_EGGS_INTERNAL.put(Material.WARDEN_SPAWN_EGG, EntityType.WARDEN);
-            SPAWN_EGGS_INTERNAL.put(Material.TADPOLE_SPAWN_EGG, EntityType.TADPOLE);
-            SPAWN_EGGS_INTERNAL.put(Material.FROG_SPAWN_EGG, EntityType.FROG);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
-        // 1.19.3
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.ENDER_DRAGON_SPAWN_EGG, EntityType.ENDER_DRAGON);
-            SPAWN_EGGS_INTERNAL.put(Material.WITHER_SPAWN_EGG, EntityType.WITHER);
-            SPAWN_EGGS_INTERNAL.put(Material.SNOW_GOLEM_SPAWN_EGG, EntityType.SNOW_GOLEM);
-            SPAWN_EGGS_INTERNAL.put(Material.IRON_GOLEM_SPAWN_EGG, EntityType.IRON_GOLEM);
-            SPAWN_EGGS_INTERNAL.put(Material.CAMEL_SPAWN_EGG, EntityType.CAMEL);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
-        // 1.19.4
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.SNIFFER_SPAWN_EGG, EntityType.SNIFFER);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
-        // 1.20.4
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.BREEZE_SPAWN_EGG, EntityType.BREEZE);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
-
-        // 1.20.6
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.BOGGED_SPAWN_EGG, EntityType.BOGGED);
-            SPAWN_EGGS_INTERNAL.put(Material.ARMADILLO_SPAWN_EGG, EntityType.ARMADILLO);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
-
-        // 1.21.4
-        try {
-            SPAWN_EGGS_INTERNAL.put(Material.CREAKING_SPAWN_EGG, EntityType.CREAKING);
-        } catch (NoSuchFieldError e) {
-            Bukkit.getLogger().log(Level.INFO, "Some items could not be loaded into the ItemGroup");
-        }
 
         WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.BLAST_FURNACE, Villager.Profession.ARMORER);
         WORKSTATION_TO_VILLAGER_PROFESSION_INTERNAL.put(Material.SMOKER, Villager.Profession.BUTCHER);
