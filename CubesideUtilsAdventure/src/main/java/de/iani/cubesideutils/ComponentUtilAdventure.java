@@ -189,9 +189,12 @@ public class ComponentUtilAdventure {
                         TextDecoration deco = DECORATION_CHARS.get(next);
                         finishComponent(FormatRetention.ALL);
                         this.currentComponent = this.currentComponent.decorate(deco);
+                        this.index += 1;
                         continue;
                     } else if (next == 'r') {
                         finishComponent(FormatRetention.EVENTS);
+                        this.index += 1;
+                        continue;
                     }
 
                     throw new ParseException("unknown color code &" + next, this.index);
