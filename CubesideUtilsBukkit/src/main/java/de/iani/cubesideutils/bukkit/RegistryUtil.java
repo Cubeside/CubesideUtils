@@ -4,14 +4,13 @@ import de.iani.cubesideutils.RandomUtil;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Keyed;
 import org.bukkit.Registry;
 
 public class RegistryUtil {
-    private static final HashMap<Registry<?>, List<? extends Keyed>> REGISTRY_ENTRIES = new HashMap<>();
+    private static final ConcurrentHashMap<Registry<?>, List<? extends Keyed>> REGISTRY_ENTRIES = new ConcurrentHashMap<>();
 
     private RegistryUtil() {
         throw new RuntimeException("No instances allowed");
@@ -21,18 +20,16 @@ public class RegistryUtil {
         return getRegistryValues(RegistryAccess.registryAccess().getRegistry(registryKey));
     }
 
-    public static <T extends Keyed> List<T> getRegistryValues(Registry<T> registry) {
-        @SuppressWarnings("unchecked")
-        List<T> values = (List<T>) REGISTRY_ENTRIES.get(registry);
-        if (values == null) {
-            synchronized (REGISTRY_ENTRIES) {
-                ArrayList<T> valuesFinal = new ArrayList<>();
-                values = valuesFinal;
-                registry.forEach(t -> valuesFinal.add(t));
-                REGISTRY_ENTRIES.put(registry, Collections.unmodifiableList(values));
-            }
-        }
+    private static <T extends Keyed> List<T> generateSortedRegistryEntryList(Registry<T> registry) {
+        ArrayList<T> values = new ArrayList<>();
+        registry.forEach(t -> values.add(t));
+        values.sort((v1, v2) -> v1.getKey().compareTo(v2.getKey()));
         return values;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Keyed> List<T> getRegistryValues(Registry<T> registry) {
+        return (List<T>) REGISTRY_ENTRIES.computeIfAbsent(registry, RegistryUtil::generateSortedRegistryEntryList);
     }
 
     public static <T extends Keyed> T getRandomRegistryEntry(RegistryKey<T> registryKey) {
