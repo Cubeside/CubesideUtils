@@ -97,8 +97,12 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         UUID playerId = player.getUniqueId();
         playerFinishsLoggingIn(player);
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            V value = this.removeFromHardCache(playerId);
-            this.playerDataUnloadedOnSuccesslessLogin(player, value);
+            Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> {
+                if (Bukkit.getPlayer(playerId) == null) {
+                    V value = this.removeFromHardCache(playerId);
+                    this.playerDataUnloadedOnSuccesslessLogin(player, value);
+                }
+            });
             return;
         }
 
@@ -128,8 +132,12 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         }
 
         playerDidntJoin(playerId);
-        V value = removeFromHardCache(playerId);
-        playerDataUnloadedDidntJoin(playerId, value);
+        Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> {
+            if (Bukkit.getPlayer(playerId) == null) {
+                V value = removeFromHardCache(playerId);
+                playerDataUnloadedDidntJoin(playerId, value);
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -137,8 +145,12 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         Player player = event.getPlayer();
         playerQuitting(player);
         UUID playerId = player.getUniqueId();
-        V value = removeFromHardCache(playerId);
-        playerDataUnloadedOnQuit(player, value);
+        Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> {
+            if (Bukkit.getPlayer(playerId) == null) {
+                V value = removeFromHardCache(playerId);
+                playerDataUnloadedOnQuit(player, value);
+            }
+        });
     }
 
     @Override
