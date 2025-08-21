@@ -1,5 +1,6 @@
 package de.iani.cubesideutils.bukkit.items;
 
+import io.papermc.paper.datacomponent.DataComponentType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -376,32 +377,111 @@ public class ItemStacks {
      * @return missing items (empty if all items are present)
      */
     public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes, boolean includeNonStorage) {
+        return doesHave(player, items, removeIfYes, includeNonStorage, null);
+    }
+
+    /**
+     * Checks whether the given player's inventory contains the given items.
+     *
+     * Returns all missing items. If removeIfYes is true and all items are present, they are removed.
+     * If a non-empty array is returned, or if removeIfYes is false, the player's inventory has been left unchanged.
+     *
+     * @param player
+     *            the player to check
+     * @param items
+     *            the items to check for
+     * @param includeNonStorage
+     *            whether or not to include the special slots like off hand or armor
+     * @param ignoredComponents
+     *            components on the itemstacks that will be ignored when comparing them
+     * @return missing items (empty if all items are present)
+     */
+    public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes, boolean includeNonStorage, DataComponentType[] ignoredComponents) {
         items = deepCopy(items);
 
         ItemStack[] oldContents = includeNonStorage ? player.getInventory().getContents() : player.getInventory().getStorageContents();
         ItemStack[] contents = deepCopy(oldContents);
 
+        ItemStack[] filteredItems = null;
+        ItemStack[] filteredContents = null;
+        boolean anyRealFilteredComponents = false;
+        if (ignoredComponents != null && ignoredComponents.length > 0) {
+            filteredItems = new ItemStack[items.length];
+            for (int j = 0; j < items.length; j++) {
+                ItemStack stack = items[j];
+                if (stack != null) {
+                    boolean cloned = false;
+                    for (DataComponentType ignored : ignoredComponents) {
+                        if (stack.isDataOverridden(ignored)) {
+                            if (!cloned) {
+                                stack = stack.clone();
+                                cloned = true;
+                            }
+                            stack.resetData(ignored);
+                            anyRealFilteredComponents = true;
+                        }
+                    }
+                    filteredItems[j] = stack;
+                }
+            }
+
+            filteredContents = new ItemStack[contents.length];
+            for (int j = 0; j < contents.length; j++) {
+                ItemStack stack = contents[j];
+                if (stack != null) {
+                    boolean cloned = false;
+                    for (DataComponentType ignored : ignoredComponents) {
+                        if (stack.isDataOverridden(ignored)) {
+                            if (!cloned) {
+                                stack = stack.clone();
+                                cloned = true;
+                            }
+                            stack.resetData(ignored);
+                            anyRealFilteredComponents = true;
+                        }
+                    }
+                    filteredContents[j] = stack;
+                }
+            }
+        }
+
         boolean has = true;
-        outer: for (ItemStack toStack : items) {
+
+        outer: for (int j = 0; j < items.length; j++) {
+            ItemStack toStack = items[j];
+            ItemStack toStackCheck = anyRealFilteredComponents ? filteredItems[j] : toStack;
             for (int i = 0; i < contents.length; i++) {
                 ItemStack hisStack = contents[i];
+                ItemStack hisStackCheck = anyRealFilteredComponents ? filteredContents[i] : hisStack;
                 if (hisStack == null || hisStack.getAmount() <= 0) {
                     continue;
                 }
-                if (!isSimilar(hisStack, toStack)) {
+                if (!isSimilar(hisStackCheck, toStackCheck)) {
                     continue;
                 }
                 if (toStack.getAmount() > hisStack.getAmount()) {
                     toStack.setAmount(toStack.getAmount() - hisStack.getAmount());
                     contents[i] = null;
+                    if (anyRealFilteredComponents) {
+                        toStackCheck.setAmount(toStack.getAmount());
+                        filteredContents[i] = null;
+                    }
                     continue;
                 } else if (toStack.getAmount() < hisStack.getAmount()) {
                     hisStack.setAmount(hisStack.getAmount() - toStack.getAmount());
                     toStack.setAmount(0);
+                    if (anyRealFilteredComponents) {
+                        hisStackCheck.setAmount(hisStack.getAmount());
+                        toStackCheck.setAmount(0);
+                    }
                     continue outer;
                 } else {
                     contents[i] = null;
                     toStack.setAmount(0);
+                    if (anyRealFilteredComponents) {
+                        filteredContents[i] = null;
+                        toStackCheck.setAmount(0);
+                    }
                     continue outer;
                 }
             }
