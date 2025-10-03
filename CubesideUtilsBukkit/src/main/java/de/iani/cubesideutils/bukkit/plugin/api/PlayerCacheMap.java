@@ -4,8 +4,10 @@ import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.collections.AdvancedCacheMap;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
@@ -61,13 +63,15 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
     }
 
     private String valueLoggingName;
-    private Map<UUID, Integer> playersAwaitingJoin;
+    private Set<UUID> joiningPlayers;
+    private Map<UUID, Integer> playerJoinTimeoutTasks;
 
     protected PlayerCacheMap(int maxSoftCacheSize, D defaultData, String valueLoggingName) {
         super(maxSoftCacheSize, defaultData);
 
         this.valueLoggingName = Objects.requireNonNull(valueLoggingName);
-        this.playersAwaitingJoin = new HashMap<>();
+        this.joiningPlayers = new HashSet<>();
+        this.playerJoinTimeoutTasks = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, CubesideUtilsBukkit.getInstance().getPlugin());
     }
 
@@ -86,6 +90,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
             return;
         }
         if (value != null) {
+            this.joiningPlayers.add(playerId);
             this.addToHardCache(playerId, value);
         }
         playerDataLoadedOnLogin(player, value);
@@ -100,6 +105,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
             Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> {
                 if (Bukkit.getPlayer(playerId) == null) {
                     V value = this.removeFromHardCache(playerId);
+                    this.joiningPlayers.remove(playerId);
                     this.playerDataUnloadedOnSuccesslessLogin(player, value);
                 }
             });
@@ -107,7 +113,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         }
 
         BukkitScheduler scheduler = Bukkit.getScheduler();
-        Integer oldTaskId = this.playersAwaitingJoin.put(playerId, scheduler.scheduleSyncDelayedTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> playerDidntJoinInternal(playerId), BETWEEN_LOGIN_AND_JOIN_TIMEOUT));
+        Integer oldTaskId = this.playerJoinTimeoutTasks.put(playerId, scheduler.scheduleSyncDelayedTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> playerDidntJoinInternal(playerId), BETWEEN_LOGIN_AND_JOIN_TIMEOUT));
         if (oldTaskId != null) {
             scheduler.cancelTask(oldTaskId);
         }
@@ -117,7 +123,8 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        Integer taskId = this.playersAwaitingJoin.remove(playerId);
+        this.joiningPlayers.remove(playerId);
+        Integer taskId = this.playerJoinTimeoutTasks.remove(playerId);
         if (taskId != null) {
             Bukkit.getScheduler().cancelTask(taskId);
         } else {
@@ -126,7 +133,8 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
     }
 
     private void playerDidntJoinInternal(UUID playerId) {
-        Integer taskId = this.playersAwaitingJoin.remove(playerId);
+        this.joiningPlayers.remove(playerId);
+        Integer taskId = this.playerJoinTimeoutTasks.remove(playerId);
         if (taskId == null) {
             return;
         }
@@ -146,7 +154,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         playerQuitting(player);
         UUID playerId = player.getUniqueId();
         Bukkit.getScheduler().runTask(CubesideUtilsBukkit.getInstance().getPlugin(), () -> {
-            if (Bukkit.getPlayer(playerId) == null) {
+            if (Bukkit.getPlayer(playerId) == null && !joiningPlayers.contains(playerId)) {
                 V value = removeFromHardCache(playerId);
                 playerDataUnloadedOnQuit(player, value);
             }
