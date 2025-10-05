@@ -1,5 +1,5 @@
 {
-  "id": "cubesideutils",
+  "id": "cubesideutilsvelocity",
   "name": "CubesideUtils",
   "version": "1.16-SNAPSHOT",
   "main": "de.iani.cubesideutils.velocity.plugin.UtilsPluginVelocity",
