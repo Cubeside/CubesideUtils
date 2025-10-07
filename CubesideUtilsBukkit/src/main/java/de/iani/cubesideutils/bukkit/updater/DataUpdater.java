@@ -64,6 +64,35 @@ public class DataUpdater {
     }
 
     /**
+     * Update the names for materials
+     *
+     * @param name
+     *            the old name
+     * @return the updated name
+     */
+    public static String updateMaterialName(String name) {
+        if (!MinecraftVersion.isAboveOrEqual(1, 20, 5)) {
+            return name;
+        }
+        name = switch (name) {
+            case "SCUTE" -> "TURTLE_SCUTE";
+            case "scute" -> "turtle_scute";
+            case "minecraft:scute" -> "minecraft:turtle_scute";
+            default -> name;
+        };
+        if (!MinecraftVersion.isAboveOrEqual(1, 21, 9)) {
+            return name;
+        }
+        name = switch (name) {
+            case "CHAIN" -> "IRON_CHAIN";
+            case "chain" -> "iron_chain";
+            case "minecraft:chain" -> "minecraft:iron_chain";
+            default -> name;
+        };
+        return name;
+    }
+
+    /**
      * Update the names for enchantments in the bukkit enums
      *
      * @param name
