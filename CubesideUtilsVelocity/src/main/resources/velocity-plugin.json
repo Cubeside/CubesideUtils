@@ -1,0 +1,15 @@
+{
+  "id": "cubesideutilsvelocity",
+  "name": "CubesideUtils",
+  "version": "1.16-SNAPSHOT",
+  "main": "de.iani.cubesideutils.velocity.plugin.UtilsPluginVelocity",
+  "url": "https://cubeside.de",
+  "description": "CubesideUtils",
+  "authors": ["Brokkonaut", "Starjon"],
+  "dependencies": [
+    {
+      "id": "globalconnectionvelocity",
+      "optional": false
+    }
+  ]
+}
