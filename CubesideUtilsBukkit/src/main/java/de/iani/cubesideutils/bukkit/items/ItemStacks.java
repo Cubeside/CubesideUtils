@@ -1,15 +1,27 @@
 package de.iani.cubesideutils.bukkit.items;
 
+import static net.kyori.adventure.text.Component.space;
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.textOfChildren;
+
+import de.iani.cubesideutils.ComponentUtilAdventure;
+import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.bukkit.StringUtilBukkit;
 import io.papermc.paper.datacomponent.DataComponentType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TreeMap;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -26,10 +38,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.BundleMeta;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 public class ItemStacks {
@@ -641,4 +657,186 @@ public class ItemStacks {
         }
         return ItemStack.deserializeBytes(Base64.getDecoder().decode(itemString));
     }
+
+    public static Component toComponent(ItemStack[] items) {
+        return toComponent(items, Style.empty());
+    }
+
+    public static Component toComponent(ItemStack[] items, Style style) {
+        TreeMap<ItemStack, Integer> itemMap = new TreeMap<>((item1, item2) -> {
+            if (item1.isSimilar(item2)) {
+                return 0;
+            }
+
+            int result = item1.getType().compareTo(item2.getType());
+            if (result != 0) {
+                return result;
+            }
+
+            if (item1.getItemMeta().hasDisplayName()) {
+                if (item2.getItemMeta().hasDisplayName()) {
+                    result = ComponentUtilAdventure.TEXT_ONLY_ORDER.compare(item1.getItemMeta().displayName(), item2.getItemMeta().displayName());
+                } else {
+                    return 1;
+                }
+            } else {
+                if (item2.getItemMeta().hasDisplayName()) {
+                    return -1;
+                }
+            }
+            if (result != 0) {
+                return result;
+            }
+
+            return item1.getItemMeta().toString().compareTo(item2.getItemMeta().toString());
+        });
+
+        Arrays.stream(items).filter(item -> item != null && item.getType() != Material.AIR && item.getAmount() > 0).forEach(item -> itemMap.merge(item, item.getAmount(), (v1, v2) -> v1 + v2));
+        return toComponent(itemMap, style);
+    }
+
+    public static Component toComponent(Map<ItemStack, Integer> amounts) {
+        return toComponent(amounts, Style.empty());
+    }
+
+    public static Component toComponent(Map<ItemStack, Integer> amounts, Style style) {
+        Component[] components = new Component[amounts.size()];
+        int index = 0;
+
+        for (ItemStack item : amounts.keySet()) {
+            int amount = amounts.get(item);
+
+            Component component = toComponent(item, amount, style);
+            if (index + 1 < amounts.size()) {
+                if (index + 2 < amounts.size()) {
+                    component = textOfChildren(component, text(", "));
+                } else {
+                    component = textOfChildren(component, text(" und "));
+                }
+            }
+            components[index] = component;
+            index++;
+        }
+
+        return textOfChildren(components).style(style);
+    }
+
+    public static Component toComponent(ItemStack item) {
+        return toComponent(item, item.getAmount(), Style.empty());
+    }
+
+    public static Component toComponent(ItemStack item, int amount) {
+        return toComponent(item, amount, Style.empty());
+    }
+
+    public static Component toComponent(ItemStack item, Style style) {
+        return toComponent(item, item.getAmount(), style);
+    }
+
+    public static Component toComponent(ItemStack item, int amount, Style style) {
+        Component result = text(amount + " ");
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null) {
+            // there used to be a warnign logged here, but cannot log without a logger... maybe make a util logger at some point?
+        }
+
+        if (meta instanceof LeatherArmorMeta) {
+            LeatherArmorMeta armorMeta = (LeatherArmorMeta) meta;
+            Color color = armorMeta.getColor();
+            // ignore "default" color:
+            if (color.asRGB() != 0xA06540) {
+                result = result.append(text(StringUtilBukkit.toNiceString(color)), text(" "));
+            }
+        }
+
+        result = result.append(text(StringUtil.capitalizeFirstLetter(item.getType().name(), true)));
+
+        if (meta instanceof PotionMeta potionMeta) {
+            PotionType data = potionMeta.getBasePotionType();
+            if (data != null) {
+                result = result.append(text(" of "), text(StringUtil.capitalizeFirstLetter(data.name(), true)));
+            }
+            // builder.append(data.isUpgraded() ? " II" : " I");
+            // if (data.isExtended()) {
+            // builder.append(" (verlängert)");
+            // }
+
+            int index = 0;
+            for (PotionEffect effect : potionMeta.getCustomEffects()) {
+                result = result.append(text((index + 1 < potionMeta.getCustomEffects().size()) ? ", " : " and "));
+                result = result.append(text(StringUtil.capitalizeFirstLetter(effect.getType().key().value(), true)), text(" "), text(StringUtil.toRomanNumber(effect.getAmplifier())));
+                if (!effect.getType().isInstant()) {
+                    result = result.append(text(" ("), text(StringUtil.formatTimespan(50 * effect.getDuration(), "", "", "", "", ":", ":", false, true)), text(")"));
+                }
+                index++;
+            }
+        }
+
+        if (meta instanceof Damageable) {
+            Damageable damageableMeta = (Damageable) meta;
+            if (damageableMeta.hasDamage()) {
+                result = result.append(text(':'), text(damageableMeta.getDamage()));
+            }
+        }
+
+        if (meta instanceof BookMeta) {
+            BookMeta bookMeta = (BookMeta) meta;
+            boolean appended = false;
+
+            if (meta.hasDisplayName()) {
+                result = result.append(text(" (\""), meta.displayName(), text('"')); // PaperComponents.legacySectionSerializer().serialize(meta.displayName())
+                appended = true;
+            } else if (bookMeta.hasTitle()) {
+                result = result.append(text(" (\""), bookMeta.title(), text('"'));
+                appended = true;
+            }
+
+            if (appended && bookMeta.hasAuthor()) {
+                result = result.append(text(" von "), bookMeta.author());
+            }
+
+            if (appended) {
+                result = result.append(text(")"));
+            }
+        } else if (meta != null && meta.hasDisplayName()) {
+            result = result.append(text(" (\""), meta.displayName(), text("\")"));
+        }
+
+        Map<Enchantment, Integer> enchantments = meta == null ? Collections.emptyMap() : new HashMap<>(meta.getEnchants());
+        if (meta instanceof EnchantmentStorageMeta) {
+            EnchantmentStorageMeta enchMeta = (EnchantmentStorageMeta) meta;
+            enchantments.putAll(enchMeta.getStoredEnchants());
+        }
+
+        if (!enchantments.isEmpty()) {
+            result = result.append(text(", verzaubert mit "));
+
+            List<Enchantment> enchList = new ArrayList<>(enchantments.keySet());
+            enchList.sort(Comparator.comparing(Enchantment::description, ComponentUtilAdventure.TEXT_ONLY_ORDER));
+
+            int index = 0;
+            for (Enchantment ench : enchList) {
+                result = result.append(ench.description());
+                if (ench.getMaxLevel() > 1 || enchantments.get(ench) > 1) {
+                    result = result.append(space(), text(StringUtil.toRomanNumber(enchantments.get(ench))));
+                }
+                if (index + 1 < enchantments.size()) {
+                    if (index + 2 < enchantments.size()) {
+                        result = result.append(text(", "));
+                    } else {
+                        result = result.append(text(" und "));
+                    }
+                }
+                index++;
+            }
+        }
+
+        return result.style(style);
+    }
+
+    public static Component toComponent(Material m) {
+        return text(StringUtil.capitalizeFirstLetter(m.name(), true));
+    }
+
 }

@@ -1,10 +1,14 @@
 package de.iani.cubesideutils.bukkit;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.translatable;
+
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import net.kyori.adventure.text.Component;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -104,6 +108,51 @@ public class PotionEffects {
         if (!effect.getType().isInstant()) {
             result += " for " + (effect.getDuration() == 0 ? "0 s" : StringUtil.formatTimespan(effect.getDuration() * 50, "d", "h", "m", "s", " ", " "));
         }
+        return result;
+    }
+
+    /*
+     * TODO: Translatable components for ambient, no particles, no icon, and duration?
+     */
+    public static Component toComponent(PotionEffect effect) {
+        Component result = translatable(effect.getType().translationKey());
+
+        // Amplifier (Roman numeral) when relevant
+        if (effect.getAmplifier() != 0 || getMaxAmplifier(effect.getType()) != 0) {
+            result = result.append(text(" " + StringUtil.toRomanNumber(effect.getAmplifier() + 1)));
+        }
+
+        // Flags
+        if (effect.isAmbient() || !effect.hasParticles() || !effect.hasIcon()) {
+            boolean first = true;
+            StringBuilder flags = new StringBuilder(" (");
+            if (effect.isAmbient()) {
+                flags.append("ambient");
+                first = false;
+            }
+            if (!effect.hasParticles()) {
+                if (!first) {
+                    flags.append(", ");
+                }
+                flags.append("no particles");
+                first = false;
+            }
+            if (!effect.hasIcon()) {
+                if (!first) {
+                    flags.append(", ");
+                }
+                flags.append("no icon");
+            }
+            flags.append(")");
+            result = result.append(text(flags.toString()));
+        }
+
+        // Duration (non-instant)
+        if (!effect.getType().isInstant()) {
+            String dur = (effect.getDuration() == 0) ? "0 s" : StringUtil.formatTimespan(effect.getDuration() * 50L, "d", "h", "m", "s", " ", " ");
+            result = result.append(text(" for " + dur));
+        }
+
         return result;
     }
 

@@ -3,6 +3,7 @@ package de.iani.cubesideutils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.TextDecoration.State;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class ComponentUtilAdventure {
 
@@ -44,6 +46,11 @@ public class ComponentUtilAdventure {
         }
         LEGACY_COMPONENT_SERIALIZER = ser;
     }
+
+    private static final PlainTextComponentSerializer PLAIN_TEXT_COMPONENT_SERIALIZER = PlainTextComponentSerializer.plainText();
+
+    public static final Comparator<Component> TEXT_ONLY_ORDER = (c1, c2) -> rawText(c1).compareTo(rawText(c2));
+    public static final Comparator<Component> TEXT_ONLY_CASE_INSENSITIVE_ORDER = (c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(rawText(c1), rawText(c2));
 
     public static final Map<Character, NamedTextColor> COLOR_CHARS;
     public static final Map<NamedTextColor, Character> COLOR_CHARS_INVERSE;
@@ -112,6 +119,14 @@ public class ComponentUtilAdventure {
 
     public static LegacyComponentSerializer getLegacyComponentSerializer() {
         return LEGACY_COMPONENT_SERIALIZER;
+    }
+
+    public static PlainTextComponentSerializer getPlainTextComponentSerializer() {
+        return PLAIN_TEXT_COMPONENT_SERIALIZER;
+    }
+
+    public static String rawText(Component c) {
+        return getPlainTextComponentSerializer().serialize(c);
     }
 
     public static Component deserializeComponent(String text) throws ParseException {
