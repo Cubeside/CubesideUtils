@@ -2,6 +2,7 @@ package de.iani.cubesideutils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import net.kyori.adventure.text.Component;
 
 public class FontUtilAdventure {
@@ -15,6 +16,10 @@ public class FontUtilAdventure {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean fitsSingleBookPage(Collection<Component> text) {
+        return fitsSingleBookPage(text.toArray(Component[]::new));
     }
 
     public static boolean fitsSingleBookPage(Component... text) {
