@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
@@ -27,6 +29,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
 import net.kyori.adventure.text.event.HoverEvent.ShowItem;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.Style.Merge;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -801,6 +804,133 @@ public class ComponentUtilAdventure {
         builder.append("\\k{");
         builder.append(component.keybind());
         builder.append('}');
+    }
+
+    public static List<Component> splitBySpaces(Component component) {
+        SpaceSplitter splitter = new SpaceSplitter();
+        splitter.accept(component, Style.empty());
+        return splitter.finish();
+    }
+
+    private static final class SpaceSplitter {
+        private final List<Component> out = new ArrayList<>();
+        private Component current = Component.empty();
+        private boolean hasContent = false;
+
+        void accept(Component c, Style parentStyle) {
+            Style effective = mergeInherited(parentStyle, c.style());
+
+            if (c instanceof TextComponent tc) {
+                String content = tc.content();
+                if (!content.isEmpty()) {
+                    appendText(content, effective);
+                }
+                for (Component child : c.children()) {
+                    accept(child, effective);
+                }
+                return;
+            }
+
+            // Non-text components (e.g., translatable/keybind/etc.) are appended atomically.
+            // Their own children are preserved inside them; we don't traverse to avoid duplication.
+            appendAtomic(c.style(effective));
+        }
+
+        private void appendText(String s, Style style) {
+            int start = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) != ' ') {
+                    continue;
+                }
+
+                // text part before the space
+                if (i > start) {
+                    appendAtomic(Component.text(s.substring(start, i)).style(style));
+                }
+                // the space itself ends the token (and is included in the token)
+                appendAtomic(Component.text(" ").style(style));
+                flushToken();
+
+                start = i + 1;
+            }
+
+            // tail (no trailing space)
+            if (start < s.length()) {
+                appendAtomic(Component.text(s.substring(start)).style(style));
+            }
+        }
+
+        private void appendAtomic(Component c) {
+            this.current = this.current.append(c);
+            this.hasContent = true;
+        }
+
+        private void flushToken() {
+            if (this.hasContent) {
+                this.out.add(this.current);
+                this.current = Component.empty();
+                this.hasContent = false;
+            }
+        }
+
+        List<Component> finish() {
+            flushToken();
+            return this.out;
+        }
+
+        private static Style mergeInherited(Style parent, Style self) {
+            // Apply parent values where the child has none (so child overrides parent).
+            return self.merge(parent, Style.Merge.Strategy.IF_ABSENT_ON_TARGET);
+        }
+    }
+
+    public static Component replacePattern(Component c, Pattern pattern, Component replacement) {
+        c = c.compact();
+        if (c instanceof TextComponent tc) {
+            String content = tc.content();
+            Style style = tc.style();
+
+            Component out = Component.empty();
+            Matcher m = pattern.matcher(content);
+
+            int last = 0;
+            while (m.find()) {
+                int start = m.start();
+                int end = m.end();
+
+                if (start > last) {
+                    out = out.append(Component.text(content.substring(last, start)).style(style));
+                }
+
+                out = out.append(replacement.applyFallbackStyle(style));
+                last = end;
+            }
+
+            if (last < content.length()) {
+                out = out.append(Component.text(content.substring(last)).style(style));
+            }
+
+            for (Component child : tc.children()) {
+                out = out.append(replacePattern(child, pattern, replacement));
+            }
+
+            return out;
+        }
+
+        List<Component> children = c.children();
+        if (children.isEmpty()) {
+            return c;
+        }
+
+        List<Component> newChildren = new ArrayList<>(children.size());
+        boolean changed = false;
+        for (Component child : children) {
+            Component replaced = replacePattern(child, pattern, replacement);
+            newChildren.add(replaced);
+            changed |= (replaced != child);
+        }
+
+        return changed ? c.children(newChildren).compact() : c;
     }
 
 }

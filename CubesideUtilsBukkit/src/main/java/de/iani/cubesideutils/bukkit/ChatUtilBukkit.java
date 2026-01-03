@@ -1,9 +1,9 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.cubeside.connection.GlobalPlayer;
+import de.iani.cubesideutils.ChatUtil;
 import de.iani.cubesideutils.ChatUtilAdventure;
 import de.iani.cubesideutils.ChatUtilAdventure.Sendable;
-import de.iani.cubesideutils.ChatUtil;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.conditions.Condition;
 import de.iani.cubesideutils.plugin.CubesideUtils;
@@ -154,6 +154,14 @@ public class ChatUtilBukkit extends ChatUtil {
         List<BukkitSendable> result = new ArrayList<>(messages.size());
         for (String msg : messages) {
             result.add(new StringMsg(msg));
+        }
+        return result;
+    }
+
+    public static List<BukkitSendable> componentToBukkitSendableList(List<Component> messages) {
+        List<BukkitSendable> result = new ArrayList<>(messages.size());
+        for (Component msg : messages) {
+            result.add(new AdventureComponentMsg(msg));
         }
         return result;
     }

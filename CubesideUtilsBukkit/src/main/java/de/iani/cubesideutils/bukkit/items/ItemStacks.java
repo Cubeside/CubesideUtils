@@ -3,6 +3,7 @@ package de.iani.cubesideutils.bukkit.items;
 import static net.kyori.adventure.text.Component.space;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.textOfChildren;
+import static net.kyori.adventure.text.Component.translatable;
 
 import de.iani.cubesideutils.ComponentUtilAdventure;
 import de.iani.cubesideutils.StringUtil;
@@ -836,7 +837,11 @@ public class ItemStacks {
     }
 
     public static Component toComponent(Material m) {
-        return text(StringUtil.capitalizeFirstLetter(m.name(), true));
+        return translatable(m);
+    }
+
+    public static String toNiceString(Material m) {
+        return StringUtil.capitalizeFirstLetter(m.name(), true);
     }
 
 }
