@@ -11,20 +11,23 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.KeybindComponent;
+import net.kyori.adventure.text.ObjectComponent;
 import net.kyori.adventure.text.ScoreComponent;
 import net.kyori.adventure.text.SelectorComponent;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.ClickEvent.Payload;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
 import net.kyori.adventure.text.event.HoverEvent.ShowItem;
@@ -34,6 +37,10 @@ import net.kyori.adventure.text.format.Style.Merge;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.TextDecoration.State;
+import net.kyori.adventure.text.object.ObjectContents;
+import net.kyori.adventure.text.object.PlayerHeadObjectContents;
+import net.kyori.adventure.text.object.PlayerHeadObjectContents.ProfileProperty;
+import net.kyori.adventure.text.object.SpriteObjectContents;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
@@ -278,9 +285,8 @@ public class ComponentUtilAdventure {
                             } catch (NumberFormatException e) {
                                 throw new ParseException("illegal item count " + itemStrings[1], this.index + 3 + itemStrings[0].length() + 1);
                             }
-                            BinaryTagHolder itemTag = itemStrings.length < 3 || itemStrings[2].isEmpty() ? null : BinaryTagHolder.binaryTagHolder(convertEscapedString(itemStrings[2]));
 
-                            event = HoverEvent.showItem(itemKey, itemCount, itemTag);
+                            event = HoverEvent.showItem(itemKey, itemCount);
                             // TODO: allow multiple items in one component?
                         } else if (actionType == 'e') {
                             int nameStartIndex = this.text.substring(contentStartIndex, contentEndIndex).indexOf('{') + contentStartIndex;
@@ -328,7 +334,11 @@ public class ComponentUtilAdventure {
                         } else if (actionType == 'c') {
                             event = ClickEvent.copyToClipboard(value);
                         } else if (actionType == 'p') {
-                            event = ClickEvent.changePage(value);
+                            try {
+                                event = ClickEvent.changePage(Integer.parseInt(value));
+                            } catch (NumberFormatException e) {
+                                throw new ParseException("invalid page number", contentStartIndex);
+                            }
                         } else if (actionType == 'u') {
                             event = ClickEvent.openUrl(value);
                         } else if (actionType == 'f') {
@@ -473,6 +483,109 @@ public class ComponentUtilAdventure {
                         continue;
                     }
 
+                    if (next == 'o') {
+                        if (charAtOrException(this.index + 2) != '{') {
+                            throw new ParseException("expected {", this.index + 2);
+                        }
+
+                        int contentStartIndex = this.index + 3;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
+
+                        char contentsTypeChar = charAtOrException(contentStartIndex);
+                        if (contentsTypeChar == 'p') {
+                            if (charAtOrException(contentStartIndex + 1) != ':') {
+                                throw new ParseException("expected :", contentStartIndex + 1);
+                            }
+                            if (charAtOrException(contentStartIndex + 2) != '{') {
+                                throw new ParseException("expected {", contentStartIndex + 2);
+                            }
+
+                            boolean hat = false;
+                            UUID id = null;
+                            String name = null;
+                            List<ProfileProperty> profileProperties = new ArrayList<>();
+                            Key texture = null;
+
+                            int endOfFirstBlock = findMatchingRightBrace(contentStartIndex + 2, contentEndIndex);
+                            String[] firstBlock = convertEscapedString(contentStartIndex + 3, endOfFirstBlock).split(",", 3);
+                            for (String s : firstBlock) {
+                                if ("hat".equalsIgnoreCase(s)) {
+                                    hat = true;
+                                    continue;
+                                }
+                                try {
+                                    id = UUID.fromString(s);
+                                    continue;
+                                } catch (IllegalArgumentException e) {
+                                    // ignore
+                                }
+                                if (name != null) {
+                                    throw new ParseException("duplicate name, or invalid other property", contentStartIndex + 3);
+                                }
+                                name = s;
+                            }
+
+                            if (charAtOrException(endOfFirstBlock + 1) == '{') {
+                                int endOfSecondBlock = findMatchingRightBrace(endOfFirstBlock + 1, contentEndIndex);
+                                String[] secondBlock = convertEscapedString(endOfFirstBlock + 2, endOfSecondBlock).split(",");
+                                for (String s : secondBlock) {
+                                    if (s.isEmpty()) {
+                                        continue;
+                                    }
+                                    String[] ppParts = s.split("=", 2);
+                                    if (ppParts.length != 2) {
+                                        throw new ParseException("profile property string must have two parts separated by =", endOfFirstBlock + 2);
+                                    }
+                                    profileProperties.add(PlayerHeadObjectContents.property(ppParts[0], ppParts[1]));
+                                }
+
+                                if (charAtOrException(endOfSecondBlock + 1) == '{') {
+                                    int endOfThirdBlock = findMatchingRightBrace(endOfSecondBlock + 1, contentEndIndex);
+                                    String thirdBlock = convertEscapedString(endOfSecondBlock + 2, endOfThirdBlock);
+                                    try {
+                                        texture = Key.key(thirdBlock);
+                                    } catch (InvalidKeyException e) {
+                                        throw new ParseException("invalid key", endOfSecondBlock + 2);
+                                    }
+                                }
+                            }
+
+                            finishComponent();
+                            this.currentComponent = this.currentComponent.append(Component.object(ObjectContents.playerHead().hat(hat).id(id).name(name).profileProperties(profileProperties).texture(texture).build()));
+                            this.index = contentEndIndex;
+                            continue;
+                        } else if (contentsTypeChar == 's') {
+                            if (charAtOrException(contentStartIndex + 1) != ':') {
+                                throw new ParseException("expected :", contentStartIndex + 1);
+                            }
+
+                            String[] parts = convertEscapedString(contentStartIndex + 2, contentEndIndex).split(",", 2);
+                            SpriteObjectContents contents;
+                            if (parts.length == 1) {
+                                try {
+                                    contents = ObjectContents.sprite(Key.key(parts[0]));
+                                } catch (InvalidKeyException e) {
+                                    throw new ParseException("invalid key", contentStartIndex + 2);
+                                }
+                            } else if (parts.length == 2) {
+                                try {
+                                    contents = ObjectContents.sprite(Key.key(parts[0]), Key.key(parts[1]));
+                                } catch (InvalidKeyException e) {
+                                    throw new ParseException("invalid key", contentStartIndex + 2);
+                                }
+                            } else {
+                                throw new ParseException("expected one or two keys", contentStartIndex + 2);
+                            }
+
+                            finishComponent();
+                            this.currentComponent = this.currentComponent.append(Component.object(contents));
+                            this.index = contentEndIndex;
+                            continue;
+                        } else {
+                            throw new ParseException("unknown object component contents type " + contentsTypeChar, contentStartIndex + 1);
+                        }
+                    }
+
                     throw new ParseException("unknown control sequence \\" + next, this.index);
                 }
 
@@ -549,10 +662,6 @@ public class ComponentUtilAdventure {
             throw new ParseException("unmatched left brace", leftBraceIndex);
         }
 
-        private String convertEscapedString(String text) throws ParseException {
-            return convertEscapedString(text, 0, text.length());
-        }
-
         private String convertEscapedString(int from, int to) throws ParseException {
             return convertEscapedString(this.text, from, to);
         }
@@ -615,6 +724,8 @@ public class ComponentUtilAdventure {
             serializeSelectorComponent(c, builder);
         } else if (component instanceof KeybindComponent c) {
             serializeKeybindComponent(c, builder);
+        } else if (component instanceof ObjectComponent c) {
+            serializeObjectComponent(c, builder);
         } else {
             throw new IllegalArgumentException("unsupported component type " + component.getClass().getName());
         }
@@ -702,8 +813,7 @@ public class ComponentUtilAdventure {
                 if (!(value instanceof ShowItem item)) {
                     throw new ClassCastException("Expected HoverEvent SHOW_ITEM value to be instance of ShowItem.");
                 }
-                builder.append(item.item().asMinimalString()).append(',').append(item.count()).append(',');
-                escapeString(item.nbt().string(), builder);
+                builder.append(item.item().asMinimalString()).append(',').append(item.count());
                 builder.append('}');
             } else if (action == HoverEvent.Action.SHOW_ENTITY) {
                 builder.append("e{");
@@ -736,7 +846,13 @@ public class ComponentUtilAdventure {
                 throw new IllegalArgumentException("ClickEvent Action OPEN_FILE is rejectet by clients and not supported.");
             }
             builder.append('{');
-            escapeString(ce.value(), builder);
+            if (ce.payload() instanceof Payload.Text payload) {
+                escapeString(payload.value(), builder);
+            } else if (ce.payload() instanceof Payload.Int payload) {
+                builder.append(payload.integer());
+            } else {
+                throw new IllegalArgumentException("Unsupported ClickEvent payload type " + ce.payload().getClass());
+            }
             builder.append('}');
         }
 
@@ -803,6 +919,34 @@ public class ComponentUtilAdventure {
     private static void serializeKeybindComponent(KeybindComponent component, StringBuilder builder) {
         builder.append("\\k{");
         builder.append(component.keybind());
+        builder.append('}');
+    }
+
+    private static void serializeObjectComponent(ObjectComponent component, StringBuilder builder) {
+        builder.append("\\o{");
+        if (component.contents() instanceof PlayerHeadObjectContents contents) {
+            builder.append("p:");
+            List<String> parts = new ArrayList<>();
+            if (contents.hat()) {
+                parts.add("hat");
+            }
+            if (contents.id() != null) {
+                parts.add(contents.id().toString());
+            }
+            if (contents.name() != null) {
+                parts.add(contents.name());
+            }
+            builder.append('{').append(parts.stream().collect(Collectors.joining(","))).append('}');
+            builder.append('{').append(contents.profileProperties().stream().map(pp -> pp.name() + "=" + pp.value()).collect(Collectors.joining(","))).append('}');
+            if (contents.texture() != null) {
+                builder.append('{').append(contents.texture().asMinimalString()).append('}');
+            }
+        } else if (component.contents() instanceof SpriteObjectContents contents) {
+            builder.append("s:");
+            builder.append(contents.atlas().asMinimalString()).append(',').append(contents.sprite().asMinimalString());
+        } else {
+            throw new IllegalArgumentException("Unknown type of object component contents: " + component.contents().getClass());
+        }
         builder.append('}');
     }
 
@@ -884,53 +1028,8 @@ public class ComponentUtilAdventure {
         }
     }
 
-    public static Component replacePattern(Component c, Pattern pattern, Component replacement) {
-        c = c.compact();
-        if (c instanceof TextComponent tc) {
-            String content = tc.content();
-            Style style = tc.style();
-
-            Component out = Component.empty();
-            Matcher m = pattern.matcher(content);
-
-            int last = 0;
-            while (m.find()) {
-                int start = m.start();
-                int end = m.end();
-
-                if (start > last) {
-                    out = out.append(Component.text(content.substring(last, start)).style(style));
-                }
-
-                out = out.append(replacement.applyFallbackStyle(style));
-                last = end;
-            }
-
-            if (last < content.length()) {
-                out = out.append(Component.text(content.substring(last)).style(style));
-            }
-
-            for (Component child : tc.children()) {
-                out = out.append(replacePattern(child, pattern, replacement));
-            }
-
-            return out;
-        }
-
-        List<Component> children = c.children();
-        if (children.isEmpty()) {
-            return c;
-        }
-
-        List<Component> newChildren = new ArrayList<>(children.size());
-        boolean changed = false;
-        for (Component child : children) {
-            Component replaced = replacePattern(child, pattern, replacement);
-            newChildren.add(replaced);
-            changed |= (replaced != child);
-        }
-
-        return changed ? c.children(newChildren).compact() : c;
+    public static Component replacePattern(Component component, Pattern pattern, Component replacement) {
+        return component.replaceText(TextReplacementConfig.builder().match(pattern).replacement(replacement).build());
     }
 
 }
