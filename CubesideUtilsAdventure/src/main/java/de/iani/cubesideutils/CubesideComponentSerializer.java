@@ -16,7 +16,6 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
-import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
@@ -203,15 +202,5 @@ public class CubesideComponentSerializer implements ComponentSerializer<Componen
         public @NotNull TextComponent asComponent() {
             return Component.text(value).style(style).children(children);
         }
-    }
-
-    public static void main(String[] args) {
-        // LegacyComponentSerializer ser = LegacyComponentSerializer.legacyAmpersand();
-        JSONComponentSerializer ser = JSONComponentSerializer.json();
-        CubesideComponentSerializer serC = CubesideComponentSerializer.instance(false, true);
-        System.out.println(serC.serialize(serC.deserialize("&x123456&laa&af&khi!")));
-        System.out.println(serC.serialize(serC.deserialize("&laa&af&khi!")));
-        System.out.println(serC.serialize(serC.deserialize("&laa&af&khi! www.web.de&c a")));
-        System.out.println(serC.serialize(serC.deserialize("&laa&af&k&&hi! &lhttps://www.web.de/a?foo=d&a=f &raa")));
     }
 }
