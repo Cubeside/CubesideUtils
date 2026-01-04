@@ -16,6 +16,7 @@ import de.iani.cubesideutils.bukkit.plugin.commands.ChangeRankInformationCommand
 import de.iani.cubesideutils.bukkit.plugin.commands.ListRankInformationCommand;
 import de.iani.cubesideutils.bukkit.plugin.commands.PlayerOptionsCommand;
 import de.iani.cubesideutils.bukkit.serialization.GlobalLocationWrapper;
+import de.iani.cubesideutils.bukkit.serialization.SerializableAdventureComponent;
 import de.iani.cubesideutils.bukkit.serialization.SerializableComponent;
 import de.iani.cubesideutils.bukkit.serialization.SerializablePair;
 import de.iani.cubesideutils.bukkit.serialization.SerializableTriple;
@@ -74,6 +75,7 @@ public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit
         new SerializablePair<>(null, null);
         new SerializableTriple<>(null, null, null);
         new SerializableComponent(new TextComponent());
+        new SerializableAdventureComponent(Component.empty());
     }
 
     private UtilsPluginBukkit plugin;

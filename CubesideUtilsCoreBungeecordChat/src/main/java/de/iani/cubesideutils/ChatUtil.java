@@ -127,7 +127,7 @@ public class ChatUtil {
     }
 
     public static void sendMessage(MessageReceiver receiver, Component pluginPrefix, Style style, Object... messageParts) {
-        Component result = empty().style(style);
+        Component result = empty();
         if (pluginPrefix != null) {
             result = result.append(pluginPrefix).append(space());
         }
@@ -148,6 +148,9 @@ public class ChatUtil {
                 result = result.append(cmp);
             } else {
                 String stringObject = Objects.toString(s);
+                if (s instanceof List<?>) {
+                    new Exception().printStackTrace();
+                }
                 if (stringObject.contains("§")) {
                     outdated |= (1 << 2);
                 }

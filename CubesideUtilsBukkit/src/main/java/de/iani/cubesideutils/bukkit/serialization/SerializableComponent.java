@@ -8,6 +8,7 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
+@Deprecated
 public class SerializableComponent implements ConfigurationSerializable {
 
     static {
