@@ -148,9 +148,6 @@ public class ChatUtil {
                 result = result.append(cmp);
             } else {
                 String stringObject = Objects.toString(s);
-                if (s instanceof List<?>) {
-                    new Exception().printStackTrace();
-                }
                 if (stringObject.contains("§")) {
                     outdated |= (1 << 2);
                 }
