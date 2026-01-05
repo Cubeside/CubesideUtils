@@ -172,12 +172,12 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
                     if (isAnySubCommandDisplayable(sender, subcmd)) {
-                        sender.sendMessage(TextComponent.fromLegacyText(exceptionHandler.getHelpMessagePrefix() + prefix + key + " ..."));
+                        sender.sendMessage(TextComponent.fromLegacy(exceptionHandler.getHelpMessagePrefix() + prefix + key + " ..."));
                     }
                 } else {
                     if (subcmd.executor.hasRequiredPermission(sender) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof ProxiedPlayer || !subcmd.executor.requiresPlayer()) {
-                            sender.sendMessage(TextComponent.fromLegacyText(exceptionHandler.getHelpMessagePrefix() + prefix + key + " " + subcmd.executor.getUsage(sender)));
+                            sender.sendMessage(TextComponent.fromLegacy(exceptionHandler.getHelpMessagePrefix() + prefix + key + " " + subcmd.executor.getUsage(sender)));
                         }
                     }
                 }
@@ -188,7 +188,7 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             if (executor.hasRequiredPermission(sender) && executor.isAvailable(sender)) {
                 String prefix = getCommandString(alias, currentMap);
                 if (sender instanceof ProxiedPlayer || !executor.requiresPlayer()) {
-                    sender.sendMessage(TextComponent.fromLegacyText(exceptionHandler.getHelpMessagePrefix() + prefix + executor.getUsage(sender)));
+                    sender.sendMessage(TextComponent.fromLegacy(exceptionHandler.getHelpMessagePrefix() + prefix + executor.getUsage(sender)));
                 }
             }
         }
