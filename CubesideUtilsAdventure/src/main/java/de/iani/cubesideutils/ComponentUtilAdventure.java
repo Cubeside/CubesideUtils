@@ -484,20 +484,18 @@ public class ComponentUtilAdventure {
                     }
 
                     if (next == 'o') {
-                        if (charAtOrException(this.index + 2) != '{') {
-                            throw new ParseException("expected {", this.index + 2);
+                        char contentsTypeChar = charAtOrException(this.index + 2);
+
+                        if (charAtOrException(this.index + 3) != '{') {
+                            throw new ParseException("expected {", this.index + 3);
                         }
 
-                        int contentStartIndex = this.index + 3;
-                        int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
+                        int contentStartIndex = this.index + 4;
+                        int contentEndIndex = findMatchingRightBrace(this.index + 3, this.to);
 
-                        char contentsTypeChar = charAtOrException(contentStartIndex);
                         if (contentsTypeChar == 'p') {
-                            if (charAtOrException(contentStartIndex + 1) != ':') {
-                                throw new ParseException("expected :", contentStartIndex + 1);
-                            }
-                            if (charAtOrException(contentStartIndex + 2) != '{') {
-                                throw new ParseException("expected {", contentStartIndex + 2);
+                            if (charAtOrException(contentStartIndex) != '{') {
+                                throw new ParseException("expected {", contentStartIndex);
                             }
 
                             boolean hat = false;
@@ -506,8 +504,8 @@ public class ComponentUtilAdventure {
                             List<ProfileProperty> profileProperties = new ArrayList<>();
                             Key texture = null;
 
-                            int endOfFirstBlock = findMatchingRightBrace(contentStartIndex + 2, contentEndIndex);
-                            String[] firstBlock = convertEscapedString(contentStartIndex + 3, endOfFirstBlock).split(",", 3);
+                            int endOfFirstBlock = findMatchingRightBrace(contentStartIndex, contentEndIndex);
+                            String[] firstBlock = convertEscapedString(contentStartIndex + 1, endOfFirstBlock).split(",", 3);
                             for (String s : firstBlock) {
                                 if ("hat".equalsIgnoreCase(s)) {
                                     hat = true;
@@ -520,7 +518,7 @@ public class ComponentUtilAdventure {
                                     // ignore
                                 }
                                 if (name != null) {
-                                    throw new ParseException("duplicate name, or invalid other property", contentStartIndex + 3);
+                                    throw new ParseException("duplicate name, or invalid other property", contentStartIndex + 1);
                                 }
                                 name = s;
                             }
@@ -555,26 +553,22 @@ public class ComponentUtilAdventure {
                             this.index = contentEndIndex;
                             continue;
                         } else if (contentsTypeChar == 's') {
-                            if (charAtOrException(contentStartIndex + 1) != ':') {
-                                throw new ParseException("expected :", contentStartIndex + 1);
-                            }
-
-                            String[] parts = convertEscapedString(contentStartIndex + 2, contentEndIndex).split(",", 2);
+                            String[] parts = convertEscapedString(contentStartIndex, contentEndIndex).split(",", 2);
                             SpriteObjectContents contents;
                             if (parts.length == 1) {
                                 try {
                                     contents = ObjectContents.sprite(Key.key(parts[0]));
                                 } catch (InvalidKeyException e) {
-                                    throw new ParseException("invalid key", contentStartIndex + 2);
+                                    throw new ParseException("invalid key", contentStartIndex);
                                 }
                             } else if (parts.length == 2) {
                                 try {
                                     contents = ObjectContents.sprite(Key.key(parts[0]), Key.key(parts[1]));
                                 } catch (InvalidKeyException e) {
-                                    throw new ParseException("invalid key", contentStartIndex + 2);
+                                    throw new ParseException("invalid key", contentStartIndex);
                                 }
                             } else {
-                                throw new ParseException("expected one or two keys", contentStartIndex + 2);
+                                throw new ParseException("expected one or two keys, separated by comma", contentStartIndex);
                             }
 
                             finishComponent();
@@ -582,7 +576,7 @@ public class ComponentUtilAdventure {
                             this.index = contentEndIndex;
                             continue;
                         } else {
-                            throw new ParseException("unknown object component contents type " + contentsTypeChar, contentStartIndex + 1);
+                            throw new ParseException("unknown object component contents type " + contentsTypeChar, this.index + 1);
                         }
                     }
 
@@ -923,9 +917,9 @@ public class ComponentUtilAdventure {
     }
 
     private static void serializeObjectComponent(ObjectComponent component, StringBuilder builder) {
-        builder.append("\\o{");
+        builder.append("\\o");
         if (component.contents() instanceof PlayerHeadObjectContents contents) {
-            builder.append("p:");
+            builder.append("p{");
             List<String> parts = new ArrayList<>();
             if (contents.hat()) {
                 parts.add("hat");
@@ -942,7 +936,7 @@ public class ComponentUtilAdventure {
                 builder.append('{').append(contents.texture().asMinimalString()).append('}');
             }
         } else if (component.contents() instanceof SpriteObjectContents contents) {
-            builder.append("s:");
+            builder.append("s{");
             builder.append(contents.atlas().asMinimalString()).append(',').append(contents.sprite().asMinimalString());
         } else {
             throw new IllegalArgumentException("Unknown type of object component contents: " + component.contents().getClass());
