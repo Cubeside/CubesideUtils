@@ -11,24 +11,23 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public interface CommandExceptionHandler {
 
-    public static final CommandExceptionHandler DEFAULT_HANDLER = new CommandExceptionHandler() {
-    };
+    public static final CommandExceptionHandler DEFAULT_HANDLER = new CommandExceptionHandler() {};
 
     public default boolean handleRequiresPlayer(RequiresPlayerException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(TextComponent.fromLegacyText(getErrorMessagePrefix() + thrown.getMessage()));
+        sender.sendMessage(TextComponent.fromLegacy(getErrorMessagePrefix() + thrown.getMessage()));
         return true;
     }
 
     public default boolean handleNoPermission(NoPermissionException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(TextComponent.fromLegacyText(getErrorMessagePrefix() + thrown.getMessage()));
+        sender.sendMessage(TextComponent.fromLegacy(getErrorMessagePrefix() + thrown.getMessage()));
         return true;
     }
 
     public default boolean handleNoPermissionForPath(NoPermissionForPathException thrown) {
         CommandSender sender = thrown.getSender();
-        sender.sendMessage(TextComponent.fromLegacyText(getErrorMessagePrefix() + thrown.getMessage()));
+        sender.sendMessage(TextComponent.fromLegacy(getErrorMessagePrefix() + thrown.getMessage()));
         return true;
     }
 
@@ -44,7 +43,7 @@ public interface CommandExceptionHandler {
     public default boolean handleInternalException(InternalCommandException thrown) {
         if (thrown.getMessage() != null) {
             CommandSender sender = thrown.getSender();
-            sender.sendMessage(TextComponent.fromLegacyText(getErrorMessagePrefix() + thrown.getMessage()));
+            sender.sendMessage(TextComponent.fromLegacy(getErrorMessagePrefix() + thrown.getMessage()));
         }
 
         Throwable cause = thrown.getCause();

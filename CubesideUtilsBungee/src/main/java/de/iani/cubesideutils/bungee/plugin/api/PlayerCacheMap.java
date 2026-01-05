@@ -72,7 +72,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
         UUID playerId = event.getConnection().getUniqueId();
         if (playerId == null) {
             event.setCancelled(true);
-            event.setCancelReason(new ComponentBuilder("Account-ID unbekannt." + "\nAccount-ID unknown.").create());
+            event.setReason(new ComponentBuilder("Account-ID unbekannt." + "\nAccount-ID unknown.").build());
             return;
         }
 
@@ -84,7 +84,7 @@ public abstract class PlayerCacheMap<V, D> extends AdvancedCacheMap<UUID, V, D> 
             CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load " + this.valueLoggingName + " for player " + playerId + ".", e);
             CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Denying join for player " + playerId + " because of an internal error.");
             event.setCancelled(true);
-            event.setCancelReason(new TextComponent(e.getKickMessage()));
+            event.setReason(new TextComponent(e.getKickMessage()));
             return;
         }
         if (value != null) {
