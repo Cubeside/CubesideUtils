@@ -472,7 +472,7 @@ public class StringUtilAdventure {
         if (style == null) {
             return length;
         }
-        String styleString = ComponentUtilAdventure.getLegacyComponentSerializer().serialize(Component.empty().style(style));
+        String styleString = ComponentUtilAdventure.toLegacy(Component.empty().style(style));
         builder.append(styleString);
         length += styleString.length();
         return length;

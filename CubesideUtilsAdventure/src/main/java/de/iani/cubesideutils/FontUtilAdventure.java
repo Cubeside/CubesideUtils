@@ -28,7 +28,7 @@ public class FontUtilAdventure {
         }
         StringBuilder sb = new StringBuilder();
         for (Component c : text) {
-            sb.append(ComponentUtilAdventure.getLegacyComponentSerializer().serialize(c));
+            sb.append(ComponentUtilAdventure.toLegacy(c));
         }
         return fitsSingleBookPage(sb.toString());
     }

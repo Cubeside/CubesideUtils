@@ -59,8 +59,8 @@ public class ComponentUtilAdventure {
 
     private static final PlainTextComponentSerializer PLAIN_TEXT_COMPONENT_SERIALIZER = PlainTextComponentSerializer.plainText();
 
-    public static final Comparator<Component> TEXT_ONLY_ORDER = (c1, c2) -> rawText(c1).compareTo(rawText(c2));
-    public static final Comparator<Component> TEXT_ONLY_CASE_INSENSITIVE_ORDER = (c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(rawText(c1), rawText(c2));
+    public static final Comparator<Component> TEXT_ONLY_ORDER = (c1, c2) -> plainText(c1).compareTo(plainText(c2));
+    public static final Comparator<Component> TEXT_ONLY_CASE_INSENSITIVE_ORDER = (c1, c2) -> String.CASE_INSENSITIVE_ORDER.compare(plainText(c1), plainText(c2));
 
     public static final Map<Character, NamedTextColor> COLOR_CHARS;
     public static final Map<NamedTextColor, Character> COLOR_CHARS_INVERSE;
@@ -135,16 +135,20 @@ public class ComponentUtilAdventure {
         return PLAIN_TEXT_COMPONENT_SERIALIZER;
     }
 
-    public static String rawText(Component c) {
-        return getPlainTextComponentSerializer().serialize(c);
+    public static String toLegacy(Component c) {
+        return LEGACY_COMPONENT_SERIALIZER.serialize(c);
     }
 
-    public static Component deserializeComponent(String text) throws ParseException {
-        return convertEscaped(text);
+    public static TextComponent fromLegacy(String s) {
+        return LEGACY_COMPONENT_SERIALIZER.deserialize(s);
     }
 
-    public static Component deserializeComponent(String text, int from, int to) throws ParseException {
-        return convertEscaped(text, from, to);
+    public static String plainText(Component c) {
+        return PLAIN_TEXT_COMPONENT_SERIALIZER.serialize(c);
+    }
+
+    public TextComponent fromPlainText(String s) {
+        return PLAIN_TEXT_COMPONENT_SERIALIZER.deserialize(s);
     }
 
     public static Component convertEscaped(String text) throws ParseException {
