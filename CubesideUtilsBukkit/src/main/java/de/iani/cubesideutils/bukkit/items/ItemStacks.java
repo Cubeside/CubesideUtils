@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.TreeMap;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Color;
@@ -738,10 +739,6 @@ public class ItemStacks {
         Component result = text(amount + " ");
         ItemMeta meta = item.getItemMeta();
 
-        if (meta == null) {
-            // there used to be a warnign logged here, but cannot log without a logger... maybe make a util logger at some point?
-        }
-
         if (meta instanceof LeatherArmorMeta) {
             LeatherArmorMeta armorMeta = (LeatherArmorMeta) meta;
             Color color = armorMeta.getColor();
@@ -751,27 +748,16 @@ public class ItemStacks {
             }
         }
 
-        result = result.append(text(StringUtil.capitalizeFirstLetter(item.getType().name(), true)));
+        Component nameComponent = item.effectiveName();
+        if (nameComponent.style().equals(Style.style(NamedTextColor.WHITE))) {
+            nameComponent = nameComponent.style(Style.empty());
+        }
+        result = result.append(nameComponent);
 
-        if (meta instanceof PotionMeta potionMeta) {
-            PotionType data = potionMeta.getBasePotionType();
-            if (data != null) {
-                result = result.append(text(" of "), text(StringUtil.capitalizeFirstLetter(data.name(), true)));
-            }
-            // builder.append(data.isUpgraded() ? " II" : " I");
-            // if (data.isExtended()) {
-            // builder.append(" (verlängert)");
-            // }
-
-            int index = 0;
-            for (PotionEffect effect : potionMeta.getCustomEffects()) {
-                result = result.append(text((index + 1 < potionMeta.getCustomEffects().size()) ? ", " : " and "));
-                result = result.append(text(StringUtil.capitalizeFirstLetter(effect.getType().key().value(), true)), text(" "), text(StringUtil.toRomanNumber(effect.getAmplifier())));
-                if (!effect.getType().isInstant()) {
-                    result = result.append(text(" ("), text(StringUtil.formatTimespan(50 * effect.getDuration(), "", "", "", "", ":", ":", false, true)), text(")"));
-                }
-                index++;
-            }
+        boolean itemTypeHidden = meta != null && meta.hasDisplayName() || meta instanceof BookMeta bm && bm.hasTitle();
+        boolean openedParanthesese = itemTypeHidden;
+        if (itemTypeHidden) {
+            result = result.append(text(" (")).append(translatable(item.getType()));
         }
 
         if (meta instanceof Damageable) {
@@ -781,27 +767,39 @@ public class ItemStacks {
             }
         }
 
+        if (meta instanceof PotionMeta potionMeta && potionMeta.getAllEffects().size() > 0) {
+            openedParanthesese = true;
+            if (itemTypeHidden) {
+                result = result.append(text(", "));
+            } else {
+                result = result.append(text(" ("));
+            }
+
+            int index = 0;
+            for (PotionEffect effect : potionMeta.getAllEffects()) {
+                if (index > 0) {
+                    result = result.append(text((index + 1 < potionMeta.getCustomEffects().size()) ? ", " : " und "));
+                }
+                result = result.append(translatable(effect.getType()));
+                if (effect.getAmplifier() > 0) {
+                    result = result.append(text(" "), text(StringUtil.toRomanNumber(effect.getAmplifier())));
+                }
+                if (!effect.getType().isInstant()) {
+                    result = result.append(text(" ("), text(StringUtil.formatTimespan(50 * effect.getDuration(), "", "", "", "", ":", ":", false, true)), text(")"));
+                }
+                index++;
+            }
+        }
+
+        if (openedParanthesese) {
+            result = result.append(text(")"));
+        }
+
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) meta;
-            boolean appended = false;
-
-            if (meta.hasDisplayName()) {
-                result = result.append(text(" (\""), meta.displayName(), text('"')); // PaperComponents.legacySectionSerializer().serialize(meta.displayName())
-                appended = true;
-            } else if (bookMeta.hasTitle()) {
-                result = result.append(text(" (\""), bookMeta.title(), text('"'));
-                appended = true;
-            }
-
-            if (appended && bookMeta.hasAuthor()) {
+            if (bookMeta.hasAuthor()) {
                 result = result.append(text(" von "), bookMeta.author());
             }
-
-            if (appended) {
-                result = result.append(text(")"));
-            }
-        } else if (meta != null && meta.hasDisplayName()) {
-            result = result.append(text(" (\""), meta.displayName(), text("\")"));
         }
 
         Map<Enchantment, Integer> enchantments = meta == null ? Collections.emptyMap() : new HashMap<>(meta.getEnchants());
@@ -811,7 +809,7 @@ public class ItemStacks {
         }
 
         if (!enchantments.isEmpty()) {
-            result = result.append(text(", verzaubert mit "));
+            result = result.append(text(" verzaubert mit "));
 
             List<Enchantment> enchList = new ArrayList<>(enchantments.keySet());
             enchList.sort(Comparator.comparing(Enchantment::description, ComponentUtilAdventure.TEXT_ONLY_ORDER));
