@@ -703,11 +703,11 @@ public class ComponentUtilAdventure {
         }
     }
 
-    public static String serializeComponent(Component component) {
-        return serializeComponent(component.compact(), new StringBuilder()).toString();
+    public static String revertEscaped(Component component) {
+        return revertEscaped(component.compact(), new StringBuilder()).toString();
     }
 
-    private static StringBuilder serializeComponent(Component component, StringBuilder builder) {
+    private static StringBuilder revertEscaped(Component component, StringBuilder builder) {
         serializeColor(component, builder);
         serializeFormatting(component, builder);
         serializeEvents(component, builder);
@@ -804,7 +804,7 @@ public class ComponentUtilAdventure {
                 if (!(value instanceof ComponentLike cLike)) {
                     throw new ClassCastException("Expected HoverEvent SHOW_TEXT value to be instance of ComponentLike.");
                 }
-                serializeComponent(cLike.asComponent(), builder);
+                revertEscaped(cLike.asComponent(), builder);
                 builder.append('}');
             } else if (action == HoverEvent.Action.SHOW_ITEM) {
                 builder.append("i{");
@@ -819,7 +819,7 @@ public class ComponentUtilAdventure {
                     throw new ClassCastException("Expected HoverEvent SHOW_ENTITY value to be instance of ShowEntity.");
                 }
                 builder.append(entity.type().asMinimalString()).append(',').append(entity.id().toString()).append(',');
-                serializeComponent(entity.name(), builder);
+                revertEscaped(entity.name(), builder);
                 builder.append('}');
             } else {
                 throw new IllegalArgumentException("HoverEvent Action " + action + " is not supported.");
@@ -877,7 +877,7 @@ public class ComponentUtilAdventure {
             if (children.size() != 1) {
                 builder.append('{');
             }
-            serializeComponent(child, builder);
+            revertEscaped(child, builder);
             if (children.size() != 1) {
                 builder.append('}');
             }
@@ -894,7 +894,7 @@ public class ComponentUtilAdventure {
 
         for (TranslationArgument argument : component.arguments()) {
             builder.append('{');
-            serializeComponent(argument.asComponent(), builder);
+            revertEscaped(argument.asComponent(), builder);
             builder.append('}');
         }
 
