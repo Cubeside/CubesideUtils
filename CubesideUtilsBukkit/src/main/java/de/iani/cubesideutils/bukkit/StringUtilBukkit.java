@@ -1,6 +1,7 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.cubeside.connection.util.GlobalLocation;
+import de.iani.cubesideutils.CubesideTranslations;
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.commands.ArgsParser;
@@ -11,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -34,9 +36,12 @@ public class StringUtilBukkit {
     private static final Map<Color, String> CONSTANT_COLOR_NAMES;
     private static final Map<String, Color> CONSTANT_COLORS_BY_NAMES;
 
+    private static final Map<Color, String> CONSTANT_COLOR_TRANSLATIONS;
+
     static {
         Map<Color, String> constantColorNames = new LinkedHashMap<>();
         Map<String, Color> constantColorsByNames = new LinkedHashMap<>();
+        Map<Color, String> constantColorTranslations = new LinkedHashMap<>();
 
         registerColor(constantColorNames, constantColorsByNames, Color.AQUA, "aqua");
         registerColor(constantColorNames, constantColorsByNames, Color.BLACK, "black");
@@ -57,16 +62,24 @@ public class StringUtilBukkit {
         registerColor(constantColorNames, constantColorsByNames, Color.YELLOW, "yellow");
 
         for (DyeColor dc : DyeColor.values()) {
-            registerColor(constantColorNames, constantColorsByNames, dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase());
+            registerColor(constantColorNames, constantColorsByNames, constantColorTranslations, dc.getColor(), dc.name().replaceAll(Pattern.quote("_"), " ").toLowerCase(), "color.minecraft." + dc.name().toLowerCase());
         }
 
         CONSTANT_COLOR_NAMES = Collections.unmodifiableMap(constantColorNames);
         CONSTANT_COLORS_BY_NAMES = Collections.unmodifiableMap(constantColorsByNames);
+        CONSTANT_COLOR_TRANSLATIONS = Collections.unmodifiableMap(constantColorTranslations);
     }
 
     private static void registerColor(Map<Color, String> colorToName, Map<String, Color> nameToColor, Color color, String name) {
+        registerColor(colorToName, nameToColor, null, color, name, null);
+    }
+
+    private static void registerColor(Map<Color, String> colorToName, Map<String, Color> nameToColor, Map<Color, String> colorToTranslation, Color color, String name, String translation) {
         colorToName.put(color, name);
         nameToColor.put(name, color);
+        if (translation != null) {
+            colorToTranslation.put(color, translation);
+        }
     }
 
     public static Set<Color> getConstantColors() {
@@ -108,6 +121,36 @@ public class StringUtilBukkit {
         builder.append(hexString).append(")");
 
         return builder.toString();
+    }
+
+    public static Component toComponent(Color color) {
+        if (CONSTANT_COLOR_TRANSLATIONS.containsKey(color)) {
+            return Component.translatable(CONSTANT_COLOR_TRANSLATIONS.get(color));
+        }
+
+        double lowestDiff = Double.MAX_VALUE;
+        Component bestMatch = null;
+
+        for (Color other : CONSTANT_COLOR_TRANSLATIONS.keySet()) {
+            double diff = diff(color, other);
+            if (diff < lowestDiff) {
+                lowestDiff = diff;
+                bestMatch = Component.translatable(CONSTANT_COLOR_TRANSLATIONS.get(other));
+            }
+        }
+
+        String hexString = Integer.toHexString(color.asRGB()).toUpperCase();
+        int zerosMissing = 6 - hexString.length();
+
+        Component result = CubesideTranslations.Components.ROUGLY.append(Component.space()).append(bestMatch);
+
+        StringBuilder builder = new StringBuilder(" (#");
+        for (int i = 0; i < zerosMissing; i++) {
+            builder.append('0');
+        }
+        builder.append(hexString).append(")");
+
+        return result.append(Component.text(builder.toString()));
     }
 
     private static double diff(Color c1, Color c2) {

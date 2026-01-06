@@ -6,6 +6,7 @@ import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.Component.translatable;
 
 import de.iani.cubesideutils.ComponentUtilAdventure;
+import de.iani.cubesideutils.CubesideTranslations;
 import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.bukkit.StringUtilBukkit;
 import io.papermc.paper.datacomponent.DataComponentType;
@@ -41,6 +42,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.BookMeta.Generation;
 import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -713,7 +715,7 @@ public class ItemStacks {
                 if (index + 2 < amounts.size()) {
                     component = textOfChildren(component, text(", "));
                 } else {
-                    component = textOfChildren(component, text(" und "));
+                    component = textOfChildren(component, space(), CubesideTranslations.Components.AND, space());
                 }
             }
             components[index] = component;
@@ -744,7 +746,7 @@ public class ItemStacks {
             Color color = armorMeta.getColor();
             // ignore "default" color:
             if (color.asRGB() != 0xA06540) {
-                result = result.append(text(StringUtilBukkit.toNiceString(color)), text(" "));
+                result = result.append(StringUtilBukkit.toComponent(color)).append(space());
             }
         }
 
@@ -778,7 +780,11 @@ public class ItemStacks {
             int index = 0;
             for (PotionEffect effect : potionMeta.getAllEffects()) {
                 if (index > 0) {
-                    result = result.append(text((index + 1 < potionMeta.getCustomEffects().size()) ? ", " : " und "));
+                    if (index + 1 < potionMeta.getCustomEffects().size()) {
+                        result = result.append(text(", "));
+                    } else {
+                        result = result.append(space()).append(CubesideTranslations.Components.AND).append(space());
+                    }
                 }
                 result = result.append(translatable(effect.getType()));
                 if (effect.getAmplifier() > 0) {
@@ -798,7 +804,17 @@ public class ItemStacks {
         if (meta instanceof BookMeta) {
             BookMeta bookMeta = (BookMeta) meta;
             if (bookMeta.hasAuthor()) {
-                result = result.append(text(" von "), bookMeta.author());
+                result = result.append(space()).append(translatable("book.byAuthor", bookMeta.author()));
+            }
+            if (bookMeta.hasGeneration()) {
+                Generation gen = bookMeta.getGeneration();
+                int genNumber = switch (gen) {
+                    case ORIGINAL -> 0;
+                    case COPY_OF_ORIGINAL -> 1;
+                    case COPY_OF_COPY -> 2;
+                    case TATTERED -> 3;
+                };
+                result = result.append(text(" (")).append(translatable("book.generation." + genNumber)).append(text(")"));
             }
         }
 
@@ -809,7 +825,7 @@ public class ItemStacks {
         }
 
         if (!enchantments.isEmpty()) {
-            result = result.append(text(" verzaubert mit "));
+            result = result.append(space()).append(CubesideTranslations.Components.ENCHANTED_WITH).append(space());
 
             List<Enchantment> enchList = new ArrayList<>(enchantments.keySet());
             enchList.sort(Comparator.comparing(Enchantment::description, ComponentUtilAdventure.TEXT_ONLY_ORDER));
@@ -824,7 +840,7 @@ public class ItemStacks {
                     if (index + 2 < enchantments.size()) {
                         result = result.append(text(", "));
                     } else {
-                        result = result.append(text(" und "));
+                        result = result.append(space()).append(CubesideTranslations.Components.AND).append(space());
                     }
                 }
                 index++;

@@ -4,6 +4,7 @@ import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.cubeside.connection.GlobalPlayer;
 import de.cubeside.connection.GlobalServer;
+import de.iani.cubesideutils.adventure.plugin.CubesideUtilsAdventure;
 import de.iani.cubesideutils.bukkit.ChatUtilBukkit;
 import de.iani.cubesideutils.bukkit.commands.CommandRouter;
 import de.iani.cubesideutils.bukkit.conditions.HasCustomPlayerDataValueCondition;
@@ -23,7 +24,6 @@ import de.iani.cubesideutils.bukkit.serialization.SerializableTriple;
 import de.iani.cubesideutils.bukkit.sound.SoundSequence;
 import de.iani.cubesideutils.bukkit.sql.SQLConfigBukkit;
 import de.iani.cubesideutils.conditions.Condition;
-import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.serialization.NullWrapper;
@@ -53,7 +53,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CubesideUtilsBukkit extends CubesideUtils implements UtilsApiBukkit {
+public class CubesideUtilsBukkit extends CubesideUtilsAdventure implements UtilsApiBukkit {
 
     public static final String DISPLAY_NAME_PROPERTY_PREFIX = "worldDisplayName:";
     public static final String RANKS_COMMAND = "ranks";
