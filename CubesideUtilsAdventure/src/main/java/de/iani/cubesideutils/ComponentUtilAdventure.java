@@ -400,6 +400,10 @@ public class ComponentUtilAdventure {
                         int contentEndIndex = findMatchingRightBrace(this.index + 2, this.to);
 
                         int translationKeyEndIndex = this.text.substring(contentStartIndex, contentEndIndex).indexOf('{');
+                        boolean hasFallback = charAtOrException(translationKeyEndIndex + contentStartIndex - 1) == ',';
+                        if (hasFallback) {
+                            translationKeyEndIndex--;
+                        }
                         if (translationKeyEndIndex < 0) {
                             translationKeyEndIndex = contentEndIndex;
                         } else {
@@ -408,8 +412,19 @@ public class ComponentUtilAdventure {
 
                         String translationKey = this.text.substring(contentStartIndex, translationKeyEndIndex);
 
+                        int startOfExtras;
+                        String fallback;
+                        if (hasFallback) {
+                            int fallbackEndIndex = findMatchingRightBrace(translationKeyEndIndex + 1, contentEndIndex);
+                            fallback = convertEscapedString(translationKeyEndIndex + 2, fallbackEndIndex);
+                            startOfExtras = fallbackEndIndex + 1;
+                        } else {
+                            fallback = null;
+                            startOfExtras = translationKeyEndIndex;
+                        }
+
                         List<Component> translationExtras = new ArrayList<>();
-                        for (int blockStartIndex = translationKeyEndIndex; blockStartIndex < contentEndIndex;) {
+                        for (int blockStartIndex = startOfExtras; blockStartIndex < contentEndIndex;) {
                             if (charAtOrException(blockStartIndex) != '{') {
                                 throw new ParseException("expected {", blockStartIndex);
                             }
@@ -422,7 +437,7 @@ public class ComponentUtilAdventure {
                         }
 
                         finishComponent();
-                        this.currentComponent = this.currentComponent.append(Component.translatable(translationKey, translationExtras));
+                        this.currentComponent = this.currentComponent.append(Component.translatable(translationKey, fallback, translationExtras));
                         this.index = contentEndIndex;
                         continue;
                     }
@@ -891,6 +906,11 @@ public class ComponentUtilAdventure {
     private static void serializeTranslatableComponent(TranslatableComponent component, StringBuilder builder) {
         builder.append("\\t{");
         builder.append(component.key());
+        if (component.fallback() != null) {
+            builder.append(",{");
+            escapeString(component.fallback(), builder);
+            builder.append('}');
+        }
 
         for (TranslationArgument argument : component.arguments()) {
             builder.append('{');
