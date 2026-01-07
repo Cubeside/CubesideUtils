@@ -847,7 +847,7 @@ public class ItemStacks {
             }
         }
 
-        return result.style(style);
+        return result.style(style).hoverEvent(item.asHoverEvent());
     }
 
     public static Component toComponent(Material m) {
