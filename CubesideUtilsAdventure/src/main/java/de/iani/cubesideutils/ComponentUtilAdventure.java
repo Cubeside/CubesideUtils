@@ -281,7 +281,7 @@ public class ComponentUtilAdventure {
                             event = HoverEvent.showText(convertEscaped(this.text, contentStartIndex, contentEndIndex));
                         } else if (actionType == 'i') {
 
-                            String[] itemStrings = this.text.substring(contentStartIndex, contentEndIndex).split("\\,", 3);
+                            String[] itemStrings = this.text.substring(contentStartIndex, contentEndIndex).split("\\,", 2);
                             Key itemKey = Key.key(itemStrings[0].toLowerCase());
                             int itemCount;
                             try {
@@ -291,7 +291,6 @@ public class ComponentUtilAdventure {
                             }
 
                             event = HoverEvent.showItem(itemKey, itemCount);
-                            // TODO: allow multiple items in one component?
                         } else if (actionType == 'e') {
                             int nameStartIndex = this.text.substring(contentStartIndex, contentEndIndex).indexOf('{') + contentStartIndex;
                             String[] entityStrings = this.text.substring(contentStartIndex, nameStartIndex < 0 ? contentEndIndex : nameStartIndex).split("\\,", 2);
@@ -305,7 +304,6 @@ public class ComponentUtilAdventure {
                             Component entityName = nameStartIndex < contentStartIndex ? null : convertEscaped(this.text, nameStartIndex + 1, findMatchingRightBrace(nameStartIndex, contentEndIndex));
 
                             event = HoverEvent.showEntity(entityKey, entityId, entityName);
-                            // TODO: allow multiple items in one component?
                         } else {
                             assert false;
                             throw new ParseException("unknown action type " + actionType, this.index + 2);
