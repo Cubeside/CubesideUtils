@@ -127,6 +127,7 @@ public class CubesideTranslations {
 
     public static class Keys {
         public static final String AND = "cubeside.and";
+        public static final String AND_OR = "cubeside.and_or";
         public static final String ENCHANTED_WITH = "cubeside.enchanted_with";
         public static final String FOR = "cubeside.for";
         public static final String ROUGLY = "cubeside.roughly";
@@ -134,6 +135,7 @@ public class CubesideTranslations {
 
     public static class Components {
         public static final Component AND = Component.translatable(Keys.AND);
+        public static final Component AND_OR = Component.translatable(Keys.AND_OR);
         public static final Component ENCHANTED_WITH = Component.translatable(Keys.ENCHANTED_WITH);
         public static final Component FOR = Component.translatable(Keys.FOR);
         public static final Component ROUGLY = Component.translatable(Keys.ROUGLY);
@@ -141,6 +143,7 @@ public class CubesideTranslations {
 
     static {
         registerTranslation(Keys.AND, "and", "und");
+        registerTranslation(Keys.AND_OR, "and/or", "und/oder");
         registerTranslation(Keys.ENCHANTED_WITH, "enchanted with", "verzaubert mit");
         registerTranslation(Keys.FOR, "for", "für");
         registerTranslation(Keys.ROUGLY, "rougly", "ungefähr");
