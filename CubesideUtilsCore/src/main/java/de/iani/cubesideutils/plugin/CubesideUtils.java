@@ -11,6 +11,7 @@ import de.iani.cubesideutils.plugin.api.PasswordHandler;
 import de.iani.cubesideutils.plugin.api.PlayerData;
 import de.iani.cubesideutils.plugin.api.UtilsApi;
 import de.iani.cubesideutils.serialization.StringSerialization;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,6 +86,10 @@ public abstract class CubesideUtils implements UtilsApi {
     protected abstract void shutdownServer();
 
     public abstract Logger getLogger();
+
+    public abstract File getDataFolder();
+
+    public abstract String getMinecraftVersion();
 
     protected abstract ConnectionAPI getConnectionApi();
 

@@ -28,6 +28,8 @@ import de.iani.cubesideutils.plugin.PlayerDataImpl;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
 import de.iani.cubesideutils.serialization.NullWrapper;
 import de.iani.cubesideutils.serialization.StringSerialization;
+import io.papermc.paper.ServerBuildInfo;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -181,6 +183,16 @@ public class CubesideUtilsBukkit extends CubesideUtilsAdventure implements Utils
     @Override
     public Logger getLogger() {
         return this.plugin.getLogger();
+    }
+
+    @Override
+    public File getDataFolder() {
+        return this.plugin.getDataFolder();
+    }
+
+    @Override
+    public String getMinecraftVersion() {
+        return ServerBuildInfo.buildInfo().minecraftVersionId();
     }
 
     public PlayerDataCache getPlayerDataCache() {

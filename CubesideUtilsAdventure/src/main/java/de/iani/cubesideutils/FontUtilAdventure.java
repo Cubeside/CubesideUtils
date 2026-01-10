@@ -1,8 +1,10 @@
 package de.iani.cubesideutils;
 
+import de.iani.cubesideutils.adventure.translations.GlobalAndMinecraftTranslator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Locale;
 import net.kyori.adventure.text.Component;
 
 public class FontUtilAdventure {
@@ -22,13 +24,24 @@ public class FontUtilAdventure {
         return fitsSingleBookPage(text.toArray(Component[]::new));
     }
 
+    public static boolean fitsSingleBookPage(Locale locale, Collection<Component> text) {
+        return fitsSingleBookPage(locale, text.toArray(Component[]::new));
+    }
+
     public static boolean fitsSingleBookPage(Component... text) {
+        return fitsSingleBookPage(Locale.US, text);
+    }
+
+    public static boolean fitsSingleBookPage(Locale locale, Component... text) {
         if (text == null) {
             return true;
         }
+        if (locale == null) {
+            locale = Locale.US;
+        }
         StringBuilder sb = new StringBuilder();
         for (Component c : text) {
-            sb.append(ComponentUtilAdventure.toLegacy(c));
+            sb.append(ComponentUtilAdventure.toLegacy(GlobalAndMinecraftTranslator.render(c, locale)));
         }
         return fitsSingleBookPage(sb.toString());
     }

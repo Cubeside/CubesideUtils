@@ -101,6 +101,16 @@ public class CubesideUtilsBungee extends CubesideUtils implements UtilsApiBungee
     }
 
     @Override
+    public File getDataFolder() {
+        return this.plugin.getDataFolder();
+    }
+
+    @Override
+    public String getMinecraftVersion() {
+        throw new UnsupportedOperationException(); // FIXME
+    }
+
+    @Override
     public UtilsGlobalDataHelperBungee getGlobalDataHelper() {
         return this.globalDataHelper;
     }

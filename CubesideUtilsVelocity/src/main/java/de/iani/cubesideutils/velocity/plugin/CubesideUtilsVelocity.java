@@ -7,7 +7,9 @@ import de.cubeside.connection.ConnectionAPI;
 import de.cubeside.connection.GlobalClientPlugin;
 import de.iani.cubesideutils.plugin.CubesideUtils;
 import de.iani.cubesideutils.plugin.PlayerDataImpl;
-
+import de.iani.cubesideutils.velocity.plugin.api.UtilsApiVelocity;
+import de.iani.cubesideutils.velocity.sql.SQLConfigVelocity;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -15,12 +17,8 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import de.iani.cubesideutils.velocity.plugin.api.UtilsApiVelocity;
-import de.iani.cubesideutils.velocity.sql.SQLConfigVelocity;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
-
 
 public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelocity {
     private static volatile CubesideUtilsVelocity instance = null;
@@ -79,7 +77,7 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
 
         this.globalClientPlugin = (GlobalClientPlugin) server.getPluginManager().getPlugin("globalconnectionvelocity").orElseThrow().getInstance().orElseThrow();
 
-        server.getScheduler().buildTask(plugin, () -> { //TODO ob das so gut ist das zu verzögern.
+        server.getScheduler().buildTask(plugin, () -> { // TODO ob das so gut ist das zu verzögern.
             this.globalDataHelper = new UtilsGlobalDataHelperVelocity(this);
             updateRankInformation();
         }).delay(0L, TimeUnit.SECONDS);
@@ -115,6 +113,16 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
     @Override
     public Logger getLogger() {
         return Logger.getLogger("CubesideUtils");
+    }
+
+    @Override
+    public File getDataFolder() {
+        throw new UnsupportedOperationException(); // FIXME
+    }
+
+    @Override
+    public String getMinecraftVersion() {
+        throw new UnsupportedOperationException(); // FIXME
     }
 
     @Override
