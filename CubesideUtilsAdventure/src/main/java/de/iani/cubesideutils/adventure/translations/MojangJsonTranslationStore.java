@@ -37,7 +37,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
     }
 
     public static @NotNull Translator load() {
-        TranslationLoader.checkAndDownloadLangs(CubesideUtils.getInstance());
+        TranslationLoader.checkAndDownloadLangs();
         String mcVersion = CubesideUtils.getInstance().getMinecraftVersion(); // "1.21.11"
         File langDir = new File(CubesideUtils.getInstance().getDataFolder(), "langs/" + mcVersion);
         try {

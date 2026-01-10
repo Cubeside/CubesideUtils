@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class TranslationLoader {
-    public static void checkAndDownloadLangs(CubesideUtils utils) {
+    public static void checkAndDownloadLangs() {
+        CubesideUtils utils = CubesideUtils.getInstance();
         try {
             String mcVersion = utils.getMinecraftVersion(); // "1.21.11"
             File langDir = new File(utils.getDataFolder(), "langs/" + mcVersion);
