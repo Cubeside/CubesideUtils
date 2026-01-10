@@ -6,8 +6,8 @@ import static net.kyori.adventure.text.Component.textOfChildren;
 import static net.kyori.adventure.text.Component.translatable;
 
 import de.iani.cubesideutils.ComponentUtilAdventure;
-import de.iani.cubesideutils.CubesideTranslations;
 import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.adventure.translations.CubesideTranslations;
 import de.iani.cubesideutils.bukkit.StringUtilBukkit;
 import io.papermc.paper.datacomponent.DataComponentType;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
 package de.iani.cubesideutils.bukkit;
 
 import de.cubeside.connection.util.GlobalLocation;
-import de.iani.cubesideutils.CubesideTranslations;
 import de.iani.cubesideutils.StringUtil;
+import de.iani.cubesideutils.adventure.translations.CubesideTranslations;
 import de.iani.cubesideutils.bukkit.plugin.CubesideUtilsBukkit;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.Collections;

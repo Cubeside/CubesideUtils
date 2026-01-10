@@ -1,5 +1,6 @@
-package de.iani.cubesideutils;
+package de.iani.cubesideutils.adventure.translations;
 
+import de.iani.cubesideutils.Pair;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
