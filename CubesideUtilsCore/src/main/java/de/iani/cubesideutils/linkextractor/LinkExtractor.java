@@ -64,6 +64,10 @@ public class LinkExtractor {
                 break;
             }
         }
+        String tld = s.substring(s.lastIndexOf('.', lastSafePos) + 1, lastSafePos + 1);
+        if (tld.length() < 2 || !isAlphabeticAscii(tld.charAt(0)) || !isAlphabeticAscii(tld.charAt(1))) {
+            return -1; // tld must start with at least 2 alphabetic characters
+        }
         // if we have a / or ? at the end until next space or end
         if (lastSafePos + 1 < len) {
             char c = s.charAt(lastSafePos + 1);
@@ -118,19 +122,5 @@ public class LinkExtractor {
 
     private static boolean isAlphaNumDashAscii(char c) {
         return isAlphabeticAscii(c) || isDigitAscii(c) || c == '-';
-    }
-
-    public static void main(String[] args) {
-        System.out.println(extractLinks("foo blabla. https://www.keks.de"));
-        System.out.println();
-        System.out.println(extractLinks("foo blabla https://www.keks.de foo blabla http://kuchen.com/abc.de "));
-        System.out.println();
-        System.out.println(extractLinks("foo blabla https://www.keks.dehttp://kuchen.com/abc.de "));
-        System.out.println();
-        System.out.println(extractLinks("https://www.a/b "));
-        System.out.println();
-        System.out.println(extractLinks("www.foo"));
-        System.out.println();
-        System.out.println(extractLinks("ttps://www.foo"));
     }
 }
