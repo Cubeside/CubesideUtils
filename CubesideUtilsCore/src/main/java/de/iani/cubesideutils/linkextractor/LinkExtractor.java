@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LinkExtractor {
-    private final static Pattern URL_PATTERN = Pattern.compile("(?<url>(?<protocol>https?\\:\\/\\/)?(?<domain>(?:[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?\\.)+[a-z]{2,63})(?<path>[\\/\\#\\?](?:[^\\s\"'<>)]*[^\\s\"'<>),.])?)?)(?=[\\s\"'<>),.]|$)", Pattern.CASE_INSENSITIVE);
+    public final static Pattern URL_PATTERN = Pattern.compile("(?<url>(?<protocol>https?\\:\\/\\/)?(?<domain>(?:[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?\\.)+[a-z]{2,63})(?<path>[\\/\\#\\?](?:[^\\s\"'<>)]*[^\\s\"'<>),.])?)?)(?=[\\s\"'<>),.]|$)", Pattern.CASE_INSENSITIVE);
 
     public static List<Segment> extractLinks(String s) {
         List<Segment> result = new ArrayList<>();
