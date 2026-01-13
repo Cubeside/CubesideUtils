@@ -134,4 +134,8 @@ public class CubesideUtilsBungee extends CubesideUtils implements UtilsApiBungee
         return this.playerDataCache.loadedData();
     }
 
+    @Override
+    public ClassLoader getServerClassLoader() {
+        return ProxyServer.class.getClassLoader();
+    }
 }

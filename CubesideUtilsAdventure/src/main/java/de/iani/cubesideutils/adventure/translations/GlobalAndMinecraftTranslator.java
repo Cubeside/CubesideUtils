@@ -12,7 +12,7 @@ public class GlobalAndMinecraftTranslator {
     private static final TranslatableComponentRenderer<Locale> RENDERER;
 
     static {
-        INSTANCE = new ChainedTranslator(Key.key("cubeside:globalandminecraft"), GlobalTranslator.translator(), MojangJsonTranslationStore.load());
+        INSTANCE = new ChainedTranslator(Key.key("cubeside:globalandminecraft"), GlobalTranslator.translator(), MojangJsonTranslationStore.translationStore());
         RENDERER = TranslatableComponentRenderer.usingTranslationSource(INSTANCE);
     }
 

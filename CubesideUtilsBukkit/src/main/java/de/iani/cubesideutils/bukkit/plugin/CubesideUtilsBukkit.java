@@ -329,4 +329,9 @@ public class CubesideUtilsBukkit extends CubesideUtilsAdventure implements Utils
     public AnvilGUI createAnvilGUI(Player player) {
         return new AnvilGUI(this, player);
     }
+
+    @Override
+    public ClassLoader getServerClassLoader() {
+        return Bukkit.class.getClassLoader();
+    }
 }
