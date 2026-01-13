@@ -10,6 +10,10 @@ import de.iani.cubesideutils.StringUtil;
 import de.iani.cubesideutils.adventure.translations.CubesideTranslations;
 import de.iani.cubesideutils.bukkit.StringUtilBukkit;
 import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -38,7 +42,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.BookMeta;
@@ -69,9 +72,22 @@ public class ItemStacks {
     }
 
     public static ItemStack hideProperties(ItemStack itemStack) {
-        ItemMeta meta = itemStack.getItemMeta();
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_PLACED_ON, ItemFlag.HIDE_ADDITIONAL_TOOLTIP, ItemFlag.HIDE_UNBREAKABLE);
-        itemStack.setItemMeta(meta);
+        TooltipDisplay existing = itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY);
+        TooltipDisplay.Builder display = TooltipDisplay.tooltipDisplay();
+        for (DataComponentType dataComponentType : RegistryAccess.registryAccess().getRegistry(RegistryKey.DATA_COMPONENT_TYPE)) {
+            if (dataComponentType != DataComponentTypes.LORE) {
+                display.addHiddenComponents(dataComponentType);
+            }
+        }
+        if (existing != null) {
+            if (existing.hideTooltip()) {
+                display.hideTooltip(true);
+            }
+            if (existing.hiddenComponents().contains(DataComponentTypes.LORE)) {
+                display.addHiddenComponents(DataComponentTypes.LORE);
+            }
+        }
+        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, display.build());
         return itemStack;
     }
 
