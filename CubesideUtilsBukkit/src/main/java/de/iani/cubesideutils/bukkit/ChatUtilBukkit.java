@@ -15,6 +15,7 @@ import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -72,7 +73,7 @@ public class ChatUtilBukkit extends ChatUtil {
         @Deprecated
         @Override
         public void sendMessage(String message) {
-            CubesideUtilsBukkit.getInstance().getGlobalDataHelper().sendMessage(gPlayer, message);
+            sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
         }
 
         @Override
@@ -110,21 +111,26 @@ public class ChatUtilBukkit extends ChatUtil {
     @Deprecated
     public static class ComponentMsg implements BukkitSendable {
 
+        @Deprecated
         public final BaseComponent[] message;
 
+        @Deprecated
         public ComponentMsg(BaseComponent[] message) {
             this.message = message;
         }
 
+        @Deprecated
         public ComponentMsg(BaseComponent message) {
             this.message = new BaseComponent[] { message };
         }
 
+        @Deprecated
         @Override
         public void send(CommandSender recipient) {
             new CommandSenderWrapper(recipient).sendMessage(message);
         }
 
+        @Deprecated
         @Override
         public Sendable<ChatUtilAdventure.MessageReceiver> toGenericSendable() {
             return new ChatUtilAdventure.AdventureComponentMsg(ChatUtil.convertBaseComponents(message));
@@ -162,14 +168,6 @@ public class ChatUtilBukkit extends ChatUtil {
         List<BukkitSendable> result = new ArrayList<>(messages.size());
         for (Component msg : messages) {
             result.add(new AdventureComponentMsg(msg));
-        }
-        return result;
-    }
-
-    public static List<BukkitSendable> bcToBukkitSendableList(List<BaseComponent[]> messages) {
-        List<BukkitSendable> result = new ArrayList<>(messages.size());
-        for (BaseComponent[] msg : messages) {
-            result.add(new ComponentMsg(msg));
         }
         return result;
     }
@@ -217,33 +215,8 @@ public class ChatUtilBukkit extends ChatUtil {
     }
 
     @Deprecated
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
-    }
-
-    @Deprecated
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent name, String openPageCommandPrefix, String pluginPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
-    }
-
-    @Deprecated
     public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, new BaseComponent[] { name }, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
-    }
-
-    @Deprecated
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
-    }
-
-    @Deprecated
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
-    }
-
-    @Deprecated
-    public static void sendMessagesPaged(CommandSender recipient, List<? extends BukkitSendable> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
-        ChatUtil.sendMessagesPaged(new CommandSenderWrapper(recipient), convertSendableList(messages), page, name, openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
     }
 
     public static void sendMessageToPlayers(Condition<? super Player> seeMsgCondition, String message) {

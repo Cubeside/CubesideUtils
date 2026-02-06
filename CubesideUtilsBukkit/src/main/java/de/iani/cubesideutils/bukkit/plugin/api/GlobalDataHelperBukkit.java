@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -47,27 +46,6 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         return getPlayer(player.getUniqueId());
     }
 
-    @Deprecated
-    public void sendMessage(OfflinePlayer player, String message) {
-        sendMessage(getPlayer(player), message);
-    }
-
-    @Deprecated
-    public void sendMessage(UUID playerId, String message) {
-        sendMessage(getPlayer(playerId), message);
-    }
-
-    @Deprecated
-    public void sendMessage(String playerName, String message) {
-        sendMessage(getPlayer(playerName), message);
-    }
-
-    @Deprecated
-    @Override
-    public void sendMessage(GlobalPlayer player, String message) {
-        this.playerMsgApi.sendMessage(player, message);
-    }
-
     public void sendMessage(OfflinePlayer player, Component message) {
         sendMessage(getPlayer(player), message);
     }
@@ -82,27 +60,6 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
 
     @Override
     public void sendMessage(GlobalPlayer player, Component message) {
-        this.playerMsgApi.sendMessage(player, message);
-    }
-
-    @Deprecated
-    public void sendMessage(OfflinePlayer player, BaseComponent... message) {
-        sendMessage(getPlayer(player), message);
-    }
-
-    @Deprecated
-    public void sendMessage(UUID playerId, BaseComponent... message) {
-        sendMessage(getPlayer(playerId), message);
-    }
-
-    @Deprecated
-    public void sendMessage(String playerName, BaseComponent... message) {
-        sendMessage(getPlayer(playerName), message);
-    }
-
-    @Deprecated
-    @Override
-    public void sendMessage(GlobalPlayer player, BaseComponent... message) {
         this.playerMsgApi.sendMessage(player, message);
     }
 
