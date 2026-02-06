@@ -106,56 +106,22 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         this.playerMsgApi.sendMessage(player, message);
     }
 
-    @Deprecated
-    public void sendActionBarMessage(OfflinePlayer player, String message) {
-        sendActionBarMessage(getPlayer(player), message);
-    }
-
-    @Deprecated
-    public void sendActionBarMessage(UUID playerId, String message) {
-        sendActionBarMessage(getPlayer(playerId), message);
-    }
-
-    @Deprecated
-    public void sendActionBarMessage(String playerName, String message) {
-        sendActionBarMessage(getPlayer(playerName), message);
-    }
-
-    @Deprecated
-    @Override
-    public void sendActionBarMessage(GlobalPlayer player, String message) {
-        this.playerMsgApi.sendActionBarMessage(player, message);
-    }
-
     @Override
     public void sendActionBarMessage(GlobalPlayer player, Component message) {
         this.playerMsgApi.sendActionBarMessage(player, message);
     }
 
-    @Deprecated
-    public void sendTitleBarMessage(OfflinePlayer player, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(getPlayer(player), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
-    }
-
-    @Deprecated
-    public void sendTitleBarMessage(UUID playerId, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(getPlayer(playerId), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
-    }
-
-    @Deprecated
-    public void sendTitleBarMessage(String playerName, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(getPlayer(playerName), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
-    }
-
-    @Deprecated
-    @Override
-    public void sendTitleBarMessage(GlobalPlayer player, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        this.playerMsgApi.sendTitleBarMessage(player, title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+    public void sendActionBarMessage(OfflinePlayer player, Component message) {
+        sendActionBarMessage(getPlayer(player), message);
     }
 
     @Override
     public void sendTitleBarMessage(GlobalPlayer player, Component title, Component subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
         this.playerMsgApi.sendTitleBarMessage(player, title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+    }
+
+    public void sendTitleBarMessage(OfflinePlayer player, Component title, Component subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
+        sendTitleBarMessage(getPlayer(player), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
     }
 
     public boolean hasProperty(OfflinePlayer player, String property) {
