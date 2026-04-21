@@ -1,19 +1,19 @@
 package de.iani.cubesideutils.bukkit.events;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.bukkit.command.Command;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class DetectCommandForLabelEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
-    private final @Nonnull String commandLine;
-    private final @Nonnull String commandLabel;
+    private final @NonNull String commandLine;
+    private final @NonNull String commandLabel;
     private @Nullable Command command;
 
-    public DetectCommandForLabelEvent(@Nonnull String commandLine, @Nonnull String commandLabel, @Nullable Command command) {
+    public DetectCommandForLabelEvent(@NonNull String commandLine, @NonNull String commandLabel, @Nullable Command command) {
         this.commandLine = commandLine;
         this.commandLabel = commandLabel;
         this.command = command;
@@ -28,11 +28,11 @@ public class DetectCommandForLabelEvent extends Event {
         return handlers;
     }
 
-    public @Nonnull String getCommandLine() {
+    public @NonNull String getCommandLine() {
         return commandLine;
     }
 
-    public @Nonnull String getCommandLabel() {
+    public @NonNull String getCommandLabel() {
         return commandLabel;
     }
 
