@@ -10,6 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -42,6 +43,10 @@ public class WorldCopyUtils {
     }
 
     public static void restoreWorld(JavaPlugin plugin, Path backupFolder, Key worldIdentifier) throws IOException {
+        restoreWorld(plugin, backupFolder, worldIdentifier, Environment.NORMAL);
+    }
+
+    public static void restoreWorld(JavaPlugin plugin, Path backupFolder, Key worldIdentifier, Environment env) throws IOException {
         // delete legacy
         Path legacyRestoreToBaseLevelPath = plugin.getServer().getLevelDirectory().getParent().resolve(worldIdentifier.value());
         deleteDirectoryIfExists(legacyRestoreToBaseLevelPath);
@@ -53,17 +58,26 @@ public class WorldCopyUtils {
             // restore legacy
             Files.createDirectories(legacyRestoreToBaseLevelPath);
             Files.copy(backupFolder.resolve("level.dat"), legacyRestoreToBaseLevelPath.resolve("level.dat"));
-            Files.createDirectories(legacyRestoreToBaseLevelPath.resolve("region"));
+
+            Path legacyRestoreToRegionContainer = legacyRestoreToBaseLevelPath; // default for overworld
+            if (env == Environment.NETHER) {
+                legacyRestoreToRegionContainer = legacyRestoreToRegionContainer.resolve("DIM-1");
+            } else if (env == Environment.THE_END) {
+                legacyRestoreToRegionContainer = legacyRestoreToRegionContainer.resolve("DIM1");
+            }
+            Files.createDirectories(legacyRestoreToRegionContainer);
+
+            Files.createDirectories(legacyRestoreToRegionContainer.resolve("region"));
             if (Files.isDirectory(backupFolder.resolve("region"))) {
-                copyDirectoryContents(backupFolder.resolve("region"), legacyRestoreToBaseLevelPath.resolve("region"));
+                copyDirectoryContents(backupFolder.resolve("region"), legacyRestoreToRegionContainer.resolve("region"));
             }
-            Files.createDirectories(legacyRestoreToBaseLevelPath.resolve("poi"));
+            Files.createDirectories(legacyRestoreToRegionContainer.resolve("poi"));
             if (Files.isDirectory(backupFolder.resolve("poi"))) {
-                copyDirectoryContents(backupFolder.resolve("poi"), legacyRestoreToBaseLevelPath.resolve("poi"));
+                copyDirectoryContents(backupFolder.resolve("poi"), legacyRestoreToRegionContainer.resolve("poi"));
             }
-            Files.createDirectories(legacyRestoreToBaseLevelPath.resolve("entities"));
+            Files.createDirectories(legacyRestoreToRegionContainer.resolve("entities"));
             if (Files.isDirectory(backupFolder.resolve("entities"))) {
-                copyDirectoryContents(backupFolder.resolve("entities"), legacyRestoreToBaseLevelPath.resolve("entities"));
+                copyDirectoryContents(backupFolder.resolve("entities"), legacyRestoreToRegionContainer.resolve("entities"));
             }
             return;
         }
