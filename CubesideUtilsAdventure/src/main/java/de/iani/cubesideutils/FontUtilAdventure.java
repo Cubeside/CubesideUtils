@@ -4,13 +4,18 @@ import de.iani.cubesideutils.adventure.translations.GlobalAndMinecraftTranslator
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 
 public class FontUtilAdventure {
     public static final int BOOK_LINE_WIDTH = 110;// mojang: 116
 
     private static byte[] charWidth = new byte[65536];
+
+    public static record Glyph(char character, Style style, int width) {}
 
     static {
         try (InputStream is = FontUtilAdventure.class.getClassLoader().getResourceAsStream("char_sizes.bin")) {
@@ -155,4 +160,25 @@ public class FontUtilAdventure {
 
         return formatingString;
     }
+
+    public static int charWidth(final char c, final Style style) {
+        int width = getCharWidth(c);
+
+        if (style.decoration(TextDecoration.BOLD) == TextDecoration.State.TRUE && c != ' ') {
+            width += 1;
+        }
+
+        return width;
+    }
+
+    public static int widthOf(final List<Glyph> glyphs) {
+        int width = 0;
+
+        for (final Glyph glyph : glyphs) {
+            width += glyph.width;
+        }
+
+        return width;
+    }
+
 }

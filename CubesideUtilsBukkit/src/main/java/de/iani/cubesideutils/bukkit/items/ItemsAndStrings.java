@@ -36,10 +36,12 @@ public class ItemsAndStrings {
     @Deprecated
     public static final String LORE_COLOR = "" + ChatColor.ITALIC + ChatColor.DARK_PURPLE;
 
+    @Deprecated
     public static String toNiceString(ItemStack[] items) {
         return toNiceString(items, ChatColor.RESET.toString());
     }
 
+    @Deprecated
     public static String toNiceString(ItemStack[] items, String colorPrefix) {
         TreeMap<ItemStack, Integer> itemMap = new TreeMap<>((item1, item2) -> {
             if (item1.isSimilar(item2)) {
@@ -73,10 +75,12 @@ public class ItemsAndStrings {
         return toNiceString(itemMap, colorPrefix);
     }
 
+    @Deprecated
     public static String toNiceString(Map<ItemStack, Integer> amounts) {
         return toNiceString(amounts, ChatColor.RESET.toString());
     }
 
+    @Deprecated
     public static String toNiceString(Map<ItemStack, Integer> amounts, String colorPrefix) {
         StringBuilder builder = new StringBuilder();
         int index = 0;
@@ -98,18 +102,22 @@ public class ItemsAndStrings {
         return builder.toString();
     }
 
+    @Deprecated
     public static String toNiceString(ItemStack item) {
         return toNiceString(item, item.getAmount(), ChatColor.RESET.toString());
     }
 
+    @Deprecated
     public static String toNiceString(ItemStack item, int amount) {
         return toNiceString(item, amount, ChatColor.RESET.toString());
     }
 
+    @Deprecated
     public static String toNiceString(ItemStack item, String colorPrefix) {
         return toNiceString(item, item.getAmount(), colorPrefix);
     }
 
+    @Deprecated
     public static String toNiceString(ItemStack item, int amount, String colorPrefix) {
         StringBuilder builder = new StringBuilder(colorPrefix);
         builder.append(amount).append(" ");
@@ -213,6 +221,7 @@ public class ItemsAndStrings {
         return builder.toString();
     }
 
+    @Deprecated
     public static String toNiceString(Material m) {
         return StringUtil.capitalizeFirstLetter(m.name(), true);
     }

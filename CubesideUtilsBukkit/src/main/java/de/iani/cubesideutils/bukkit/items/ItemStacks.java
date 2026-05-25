@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -60,6 +61,8 @@ public class ItemStacks {
 
     private static final NamespacedKey attackSpeedKey = NamespacedKey.fromString("cubesideutils:attackspeed");
     private static final NamespacedKey attackDamageKey = NamespacedKey.fromString("cubesideutils:attackdamage");
+
+    public static final Style LORE_STYLE = Style.style(NamedTextColor.DARK_PURPLE, TextDecoration.ITALIC);
 
     public static ItemStack unbreakable(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();

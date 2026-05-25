@@ -1,9 +1,12 @@
 package de.iani.cubesideutils;
 
+import de.iani.cubesideutils.FontUtilAdventure.Glyph;
 import java.text.ParseException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,8 @@ import net.kyori.adventure.text.event.ClickEvent.Payload;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.event.HoverEvent.ShowEntity;
 import net.kyori.adventure.text.event.HoverEvent.ShowItem;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
+import net.kyori.adventure.text.flattener.FlattenerListener;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.Style.Merge;
@@ -41,6 +46,7 @@ import net.kyori.adventure.text.object.ObjectContents;
 import net.kyori.adventure.text.object.PlayerHeadObjectContents;
 import net.kyori.adventure.text.object.PlayerHeadObjectContents.ProfileProperty;
 import net.kyori.adventure.text.object.SpriteObjectContents;
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
@@ -56,6 +62,8 @@ public class ComponentUtilAdventure {
         }
         LEGACY_COMPONENT_SERIALIZER = ser;
     }
+
+    private static final JSONComponentSerializer JSON_COMPONENT_SERIALIZER = JSONComponentSerializer.json();
 
     private static final PlainTextComponentSerializer PLAIN_TEXT_COMPONENT_SERIALIZER = PlainTextComponentSerializer.plainText();
 
@@ -127,12 +135,24 @@ public class ComponentUtilAdventure {
         // prevents instances
     }
 
+    public static JSONComponentSerializer getJsonComponentSerializer() {
+        return JSON_COMPONENT_SERIALIZER;
+    }
+
     public static LegacyComponentSerializer getLegacyComponentSerializer() {
         return LEGACY_COMPONENT_SERIALIZER;
     }
 
     public static PlainTextComponentSerializer getPlainTextComponentSerializer() {
         return PLAIN_TEXT_COMPONENT_SERIALIZER;
+    }
+
+    public static String toJson(Component c) {
+        return JSON_COMPONENT_SERIALIZER.serialize(c);
+    }
+
+    public static Component fromJson(String s) {
+        return JSON_COMPONENT_SERIALIZER.deserialize(s);
     }
 
     public static String toLegacy(Component c) {
@@ -1046,6 +1066,191 @@ public class ComponentUtilAdventure {
 
     public static Component replacePattern(Component component, Pattern pattern, Component replacement) {
         return component.replaceText(TextReplacementConfig.builder().match(pattern).replacement(replacement).build());
+    }
+
+    public static List<Component> wrapLines(final Component input, final int maxWidthPx) {
+        Objects.requireNonNull(input, "input");
+
+        if (maxWidthPx <= 0) {
+            throw new IllegalArgumentException("maxWidthPx must be > 0");
+        }
+
+        final List<Glyph> glyphs = flatten(input);
+        if (glyphs.isEmpty()) {
+            return Collections.singletonList(Component.empty());
+        }
+
+        final List<Component> lines = new ArrayList<>();
+
+        List<Glyph> line = new ArrayList<>();
+        int lineWidth = 0;
+        int lastBreakIndex = -1;
+
+        for (final Glyph glyph : glyphs) {
+            final char c = glyph.character();
+
+            if (c == '\r') {
+                continue;
+            }
+
+            if (c == '\n') {
+                lines.add(toComponent(trimTrailing(line)));
+                line = new ArrayList<>();
+                lineWidth = 0;
+                lastBreakIndex = -1;
+                continue;
+            }
+
+            if (line.isEmpty() && Character.isWhitespace(c)) {
+                continue; // avoid leading whitespace after wrapping
+            }
+
+            while (!line.isEmpty() && lineWidth + glyph.width() > maxWidthPx) {
+                if (lastBreakIndex >= 0) {
+                    final List<Glyph> beforeBreak = trimTrailing(new ArrayList<>(line.subList(0, lastBreakIndex)));
+
+                    final List<Glyph> afterBreak = trimLeading(new ArrayList<>(line.subList(lastBreakIndex + 1, line.size())));
+
+                    lines.add(toComponent(beforeBreak));
+
+                    line = afterBreak;
+                    lineWidth = FontUtilAdventure.widthOf(line);
+                    lastBreakIndex = findLastBreakIndex(line);
+                } else {
+                    lines.add(toComponent(line));
+
+                    line = new ArrayList<>();
+                    lineWidth = 0;
+                    lastBreakIndex = -1;
+                }
+            }
+
+            if (line.isEmpty() && Character.isWhitespace(c)) {
+                continue;
+            }
+
+            line.add(glyph);
+            lineWidth += glyph.width();
+
+            if (Character.isWhitespace(c)) {
+                lastBreakIndex = line.size() - 1;
+            }
+        }
+
+        if (!line.isEmpty()) {
+            lines.add(toComponent(trimTrailing(line)));
+        }
+
+        return lines;
+    }
+
+    private static List<Glyph> flatten(final Component component) {
+        final List<Glyph> glyphs = new ArrayList<>();
+        final Deque<Style> styleStack = new ArrayDeque<>();
+
+        ComponentFlattener.basic().flatten(component, new FlattenerListener() {
+            @Override
+            public void pushStyle(final Style style) {
+                styleStack.push(style);
+            }
+
+            @Override
+            public void component(final String text) {
+                final Style style = effectiveStyle(styleStack);
+
+                for (int i = 0; i < text.length(); i++) {
+                    final char c = text.charAt(i);
+                    glyphs.add(new Glyph(c, style, FontUtilAdventure.charWidth(c, style)));
+                }
+            }
+
+            @Override
+            public void popStyle(final Style style) {
+                styleStack.pop();
+            }
+        });
+
+        return glyphs;
+    }
+
+    private static Style effectiveStyle(final Deque<Style> stack) {
+        Style result = Style.empty();
+
+        // ArrayDeque iteration is newest-to-oldest because we push().
+        // We need oldest-to-newest so children override parents.
+        final List<Style> styles = new ArrayList<>(stack);
+        Collections.reverse(styles);
+
+        for (final Style style : styles) {
+            result = result.merge(style, Style.Merge.Strategy.ALWAYS);
+        }
+
+        return result;
+    }
+
+    private static int findLastBreakIndex(final List<Glyph> glyphs) {
+        for (int i = glyphs.size() - 1; i >= 0; i--) {
+            if (Character.isWhitespace(glyphs.get(i).character())) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static Component toComponent(final List<Glyph> glyphs) {
+        if (glyphs.isEmpty()) {
+            return Component.empty();
+        }
+
+        final TextComponent.Builder builder = Component.text();
+
+        Style currentStyle = glyphs.get(0).style();
+        final StringBuilder text = new StringBuilder();
+
+        for (final Glyph glyph : glyphs) {
+            if (!glyph.style().equals(currentStyle)) {
+                builder.append(Component.text(text.toString()).style(currentStyle));
+                text.setLength(0);
+                currentStyle = glyph.style();
+            }
+
+            text.append(glyph.character());
+        }
+
+        if (text.length() > 0) {
+            builder.append(Component.text(text.toString()).style(currentStyle));
+        }
+
+        return builder.build();
+    }
+
+    private static List<Glyph> trimLeading(final List<Glyph> glyphs) {
+        int start = 0;
+
+        while (start < glyphs.size() && Character.isWhitespace(glyphs.get(start).character())) {
+            start++;
+        }
+
+        if (start == 0) {
+            return glyphs;
+        }
+
+        return new ArrayList<>(glyphs.subList(start, glyphs.size()));
+    }
+
+    private static List<Glyph> trimTrailing(final List<Glyph> glyphs) {
+        int end = glyphs.size();
+
+        while (end > 0 && Character.isWhitespace(glyphs.get(end - 1).character())) {
+            end--;
+        }
+
+        if (end == glyphs.size()) {
+            return glyphs;
+        }
+
+        return new ArrayList<>(glyphs.subList(0, end));
     }
 
 }
