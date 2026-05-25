@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.AbstractTranslationStore;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
 
 public final class MojangJsonTranslationStore extends AbstractTranslationStore<MessageFormat> {
@@ -49,6 +50,8 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
         CubesideUtils.getInstance().getLogger().info("Found " + loadableLanguageFiles.size() + " language files. ");
 
         loadLanguage(Locale.US);
+        
+        GlobalTranslator.translator().addSource(this);
     }
 
     private void loadLanguage(Locale locale) {

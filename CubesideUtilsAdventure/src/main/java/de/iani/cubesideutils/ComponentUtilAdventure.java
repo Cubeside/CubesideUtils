@@ -1,6 +1,7 @@
 package de.iani.cubesideutils;
 
 import de.iani.cubesideutils.FontUtilAdventure.Glyph;
+import de.iani.cubesideutils.adventure.translations.CubesideTranslations;
 import java.text.ParseException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -49,6 +51,7 @@ import net.kyori.adventure.text.object.SpriteObjectContents;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 
 public class ComponentUtilAdventure {
 
@@ -61,6 +64,8 @@ public class ComponentUtilAdventure {
             ser = null;
         }
         LEGACY_COMPONENT_SERIALIZER = ser;
+
+        CubesideTranslations.class.toString(); // trigger class loading to ensure translations are registered
     }
 
     private static final JSONComponentSerializer JSON_COMPONENT_SERIALIZER = JSONComponentSerializer.json();
@@ -156,7 +161,11 @@ public class ComponentUtilAdventure {
     }
 
     public static String toLegacy(Component c) {
-        return LEGACY_COMPONENT_SERIALIZER.serialize(c);
+        return toLegacy(c, Locale.US);
+    }
+
+    public static String toLegacy(Component c, Locale locale) {
+        return LEGACY_COMPONENT_SERIALIZER.serialize(GlobalTranslator.render(c, locale));
     }
 
     public static TextComponent fromLegacy(String s) {
@@ -164,7 +173,11 @@ public class ComponentUtilAdventure {
     }
 
     public static String plainText(Component c) {
-        return PLAIN_TEXT_COMPONENT_SERIALIZER.serialize(c);
+        return plainText(c, Locale.US);
+    }
+
+    public static String plainText(Component c, Locale locale) {
+        return PLAIN_TEXT_COMPONENT_SERIALIZER.serialize(GlobalTranslator.render(c, locale));
     }
 
     public TextComponent fromPlainText(String s) {
@@ -1068,8 +1081,12 @@ public class ComponentUtilAdventure {
         return component.replaceText(TextReplacementConfig.builder().match(pattern).replacement(replacement).build());
     }
 
-    public static List<Component> wrapLines(final Component input, final int maxWidthPx) {
-        Objects.requireNonNull(input, "input");
+    public static List<Component> wrapLines(Component input, int maxWidthPx) {
+        return wrapLines(input, maxWidthPx, Locale.US);
+    }
+
+    public static List<Component> wrapLines(Component input, int maxWidthPx, Locale locale) {
+        input = GlobalTranslator.render(input, locale);
 
         if (maxWidthPx <= 0) {
             throw new IllegalArgumentException("maxWidthPx must be > 0");

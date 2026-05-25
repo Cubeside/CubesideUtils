@@ -107,6 +107,8 @@ public class CubesideUtilsBukkit extends CubesideUtilsAdventure implements Utils
 
     @Override
     protected void onEnableInternal() throws Throwable {
+        super.onEnableInternal();
+
         this.plugin.saveDefaultConfig();
         FileConfiguration config = this.plugin.getConfig();
 
