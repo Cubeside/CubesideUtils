@@ -1,9 +1,7 @@
 package de.iani.cubesideutils;
 
 import de.iani.cubesideutils.linkextractor.LinkExtractor;
-import de.iani.cubesideutils.linkextractor.LinkSegment;
-import de.iani.cubesideutils.linkextractor.PlainSegment;
-import de.iani.cubesideutils.linkextractor.Segment;
+import de.iani.cubesideutils.linkextractor.TextSegment;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -51,13 +49,13 @@ public class CubesideComponentSerializer implements ComponentSerializer<Componen
 
     @Override
     public @NotNull TextComponent deserialize(@NotNull String input) {
-        List<Segment> segments = convertLinks ? LinkExtractor.extractLinks(input) : List.of(new PlainSegment(input));
+        List<TextSegment> segments = convertLinks ? LinkExtractor.extractLinks(input) : List.of(new TextSegment.PlainSegment(input));
         ArrayList<ComponentBuilder> parts = new ArrayList<>();
         ComponentBuilder currentPart = null;
         Style currentStyle = Style.empty();
         StringBuilder builder = new StringBuilder();
-        for (Segment segment : segments) {
-            if (segment instanceof PlainSegment plain) {
+        for (TextSegment segment : segments) {
+            if (segment instanceof TextSegment.PlainSegment plain) {
                 String text = plain.value();
                 if (!allowColors) {
                     if (currentPart == null) {
@@ -157,7 +155,7 @@ public class CubesideComponentSerializer implements ComponentSerializer<Componen
                         currentStyle = Style.empty();
                     }
                 }
-            } else if (segment instanceof LinkSegment link) {
+            } else if (segment instanceof TextSegment.LinkSegment link) {
                 String linkUrl = link.value();
                 if (!linkUrl.regionMatches(true, 0, "https://", 0, 8) && !linkUrl.regionMatches(true, 0, "http://", 0, 7)) {
                     linkUrl = "https://" + linkUrl;

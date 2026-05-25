@@ -4,7 +4,6 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.space;
 
 import de.iani.cubesideutils.ChatUtilAdventure.Sendable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,25 +56,6 @@ public class ChatUtil {
     }
 
     @Deprecated
-    public static class BaseComponentMsg implements Sendable<MessageReceiver> {
-
-        public final BaseComponent[] message;
-
-        public BaseComponentMsg(BaseComponent... message) {
-            this.message = message;
-        }
-
-        public BaseComponentMsg(BaseComponent message) {
-            this.message = new BaseComponent[] { message };
-        }
-
-        @Override
-        public void send(MessageReceiver recipient) {
-            recipient.sendMessage(this.message);
-        }
-    }
-
-    @Deprecated
     public static Component convertBaseComponent(BaseComponent bc) {
         return GsonComponentSerializer.gson().deserialize(ComponentSerializer.toString(bc));
     }
@@ -86,32 +66,8 @@ public class ChatUtil {
     }
 
     @Deprecated
-    public static List<Sendable<MessageReceiver>> bcToSendableList(List<BaseComponent[]> messages) {
-        List<Sendable<MessageReceiver>> result = new ArrayList<>(messages.size());
-        for (BaseComponent[] msg : messages) {
-            result.add(new BaseComponentMsg(msg));
-        }
-        return result;
-    }
-
-    @Deprecated
-    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<? super T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
-    }
-
-    @Deprecated
     public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<? super T>> messages, int page, String name, String openPageCommandPrefix, String pluginPrefix, ChatColor normalColor, ChatColor warningColor) {
         sendMessagesPaged(recipient, messages, page, new ComponentBuilder(name).create(), openPageCommandPrefix, pluginPrefix, normalColor, warningColor);
-    }
-
-    @Deprecated
-    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<? super T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, "");
-    }
-
-    @Deprecated
-    public static <T extends MessageReceiver> void sendMessagesPaged(T recipient, List<? extends Sendable<? super T>> messages, int page, BaseComponent[] name, String openPageCommandPrefix, String pluginPrefix) {
-        sendMessagesPaged(recipient, messages, page, name, openPageCommandPrefix, pluginPrefix, ChatColor.GREEN, ChatColor.GOLD);
     }
 
     @Deprecated

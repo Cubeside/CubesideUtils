@@ -6,13 +6,13 @@ import de.iani.cubesideutils.bukkit.commands.CommandUtil;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.Arrays;
 import java.util.EnumMap;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.command.Command;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class CommandActionFlagsCheckEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
@@ -23,7 +23,7 @@ public class CommandActionFlagsCheckEvent extends Event {
     private final @Nullable Command command;
     private final @Nullable Plugin plugin;
 
-    public CommandActionFlagsCheckEvent(@Nonnull String commandLine) {
+    public CommandActionFlagsCheckEvent(@NonNull String commandLine) {
         this.commandLine = commandLine;
         this.command = CommandUtil.getCommandFromCommandLine(commandLine);
         this.plugin = command == null ? null : CommandUtil.getOwningPlugin(command);
@@ -39,28 +39,28 @@ public class CommandActionFlagsCheckEvent extends Event {
         return handlers;
     }
 
-    public void setActionFlag(@Nonnull CommandActionFlag flag, @Nonnull TriState state) {
+    public void setActionFlag(@NonNull CommandActionFlag flag, @NonNull TriState state) {
         Preconditions.checkNotNull(flag, "flag");
         Preconditions.checkNotNull(state, "state");
         actionFlags.put(flag, state);
     }
 
-    public void setActionFlag(@Nonnull CommandActionFlag flag, boolean state) {
+    public void setActionFlag(@NonNull CommandActionFlag flag, boolean state) {
         Preconditions.checkNotNull(flag, "flag");
         actionFlags.put(flag, TriState.byBoolean(state));
     }
 
-    public @Nonnull TriState getActionFlag(@Nonnull CommandActionFlag flag) {
+    public @NonNull TriState getActionFlag(@NonNull CommandActionFlag flag) {
         Preconditions.checkNotNull(flag, "flag");
         return actionFlags.getOrDefault(flag, TriState.NOT_SET);
     }
 
-    public boolean getActionFlagUnknownToTrue(@Nonnull CommandActionFlag flag) {
+    public boolean getActionFlagUnknownToTrue(@NonNull CommandActionFlag flag) {
         Preconditions.checkNotNull(flag, "flag");
         return actionFlags.getOrDefault(flag, TriState.NOT_SET).toBooleanOrElse(true);
     }
 
-    public @Nonnull String getCommandLine() {
+    public @NonNull String getCommandLine() {
         return commandLine;
     }
 
@@ -81,7 +81,7 @@ public class CommandActionFlagsCheckEvent extends Event {
     /**
      * @return a new ArgsParser containing the commands arguments
      */
-    public @Nonnull ArgsParser getCommandArguments() {
+    public @NonNull ArgsParser getCommandArguments() {
         if (commandArgs == null) {
             String[] splitLine = org.apache.commons.lang3.StringUtils.split(commandLine, ' '); // same split method as paper uses for consistency
             commandArgs = splitLine.length > 1 ? Arrays.copyOfRange(splitLine, 1, splitLine.length) : new String[0];

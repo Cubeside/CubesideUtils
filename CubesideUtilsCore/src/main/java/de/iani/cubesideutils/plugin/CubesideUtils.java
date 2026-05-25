@@ -256,4 +256,5 @@ public abstract class CubesideUtils implements UtilsApi {
         return this.cachedRealServers;
     }
 
+    public abstract ClassLoader getServerClassLoader();
 }

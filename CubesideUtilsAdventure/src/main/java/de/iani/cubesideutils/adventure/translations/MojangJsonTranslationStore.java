@@ -11,69 +11,60 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.AbstractTranslationStore;
-import net.kyori.adventure.translation.Translator;
 import org.jetbrains.annotations.NotNull;
 
 public final class MojangJsonTranslationStore extends AbstractTranslationStore<MessageFormat> {
+    private static final MojangJsonTranslationStore INSTANCE = new MojangJsonTranslationStore();
 
-    private MojangJsonTranslationStore(Map<Locale, Map<String, MessageFormat>> translations) {
+    private final File langDir;
+    private final ConcurrentHashMap<Locale, File> loadableLanguageFiles = new ConcurrentHashMap<>();
+    private final Set<Locale> loadedLanguageFiles = ConcurrentHashMap.newKeySet();
+
+    public static MojangJsonTranslationStore translationStore() {
+        return INSTANCE;
+    }
+
+    private MojangJsonTranslationStore() {
         super(Key.key("cubeside:mojangtranslations"));
-        for (Entry<Locale, Map<String, MessageFormat>> localTranslations : translations.entrySet()) {
-            for (Entry<String, MessageFormat> localTranslation : localTranslations.getValue().entrySet()) {
-                register(localTranslation.getKey(), localTranslations.getKey(), localTranslation.getValue());
-            }
-        }
-    }
 
-    @Override
-    public @org.jetbrains.annotations.Nullable MessageFormat translate(@NotNull String key, @NotNull Locale locale) {
-        return translationValue(key, locale);
-    }
+        langDir = new File(CubesideUtils.getInstance().getDataFolder(), "minecraft_langs");
+        TranslationLoader.checkAndDownloadLangs(langDir);
 
-    public static @NotNull Translator load() {
-        TranslationLoader.checkAndDownloadLangs();
-        String mcVersion = CubesideUtils.getInstance().getMinecraftVersion(); // "1.21.11"
-        File langDir = new File(CubesideUtils.getInstance().getDataFolder(), "langs/" + mcVersion);
-        try {
-            return loadFromDirectory(langDir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Factory-Methode zum Laden aller Mojang-Langdateien eines Versionsordners
-     */
-    public static MojangJsonTranslationStore loadFromDirectory(File langDir) throws IOException {
-        if (!langDir.isDirectory()) {
-            throw new IllegalArgumentException("Kein Verzeichnis: " + langDir);
-        }
-
-        Map<Locale, Map<String, MessageFormat>> result = new HashMap<>();
-
-        File[] files = langDir.listFiles((dir, name) -> name.endsWith(".json"));
+        File[] files = langDir.listFiles((dir, name) -> name.endsWith(".json") && !name.equals("langmeta.json"));
         if (files == null) {
-            throw new IOException("Fehler beim Lesen des Verzeichnisses");
+            throw new RuntimeException("Fehler beim Lesen des Verzeichnisses");
         }
-
-        Gson gson = new Gson();
-
         for (File file : files) {
             String localeName = file.getName().replace(".json", "");
             Locale locale = parseLocale(localeName);
+            loadableLanguageFiles.put(locale, file);
+        }
+        CubesideUtils.getInstance().getLogger().info("Found " + loadableLanguageFiles.size() + " language files. ");
 
-            try (Reader reader = new InputStreamReader(
-                    new FileInputStream(file), StandardCharsets.UTF_8)) {
+        loadLanguage(Locale.US);
+    }
 
-                JsonObject json = gson.fromJson(reader, JsonObject.class);
-                Map<String, MessageFormat> map = new HashMap<>();
-
+    private void loadLanguage(Locale locale) {
+        if (loadedLanguageFiles.contains(locale)) {
+            return;
+        }
+        if (!loadableLanguageFiles.containsKey(locale)) {
+            CubesideUtils.getInstance().getLogger().warning("Language not found: " + locale);
+            return;
+        }
+        File file = loadableLanguageFiles.remove(locale);
+        if (file != null && file.isFile()) {
+            loadedLanguageFiles.add(locale);
+            CubesideUtils.getInstance().getLogger().info("Loading locale " + locale);
+            try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+                JsonObject json = new Gson().fromJson(reader, JsonObject.class);
                 for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
                     if (!entry.getValue().isJsonPrimitive()) {
                         continue;
@@ -82,18 +73,21 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
                     String key = entry.getKey();
                     String value = entry.getValue().getAsString();
 
-                    map.put(key, new MessageFormat(value, locale));
+                    register(key, locale, new MessageFormat(value, locale));
                 }
-
-                result.put(locale, Map.copyOf(map));
+            } catch (IOException e) {
+                CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not read language file " + file.getName(), e);
             }
         }
+    }
 
-        return new MojangJsonTranslationStore(Map.copyOf(result));
+    @Override
+    public @org.jetbrains.annotations.Nullable MessageFormat translate(@NotNull String key, @NotNull Locale locale) {
+        loadLanguage(locale);
+        return translationValue(key, locale);
     }
 
     private static Locale parseLocale(String mojangName) {
-        // Mojang: de_de, en_us, pt_br
         String[] parts = mojangName.split("_");
         if (parts.length == 1) {
             return new Locale(parts[0]);

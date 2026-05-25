@@ -149,4 +149,8 @@ public class CubesideUtilsVelocity extends CubesideUtils implements UtilsApiVelo
         return this.playerDataCache.loadedData();
     }
 
+    @Override
+    public ClassLoader getServerClassLoader() {
+        return ProxyServer.class.getClassLoader();
+    }
 }

@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -47,27 +46,6 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         return getPlayer(player.getUniqueId());
     }
 
-    @Deprecated
-    public void sendMessage(OfflinePlayer player, String message) {
-        sendMessage(getPlayer(player), message);
-    }
-
-    @Deprecated
-    public void sendMessage(UUID playerId, String message) {
-        sendMessage(getPlayer(playerId), message);
-    }
-
-    @Deprecated
-    public void sendMessage(String playerName, String message) {
-        sendMessage(getPlayer(playerName), message);
-    }
-
-    @Deprecated
-    @Override
-    public void sendMessage(GlobalPlayer player, String message) {
-        this.playerMsgApi.sendMessage(player, message);
-    }
-
     public void sendMessage(OfflinePlayer player, Component message) {
         sendMessage(getPlayer(player), message);
     }
@@ -85,77 +63,22 @@ public abstract class GlobalDataHelperBukkit<T extends Enum<T>> extends GlobalDa
         this.playerMsgApi.sendMessage(player, message);
     }
 
-    @Deprecated
-    public void sendMessage(OfflinePlayer player, BaseComponent... message) {
-        sendMessage(getPlayer(player), message);
-    }
-
-    @Deprecated
-    public void sendMessage(UUID playerId, BaseComponent... message) {
-        sendMessage(getPlayer(playerId), message);
-    }
-
-    @Deprecated
-    public void sendMessage(String playerName, BaseComponent... message) {
-        sendMessage(getPlayer(playerName), message);
-    }
-
-    @Deprecated
-    @Override
-    public void sendMessage(GlobalPlayer player, BaseComponent... message) {
-        this.playerMsgApi.sendMessage(player, message);
-    }
-
-    @Deprecated
-    public void sendActionBarMessage(OfflinePlayer player, String message) {
-        sendActionBarMessage(getPlayer(player), message);
-    }
-
-    @Deprecated
-    public void sendActionBarMessage(UUID playerId, String message) {
-        sendActionBarMessage(getPlayer(playerId), message);
-    }
-
-    @Deprecated
-    public void sendActionBarMessage(String playerName, String message) {
-        sendActionBarMessage(getPlayer(playerName), message);
-    }
-
-    @Deprecated
-    @Override
-    public void sendActionBarMessage(GlobalPlayer player, String message) {
-        this.playerMsgApi.sendActionBarMessage(player, message);
-    }
-
     @Override
     public void sendActionBarMessage(GlobalPlayer player, Component message) {
         this.playerMsgApi.sendActionBarMessage(player, message);
     }
 
-    @Deprecated
-    public void sendTitleBarMessage(OfflinePlayer player, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(getPlayer(player), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
-    }
-
-    @Deprecated
-    public void sendTitleBarMessage(UUID playerId, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(getPlayer(playerId), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
-    }
-
-    @Deprecated
-    public void sendTitleBarMessage(String playerName, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        sendTitleBarMessage(getPlayer(playerName), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
-    }
-
-    @Deprecated
-    @Override
-    public void sendTitleBarMessage(GlobalPlayer player, String title, String subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
-        this.playerMsgApi.sendTitleBarMessage(player, title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+    public void sendActionBarMessage(OfflinePlayer player, Component message) {
+        sendActionBarMessage(getPlayer(player), message);
     }
 
     @Override
     public void sendTitleBarMessage(GlobalPlayer player, Component title, Component subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
         this.playerMsgApi.sendTitleBarMessage(player, title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
+    }
+
+    public void sendTitleBarMessage(OfflinePlayer player, Component title, Component subtitle, int fadeInTicks, int durationTicks, int fadeOutTicks) {
+        sendTitleBarMessage(getPlayer(player), title, subtitle, fadeInTicks, durationTicks, fadeOutTicks);
     }
 
     public boolean hasProperty(OfflinePlayer player, String property) {
