@@ -65,7 +65,7 @@ public class UtilsGlobalDataHelperBukkit extends GlobalDataHelperBukkit<MessageT
                 Condition<? super Player> seeMsgCondition = readStringSerializable(data);
                 boolean componentMsg = data.readBoolean();
                 if (componentMsg) {
-                    Component message = readAdventureComponent(data);
+                    Component message = readComponent(data);
                     ChatUtilBukkit.sendMessageToPlayers(seeMsgCondition, message);
                 } else {
                     String message = data.readUTF();
