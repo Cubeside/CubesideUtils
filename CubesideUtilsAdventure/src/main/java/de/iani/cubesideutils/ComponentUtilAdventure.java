@@ -1270,4 +1270,9 @@ public class ComponentUtilAdventure {
         return new ArrayList<>(glyphs.subList(0, end));
     }
 
+    public static Style getLastStyle(Component component) {
+        List<Glyph> flat = flatten(component);
+        return (flat.isEmpty() ? Style.empty() : flat.get(flat.size() - 1).style());
+    }
+
 }
