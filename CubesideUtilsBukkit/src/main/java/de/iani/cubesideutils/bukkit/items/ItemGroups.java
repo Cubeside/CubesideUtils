@@ -169,6 +169,9 @@ public class ItemGroups {
     private static final Map<DyeColor, Material> DYE_COLOR_TO_STAINED_GLASS_PANE = new HashMap<>();
     private static final Map<DyeColor, Material> DYE_COLOR_TO_BED = new HashMap<>();
     private static final Map<DyeColor, Material> DYE_COLOR_TO_SHULKER_BOX = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_CARPET = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_CANDLE = new HashMap<>();
+    private static final Map<DyeColor, Material> DYE_COLOR_TO_CANDLE_CAKE = new HashMap<>();
     private static final Map<Material, DyeColor> MATERIAL_TO_DYE_COLOR = new HashMap<>();
 
     private static final Set<Material> DYES_INTERNAL = new HashSet<>();
@@ -262,10 +265,10 @@ public class ItemGroups {
                     BED_INTERNAL.add(m);
                 } else if (name.endsWith("_CARPET")) {
                     CARPET_INTERNAL.add(m);
-                } else if (name.endsWith("_TERRACOTTA")) {
-                    TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("_GLAZED_TERRACOTTA")) {
                     GLAZED_TERRACOTTA_INTERNAL.add(m);
+                } else if (name.endsWith("TERRACOTTA")) {
+                    TERRACOTTA_INTERNAL.add(m);
                 } else if (name.endsWith("CANDLE")) {
                     CANDLE_INTERNAL.add(m);
                 } else if (name.endsWith("CANDLE_CAKE")) {
@@ -685,6 +688,60 @@ public class ItemGroups {
         DYE_COLOR_TO_SHULKER_BOX.put(DyeColor.BLACK, Material.BLACK_SHULKER_BOX);
         DYE_COLOR_TO_SHULKER_BOX.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
 
+        DYE_COLOR_TO_CARPET.put(DyeColor.WHITE, Material.WHITE_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.ORANGE, Material.ORANGE_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.MAGENTA, Material.MAGENTA_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.YELLOW, Material.YELLOW_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.LIME, Material.LIME_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.PINK, Material.PINK_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.GRAY, Material.GRAY_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.CYAN, Material.CYAN_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.PURPLE, Material.PURPLE_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.BLUE, Material.BLUE_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.BROWN, Material.BROWN_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.GREEN, Material.GREEN_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.RED, Material.RED_CARPET);
+        DYE_COLOR_TO_CARPET.put(DyeColor.BLACK, Material.BLACK_CARPET);
+        DYE_COLOR_TO_CARPET.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_CANDLE.put(DyeColor.WHITE, Material.WHITE_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.ORANGE, Material.ORANGE_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.MAGENTA, Material.MAGENTA_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.YELLOW, Material.YELLOW_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.LIME, Material.LIME_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.PINK, Material.PINK_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.GRAY, Material.GRAY_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.CYAN, Material.CYAN_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.PURPLE, Material.PURPLE_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.BLUE, Material.BLUE_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.BROWN, Material.BROWN_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.GREEN, Material.GREEN_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.RED, Material.RED_CANDLE);
+        DYE_COLOR_TO_CANDLE.put(DyeColor.BLACK, Material.BLACK_CANDLE);
+        DYE_COLOR_TO_CANDLE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.WHITE, Material.WHITE_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.ORANGE, Material.ORANGE_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.MAGENTA, Material.MAGENTA_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.LIGHT_BLUE, Material.LIGHT_BLUE_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.YELLOW, Material.YELLOW_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.LIME, Material.LIME_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.PINK, Material.PINK_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.GRAY, Material.GRAY_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.LIGHT_GRAY, Material.LIGHT_GRAY_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.CYAN, Material.CYAN_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.PURPLE, Material.PURPLE_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.BLUE, Material.BLUE_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.BROWN, Material.BROWN_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.GREEN, Material.GREEN_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.RED, Material.RED_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.put(DyeColor.BLACK, Material.BLACK_CANDLE_CAKE);
+        DYE_COLOR_TO_CANDLE_CAKE.forEach((key, value) -> MATERIAL_TO_DYE_COLOR.put(value, key));
+
         ALL_SIGNS_INTERNAL.addAll(SIGNS_INTERNAL);
         ALL_SIGNS_INTERNAL.addAll(WALL_SIGNS_INTERNAL);
         ALL_SIGNS_INTERNAL.addAll(HANGING_SIGNS_INTERNAL);
@@ -1001,6 +1058,18 @@ public class ItemGroups {
 
     public static Material getShulkerBoxForDyeColor(DyeColor color) {
         return DYE_COLOR_TO_SHULKER_BOX.get(color);
+    }
+
+    public static Material getCarpetForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_CARPET.get(color);
+    }
+
+    public static Material getCandleForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_CANDLE.get(color);
+    }
+
+    public static Material getCandleCakeForDyeColor(DyeColor color) {
+        return DYE_COLOR_TO_CANDLE_CAKE.get(color);
     }
 
     public static DyeColor getDyeColorFor(Material colorable) {
