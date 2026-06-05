@@ -73,7 +73,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
                     String key = entry.getKey();
                     String value = entry.getValue().getAsString();
 
-                    register(key, locale, new MessageFormat(value, locale));
+                    register(key, locale, new MessageFormat(toMessageFormat(value), locale));
                 }
             } catch (IOException e) {
                 CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not read language file " + file.getName(), e);
@@ -93,5 +93,80 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
             return new Locale(parts[0]);
         }
         return new Locale(parts[0], parts[1].toUpperCase());
+    }
+
+    private static String toMessageFormat(String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("input must not be null");
+        }
+
+        StringBuilder out = new StringBuilder(input.length());
+        int nextImplicitIndex = 0;
+
+        for (int i = 0; i < input.length();) {
+            char c = input.charAt(i);
+
+            if (c != '%') {
+                appendMessageFormatLiteral(out, c);
+                i++;
+                continue;
+            }
+
+            if (i + 1 >= input.length()) {
+                throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings");
+            }
+
+            // %% als literales Prozentzeichen
+            if (input.charAt(i + 1) == '%') {
+                out.append('%');
+                i += 2;
+                continue;
+            }
+
+            int placeholderStart = i;
+            i++; // '%' überspringen
+
+            int explicitIndex = -1;
+
+            // Prüfen auf %1$s, %2$s, ...
+            int numberStart = i;
+            while (i < input.length() && Character.isDigit(input.charAt(i))) {
+                i++;
+            }
+
+            if (i > numberStart) {
+                if (i >= input.length() || input.charAt(i) != '$') {
+                    throw new IllegalArgumentException("Ungültiger Platzhalter ab Position " + placeholderStart);
+                }
+
+                int minecraftIndex = Integer.parseInt(input.substring(numberStart, i));
+                if (minecraftIndex < 1) {
+                    throw new IllegalArgumentException("Minecraft-Argumentindizes beginnen bei 1: Position " + placeholderStart);
+                }
+
+                explicitIndex = minecraftIndex - 1;
+                i++; // '$' überspringen
+            }
+
+            if (i >= input.length() || input.charAt(i) != 's') {
+                throw new IllegalArgumentException("Nur %s und %n$s sind erlaubt; ungültiger Platzhalter ab Position " + placeholderStart);
+            }
+
+            i++; // 's' überspringen
+
+            int javaIndex = explicitIndex >= 0 ? explicitIndex : nextImplicitIndex++;
+            out.append('{').append(javaIndex).append('}');
+        }
+
+        return out.toString();
+    }
+
+    private static void appendMessageFormatLiteral(StringBuilder out, char c) {
+        switch (c) {
+            case '\'' -> out.append("''");
+            case '{' -> out.append("'{'");
+            case '}' -> out.append("'}'");
+            default -> out.append(c);
+        }
     }
 }
