@@ -2,6 +2,7 @@ package de.iani.cubesideutils;
 
 import de.iani.cubesideutils.FontUtilAdventure.Glyph;
 import de.iani.cubesideutils.adventure.translations.CubesideTranslations;
+import de.iani.cubesideutils.adventure.translations.GlobalAndMinecraftTranslator;
 import java.text.ParseException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -51,7 +52,6 @@ import net.kyori.adventure.text.object.SpriteObjectContents;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.kyori.adventure.translation.GlobalTranslator;
 
 public class ComponentUtilAdventure {
 
@@ -165,7 +165,7 @@ public class ComponentUtilAdventure {
     }
 
     public static String toLegacy(Component c, Locale locale) {
-        return LEGACY_COMPONENT_SERIALIZER.serialize(GlobalTranslator.render(c, locale));
+        return LEGACY_COMPONENT_SERIALIZER.serialize(GlobalAndMinecraftTranslator.render(c, locale));
     }
 
     public static TextComponent fromLegacy(String s) {
@@ -177,7 +177,7 @@ public class ComponentUtilAdventure {
     }
 
     public static String plainText(Component c, Locale locale) {
-        return PLAIN_TEXT_COMPONENT_SERIALIZER.serialize(GlobalTranslator.render(c, locale));
+        return PLAIN_TEXT_COMPONENT_SERIALIZER.serialize(GlobalAndMinecraftTranslator.render(c, locale));
     }
 
     public TextComponent fromPlainText(String s) {
@@ -1086,7 +1086,7 @@ public class ComponentUtilAdventure {
     }
 
     public static List<Component> wrapLines(Component input, int maxWidthPx, Locale locale) {
-        input = GlobalTranslator.render(input, locale);
+        input = GlobalAndMinecraftTranslator.render(input, locale);
 
         if (maxWidthPx <= 0) {
             throw new IllegalArgumentException("maxWidthPx must be > 0");

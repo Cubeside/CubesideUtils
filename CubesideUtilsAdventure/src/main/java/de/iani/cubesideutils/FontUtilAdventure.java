@@ -1,6 +1,5 @@
 package de.iani.cubesideutils;
 
-import de.iani.cubesideutils.adventure.translations.GlobalAndMinecraftTranslator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -46,7 +45,7 @@ public class FontUtilAdventure {
         }
         StringBuilder sb = new StringBuilder();
         for (Component c : text) {
-            sb.append(ComponentUtilAdventure.toLegacy(GlobalAndMinecraftTranslator.render(c, locale)));
+            sb.append(ComponentUtilAdventure.toLegacy(c, locale));
         }
         return fitsSingleBookPage(sb.toString());
     }
