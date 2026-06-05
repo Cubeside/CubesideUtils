@@ -41,10 +41,10 @@ public class TranslationLoader {
             if (in != null) {
                 Files.copy(in, new File(langDir, "en_us.json").toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
-                utils.getLogger().info("Could not find en_us.json");
+                utils.getLogger().severe("Could not find en_us.json");
             }
         } catch (IOException e1) {
-            utils.getLogger().info("Could not extract en_us.json");
+            utils.getLogger().log(Level.SEVERE, "Could not extract en_us.json", e1);
         }
 
         File metaFile = new File(langDir, "langmeta.json");
