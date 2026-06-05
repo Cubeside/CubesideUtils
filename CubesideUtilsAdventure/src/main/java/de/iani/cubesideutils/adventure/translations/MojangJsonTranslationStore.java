@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.AbstractTranslationStore;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.jetbrains.annotations.NotNull;
 
 public final class MojangJsonTranslationStore extends AbstractTranslationStore<MessageFormat> {
@@ -49,6 +50,8 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
         CubesideUtils.getInstance().getLogger().info("Found " + loadableLanguageFiles.size() + " language files. ");
 
         loadLanguage(Locale.US);
+
+        GlobalTranslator.translator().addSource(this);
     }
 
     private void loadLanguage(Locale locale) {
@@ -72,8 +75,11 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
 
                     String key = entry.getKey();
                     String value = entry.getValue().getAsString();
-
-                    register(key, locale, new MessageFormat(toMessageFormat(value), locale));
+                    try {
+                        register(key, locale, new MessageFormat(toMessageFormat(value), locale));
+                    } catch (IllegalArgumentException e) {
+                        CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load language string for locale " + locale + ": " + e.getMessage(), e);
+                    }
                 }
             } catch (IOException e) {
                 CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not read language file " + file.getName(), e);
@@ -113,7 +119,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
             }
 
             if (i + 1 >= input.length()) {
-                throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings");
+                throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings: " + input);
             }
 
             // %% als literales Prozentzeichen
@@ -136,12 +142,12 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
 
             if (i > numberStart) {
                 if (i >= input.length() || input.charAt(i) != '$') {
-                    throw new IllegalArgumentException("Ungültiger Platzhalter ab Position " + placeholderStart);
+                    throw new IllegalArgumentException("Ungültiger Platzhalter ab Position " + placeholderStart + ": " + input);
                 }
 
                 int minecraftIndex = Integer.parseInt(input.substring(numberStart, i));
                 if (minecraftIndex < 1) {
-                    throw new IllegalArgumentException("Minecraft-Argumentindizes beginnen bei 1: Position " + placeholderStart);
+                    throw new IllegalArgumentException("Minecraft-Argumentindizes beginnen bei 1: Position " + placeholderStart + ": " + input);
                 }
 
                 explicitIndex = minecraftIndex - 1;
@@ -149,7 +155,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
             }
 
             if (i >= input.length() || input.charAt(i) != 's') {
-                throw new IllegalArgumentException("Nur %s und %n$s sind erlaubt; ungültiger Platzhalter ab Position " + placeholderStart);
+                throw new IllegalArgumentException("Nur %s und %n$s sind erlaubt; ungültiger Platzhalter ab Position " + placeholderStart + ": " + input);
             }
 
             i++; // 's' überspringen
