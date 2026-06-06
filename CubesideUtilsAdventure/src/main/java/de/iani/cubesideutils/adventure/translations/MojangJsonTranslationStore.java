@@ -75,7 +75,9 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
                     try {
                         register(key, locale, new MessageFormat(toMessageFormat(value), locale));
                     } catch (IllegalArgumentException e) {
-                        CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load language string for locale " + locale + ": " + e.getMessage(), e);
+                        if (!key.startsWith("translation.test")) {
+                            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load language string for locale " + locale + ": " + e.getMessage(), e);
+                        }
                     }
                 }
             } catch (IOException e) {
