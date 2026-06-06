@@ -3,12 +3,14 @@ package de.iani.cubesideutils.plugin;
 import de.cubeside.connection.GlobalServer;
 import de.iani.cubesideutils.RandomUtil;
 import de.iani.cubesideutils.plugin.UtilsGlobalDataHelper.MessageType;
+import de.iani.cubesideutils.primitivewrapper.ComparableByteArray;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +20,7 @@ import javax.crypto.spec.PBEKeySpec;
 public class OtpHandlerImpl implements OtpHandler {
 
     public static final int ITERATION_COUNT = 10000;
+    public static final int KEY_LENGTH = 12;
     public static final int HASH_LENGTH = 64;
 
     private static final SecretKeyFactory FACTORY;
@@ -32,7 +35,7 @@ public class OtpHandlerImpl implements OtpHandler {
 
     private String key;
 
-    private Map<UUID, byte[]> currentOtps;
+    private Map<ComparableByteArray, OtpData> currentOtps;
 
     public OtpHandlerImpl(String key) {
         if (key.length() > MAX_KEY_LENGTH || key.isEmpty()) {
@@ -52,11 +55,18 @@ public class OtpHandlerImpl implements OtpHandler {
             }
 
             boolean created = data.readBoolean();
-            UUID holderId = GlobalDataHelperBaseImpl.readUUID(data);
+            int otpLength = data.readInt();
+            byte[] otp = new byte[otpLength];
+            data.readFully(otp);
             if (created) {
-                currentOtps.put(holderId, data.readAllBytes());
+                UUID holderId = GlobalDataHelperBaseImpl.readUUID(data);
+                Instant validUntil = Instant.ofEpochMilli(data.readLong());
+                String payload = data.readBoolean() ? data.readUTF() : null;
+                OtpData otpData = new OtpData(otp, holderId, validUntil, payload);
+                CubesideUtils.getInstance().getLogger().info("Received OTP: " + otpData);
+                currentOtps.put(new ComparableByteArray(otp), otpData);
             } else {
-                currentOtps.remove(holderId);
+                currentOtps.remove(new ComparableByteArray(otp));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -64,26 +74,35 @@ public class OtpHandlerImpl implements OtpHandler {
     }
 
     @Override
-    public boolean testAndReset(UUID holderId, String password) {
-        byte[] otp = currentOtps.get(holderId);
-        if (otp == null) {
-            return false;
+    public OtpData testAndReset(String password) {
+        byte[] otp = hash(password);
+        OtpData data = currentOtps.remove(new ComparableByteArray(otp));
+        if (data == null) {
+            return null;
         }
-
-        if (Arrays.equals(otp, hash(password))) {
-            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, false, holderId);
-            currentOtps.remove(holderId);
-            return true;
+        CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, false, otp.length, otp);
+        if (data.validUntil().isAfter(Instant.now())) {
+            return null;
         }
-        return false;
+        return data;
     }
 
     @Override
-    public String generate(UUID holderId, int length) {
-        String result = RandomUtil.generateRandomAlphaNumericalString(length);
+    public String generate(UUID holderId, Duration validity) {
+        return generate(holderId, validity, null);
+    }
+
+    @Override
+    public String generate(UUID holderId, Duration validity, String payload) {
+        String result = RandomUtil.generateRandomAlphaNumericalString(KEY_LENGTH);
         byte[] otp = hash(result);
-        currentOtps.put(holderId, otp);
-        CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, holderId, otp);
+        OtpData data = new OtpData(otp, holderId, Instant.now().plus(validity), payload);
+        currentOtps.put(new ComparableByteArray(otp), data);
+        if (data.payload() == null) {
+            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, otp.length, otp, holderId, data.validUntil().getEpochSecond(), false);
+        } else {
+            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, otp.length, otp, holderId, data.validUntil().getEpochSecond(), true, data.payload());
+        }
         return result;
     }
 
