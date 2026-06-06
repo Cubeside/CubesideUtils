@@ -11,7 +11,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.SecretKeyFactory;
@@ -24,6 +23,7 @@ public class OtpHandlerImpl implements OtpHandler {
     public static final int HASH_LENGTH = 64;
 
     private static final SecretKeyFactory FACTORY;
+    private volatile int cleanupCounter;
 
     static {
         try {
@@ -35,7 +35,7 @@ public class OtpHandlerImpl implements OtpHandler {
 
     private String key;
 
-    private Map<ComparableByteArray, OtpData> currentOtps;
+    private ConcurrentHashMap<ComparableByteArray, OtpData> currentOtps;
 
     public OtpHandlerImpl(String key) {
         if (key.length() > MAX_KEY_LENGTH || key.isEmpty()) {
@@ -60,11 +60,11 @@ public class OtpHandlerImpl implements OtpHandler {
             data.readFully(otp);
             if (created) {
                 UUID holderId = GlobalDataHelperBaseImpl.readUUID(data);
-                Instant validUntil = Instant.ofEpochMilli(data.readLong());
+                Instant validUntil = Instant.ofEpochSecond(data.readLong(), data.readInt());
                 String payload = data.readBoolean() ? data.readUTF() : null;
                 OtpData otpData = new OtpData(otp, holderId, validUntil, payload);
-                CubesideUtils.getInstance().getLogger().info("Received OTP: " + otpData);
                 currentOtps.put(new ComparableByteArray(otp), otpData);
+                checkForCleanup();
             } else {
                 currentOtps.remove(new ComparableByteArray(otp));
             }
@@ -73,15 +73,24 @@ public class OtpHandlerImpl implements OtpHandler {
         }
     }
 
+    private void checkForCleanup() {
+        if (++cleanupCounter > 1000) {
+            cleanupCounter = 0;
+            Instant now = Instant.now();
+            currentOtps.values().removeIf(data -> data.validUntil().isBefore(now));
+        }
+    }
+
     @Override
     public OtpData testAndReset(String password) {
+        checkForCleanup();
         byte[] otp = hash(password);
         OtpData data = currentOtps.remove(new ComparableByteArray(otp));
         if (data == null) {
             return null;
         }
         CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, false, otp.length, otp);
-        if (data.validUntil().isAfter(Instant.now())) {
+        if (data.validUntil().isBefore(Instant.now())) {
             return null;
         }
         return data;
@@ -99,9 +108,9 @@ public class OtpHandlerImpl implements OtpHandler {
         OtpData data = new OtpData(otp, holderId, Instant.now().plus(validity), payload);
         currentOtps.put(new ComparableByteArray(otp), data);
         if (data.payload() == null) {
-            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, otp.length, otp, holderId, data.validUntil().getEpochSecond(), false);
+            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, otp.length, otp, holderId, data.validUntil().getEpochSecond(), data.validUntil().getNano(), false);
         } else {
-            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, otp.length, otp, holderId, data.validUntil().getEpochSecond(), true, data.payload());
+            CubesideUtils.getInstance().getGlobalDataHelper().sendData(false, MessageType.OTP_CHANGED, key, true, otp.length, otp, holderId, data.validUntil().getEpochSecond(), data.validUntil().getNano(), true, data.payload());
         }
         return result;
     }
@@ -114,5 +123,4 @@ public class OtpHandlerImpl implements OtpHandler {
             throw new RuntimeException(e);
         }
     }
-
 }
