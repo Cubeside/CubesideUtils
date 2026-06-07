@@ -7,12 +7,14 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent.Reason;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 public abstract class AbstractWindow implements Window {
 
     private final Player player;
     private Inventory inventory;
     private Window parentWindow;
+    private InventoryView view;
 
     public AbstractWindow(Player player, Inventory inventory) {
         this.player = player;
@@ -39,6 +41,15 @@ public abstract class AbstractWindow implements Window {
             this.player.closeInventory(Reason.PLUGIN);
         }
         this.inventory = inventory;
+    }
+
+    @Override
+    public InventoryView getView() {
+        return this.view;
+    }
+
+    protected void setView(InventoryView view) {
+        this.view = view;
     }
 
     @Override
@@ -88,7 +99,7 @@ public abstract class AbstractWindow implements Window {
     @Override
     public void open() {
         rebuildInventory();
-        getPlayer().openInventory(getInventory());
+        setView(getPlayer().openInventory(getInventory()));
         WindowManager.getInstance().registerOpenWindow(this);
     }
 
