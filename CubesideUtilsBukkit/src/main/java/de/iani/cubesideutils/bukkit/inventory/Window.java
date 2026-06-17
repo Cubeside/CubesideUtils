@@ -5,6 +5,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 public interface Window {
 
@@ -13,6 +14,8 @@ public interface Window {
     Inventory getInventory();
 
     Window getParent();
+
+    InventoryView getView();
 
     void open();
 
