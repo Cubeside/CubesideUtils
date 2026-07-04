@@ -269,11 +269,11 @@ public abstract class GlobalDataRequestManagerImpl<T extends Enum<T>> implements
     }
 
     protected UUID readUUID(DataInputStream msgin) throws IOException {
-        return getHelper().readUUID(msgin);
+        return readUUID(msgin);
     }
 
     protected <S extends StringSerializable> S readStringSerializable(DataInputStream msgin) throws IOException {
-        return getHelper().readStringSerializable(msgin);
+        return readStringSerializable(msgin);
     }
 
     protected abstract void respondToRequest(T requestType, GlobalServer source, DataInputStream requestData, DataOutputStream responseData) throws IOException;
