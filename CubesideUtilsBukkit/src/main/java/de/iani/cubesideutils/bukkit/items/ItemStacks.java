@@ -62,6 +62,12 @@ public class ItemStacks {
         // prevents instances
     }
 
+    public static enum RemovalPolicy {
+        NEVER,
+        IF_COMPLETE,
+        ALWAYS;
+    }
+
     private static final NamespacedKey attackSpeedKey = NamespacedKey.fromString("cubesideutils:attackspeed");
     private static final NamespacedKey attackDamageKey = NamespacedKey.fromString("cubesideutils:attackdamage");
 
@@ -436,6 +442,10 @@ public class ItemStacks {
      * @return missing items (empty if all items are present)
      */
     public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes, boolean includeNonStorage, DataComponentType[] ignoredComponents) {
+        return doesHave(player, items, removeIfYes ? RemovalPolicy.IF_COMPLETE : RemovalPolicy.NEVER, includeNonStorage, ignoredComponents);
+    }
+
+    public static ItemStack[] doesHave(Player player, ItemStack[] items, RemovalPolicy removal, boolean includeNonStorage, DataComponentType[] ignoredComponents) {
         items = deepCopy(items);
 
         ItemStack[] oldContents = includeNonStorage ? player.getInventory().getContents() : player.getInventory().getStorageContents();
@@ -527,16 +537,9 @@ public class ItemStacks {
             has = false;
         }
 
-        if (!has) {
-            ItemStack[] missing = shrink(items);
-            if (missing.length == 0) {
-                throw new AssertionError();
-            }
+        ItemStack[] result = has ? new ItemStack[0] : shrink(items);
 
-            return missing;
-        }
-
-        if (removeIfYes) {
+        if (removal == RemovalPolicy.ALWAYS || (removal == RemovalPolicy.IF_COMPLETE && has)) {
             if (includeNonStorage) {
                 player.getInventory().setContents(contents);
             } else {
@@ -544,7 +547,8 @@ public class ItemStacks {
             }
             player.updateInventory();
         }
-        return new ItemStack[0];
+
+        return result;
     }
 
     public static boolean equals(ItemStack[] i1, ItemStack[] i2) {
@@ -875,136 +879,6 @@ public class ItemStacks {
 
     public static String toNiceString(Material m) {
         return StringUtil.capitalizeFirstLetter(m.name(), true);
-    }
-
-    /**
-     * Removes all available items from the given player's inventory.
-     *
-     * Removes as many items as possible from the inventory and returns the items that couldn't be removed.
-     * Unlike doesHave with removeIfYes=true, this always removes what's available regardless of whether all items are present.
-     * The inventory is always updated.
-     *
-     * @param player
-     *            the player from whose inventory to remove items
-     * @param items
-     *            the items to remove
-     * @param includeNonStorage
-     *            whether or not to include the special slots like off hand or armor
-     * @return items that couldn't be removed (empty if all items were available)
-     */
-    public static ItemStack[] removeFromInventory(Player player, ItemStack[] items, boolean includeNonStorage) {
-        return removeFromInventory(player, items, includeNonStorage, null);
-    }
-
-    /**
-     * Removes all available items from the given player's inventory.
-     *
-     * Removes as many items as possible from the inventory and returns the items that couldn't be removed.
-     * Unlike doesHave with removeIfYes=true, this always removes what's available regardless of whether all items are present.
-     * The inventory is always updated.
-     *
-     * @param player
-     *            the player from whose inventory to remove items
-     * @param items
-     *            the items to remove
-     * @param includeNonStorage
-     *            whether or not to include the special slots like off hand or armor
-     * @param ignoredComponents
-     *            components on the itemstacks that will be ignored when comparing them
-     * @return items that couldn't be removed (empty if all items were available)
-     */
-    public static ItemStack[] removeFromInventory(Player player, ItemStack[] items, boolean includeNonStorage, DataComponentType[] ignoredComponents) {
-        items = deepCopy(items);
-
-        ItemStack[] oldContents = includeNonStorage ? player.getInventory().getContents() : player.getInventory().getStorageContents();
-        ItemStack[] contents = deepCopy(oldContents);
-
-        ItemStack[] filteredItems = null;
-        ItemStack[] filteredContents = null;
-        boolean anyRealFilteredComponents = false;
-        if (ignoredComponents != null && ignoredComponents.length > 0) {
-            filteredItems = new ItemStack[items.length];
-            for (int j = 0; j < items.length; j++) {
-                ItemStack stack = items[j];
-                if (stack != null) {
-                    boolean cloned = false;
-                    for (DataComponentType ignored : ignoredComponents) {
-                        if (stack.isDataOverridden(ignored)) {
-                            if (!cloned) {
-                                stack = stack.clone();
-                                cloned = true;
-                            }
-                            stack.resetData(ignored);
-                            anyRealFilteredComponents = true;
-                        }
-                    }
-                    filteredItems[j] = stack;
-                }
-            }
-
-            filteredContents = new ItemStack[contents.length];
-            for (int j = 0; j < contents.length; j++) {
-                ItemStack stack = contents[j];
-                if (stack != null) {
-                    boolean cloned = false;
-                    for (DataComponentType ignored : ignoredComponents) {
-                        if (stack.isDataOverridden(ignored)) {
-                            if (!cloned) {
-                                stack = stack.clone();
-                                cloned = true;
-                            }
-                            stack.resetData(ignored);
-                            anyRealFilteredComponents = true;
-                        }
-                    }
-                    filteredContents[j] = stack;
-                }
-            }
-        }
-
-        // Try to remove all items, continue even if some are not found
-        for (int j = 0; j < items.length; j++) {
-            ItemStack toStack = items[j];
-            ItemStack toStackCheck = anyRealFilteredComponents ? filteredItems[j] : toStack;
-
-            while (toStack.getAmount() > 0) {
-                int firstSimilar = getFirstSimilar(toStackCheck, filteredContents != null ? filteredContents : contents, 0);
-                if (firstSimilar < 0) {
-                    break; // No matching item found, move to next requested item
-                }
-
-                ItemStack hisStack = contents[firstSimilar];
-                ItemStack hisStackCheck = anyRealFilteredComponents ? filteredContents[firstSimilar] : hisStack;
-
-                int here = hisStack.getAmount();
-                if (here > toStack.getAmount()) {
-                    hisStack.setAmount(here - toStack.getAmount());
-                    toStack.setAmount(0);
-                    if (anyRealFilteredComponents) {
-                        hisStackCheck.setAmount(hisStack.getAmount());
-                        toStackCheck.setAmount(0);
-                    }
-                } else {
-                    contents[firstSimilar] = null;
-                    toStack.setAmount(toStack.getAmount() - here);
-                    if (anyRealFilteredComponents) {
-                        filteredContents[firstSimilar] = null;
-                        toStackCheck.setAmount(toStack.getAmount());
-                    }
-                }
-            }
-        }
-
-        // Always update the inventory
-        if (includeNonStorage) {
-            player.getInventory().setContents(contents);
-        } else {
-            player.getInventory().setStorageContents(contents);
-        }
-        player.updateInventory();
-
-        // Return items that couldn't be removed
-        return shrink(items);
     }
 
 }
