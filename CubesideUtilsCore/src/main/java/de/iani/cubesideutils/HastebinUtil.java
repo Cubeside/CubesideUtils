@@ -1,5 +1,6 @@
 package de.iani.cubesideutils;
 
+import de.iani.cubesideutils.plugin.CubesideUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,56 +31,53 @@ public class HastebinUtil {
         if (listener == null) {
             throw new NullPointerException("listener");
         }
-        new Thread("Hastebin Paste Thread") {
-            @Override
-            public void run() {
-                HttpClient client = HttpClient.newHttpClient();
-                try {
-                    HttpRequest request = HttpRequest.newBuilder(URI.create("https://cpaste.de/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
-                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    String content = response.body();
-                    JSONObject responseJson = (JSONObject) new JSONParser().parse(content);
-                    String key = (String) responseJson.get("key");
-                    if (key != null) {
-                        listener.onSuccess("https://cpaste.de/" + key);
-                        return;
-                    } else {
-                        // fallthrough listener.onError(new IOException("No key was returned"));
-                    }
-                } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
-                    // fallthrough
+        CubesideUtils.getInstance().getExecutor().submit(() -> {
+            HttpClient client = HttpClient.newHttpClient();
+            try {
+                HttpRequest request = HttpRequest.newBuilder(URI.create("https://cpaste.de/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                String contentBody = response.body();
+                JSONObject responseJson = (JSONObject) new JSONParser().parse(contentBody);
+                String key = (String) responseJson.get("key");
+                if (key != null) {
+                    listener.onSuccess("https://cpaste.de/" + key);
+                    return;
+                } else {
+                    // fallthrough listener.onError(new IOException("No key was returned"));
                 }
-                try {
-                    HttpRequest request = HttpRequest.newBuilder(URI.create("https://hastebin.com/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
-                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    String content = response.body();
-                    JSONObject responseJson = (JSONObject) new JSONParser().parse(content);
-                    String key = (String) responseJson.get("key");
-                    if (key != null) {
-                        listener.onSuccess("https://hastebin.com/" + key);
-                        return;
-                    } else {
-                        // fallthrough listener.onError(new IOException("No key was returned"));
-                    }
-                } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
-                    // fallthrough
-                }
-                try {
-                    HttpRequest request = HttpRequest.newBuilder(URI.create("https://hasteb.in/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
-                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    String content = response.body();
-                    JSONObject responseJson = (JSONObject) new JSONParser().parse(content);
-                    String key = (String) responseJson.get("key");
-                    if (key != null) {
-                        listener.onSuccess("https://hasteb.in/" + key);
-                    } else {
-                        listener.onError(new IOException("No key was returned"));
-                    }
-                } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
-                    listener.onError(ex);
-                }
+            } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
+                // fallthrough
             }
-        }.start();
+            try {
+                HttpRequest request = HttpRequest.newBuilder(URI.create("https://hastebin.com/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                String contentBody = response.body();
+                JSONObject responseJson = (JSONObject) new JSONParser().parse(contentBody);
+                String key = (String) responseJson.get("key");
+                if (key != null) {
+                    listener.onSuccess("https://hastebin.com/" + key);
+                    return;
+                } else {
+                    // fallthrough listener.onError(new IOException("No key was returned"));
+                }
+            } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
+                // fallthrough
+            }
+            try {
+                HttpRequest request = HttpRequest.newBuilder(URI.create("https://hasteb.in/documents")).POST(HttpRequest.BodyPublishers.ofString(content)).build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                String contentBody = response.body();
+                JSONObject responseJson = (JSONObject) new JSONParser().parse(contentBody);
+                String key = (String) responseJson.get("key");
+                if (key != null) {
+                    listener.onSuccess("https://hasteb.in/" + key);
+                } else {
+                    listener.onError(new IOException("No key was returned"));
+                }
+            } catch (IOException | InterruptedException | ParseException | ClassCastException ex) {
+                listener.onError(ex);
+            }
+        });
     }
 
     public static interface PasteCompletedListener {

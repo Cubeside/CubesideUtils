@@ -18,6 +18,11 @@ public class UtilsPluginBukkit extends JavaPlugin {
     }
 
     @Override
+    public void onDisable() {
+        core.onDisable();
+    }
+
+    @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
         // used by some plugins to check if a worldgenerator is available
         if (worldName == null || worldName.length() == 0 || worldName.equals("test")) {

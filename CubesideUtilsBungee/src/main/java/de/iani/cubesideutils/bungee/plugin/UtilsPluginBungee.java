@@ -13,4 +13,9 @@ public class UtilsPluginBungee extends Plugin {
     public void onEnable() {
         core.onEnable();
     }
+
+    @Override
+    public void onDisable() {
+        core.onDisable();
+    }
 }

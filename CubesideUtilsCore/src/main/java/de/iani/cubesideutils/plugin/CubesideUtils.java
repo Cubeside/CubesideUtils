@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
@@ -49,6 +52,8 @@ public abstract class CubesideUtils implements UtilsApi {
 
     private Map<String, Boolean> cachedRealServers;
 
+    private final ExecutorService utilsExecutor;
+
     public CubesideUtils() {
         synchronized (CubesideUtils.class) {
             if (instance != null) {
@@ -65,6 +70,7 @@ public abstract class CubesideUtils implements UtilsApi {
         this.rankPermissionsAndPrefixes = Collections.emptyMap();
 
         this.cachedRealServers = Collections.synchronizedMap(new HashMap<>());
+        this.utilsExecutor = Executors.newSingleThreadExecutor();
     }
 
     public void onEnable() {
@@ -77,6 +83,19 @@ public abstract class CubesideUtils implements UtilsApi {
         } catch (Throwable e) {
             getLogger().log(Level.SEVERE, "Could not initilize CubesideUtils plugin.", e);
             shutdownServer();
+        }
+    }
+
+    public void onDisable() {
+        utilsExecutor.shutdown();
+        if (!utilsExecutor.isTerminated()) {
+            getLogger().log(Level.INFO, "Waiting for the Executor to shutdown..");
+            try {
+                utilsExecutor.awaitTermination(2, TimeUnit.MINUTES);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            getLogger().log(Level.INFO, "Shutdown completed.");
         }
     }
 
@@ -257,4 +276,8 @@ public abstract class CubesideUtils implements UtilsApi {
     }
 
     public abstract ClassLoader getServerClassLoader();
+
+    public ExecutorService getExecutor() {
+        return utilsExecutor;
+    }
 }
