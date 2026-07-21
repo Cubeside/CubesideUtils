@@ -62,6 +62,12 @@ public class ItemStacks {
         // prevents instances
     }
 
+    public static enum RemovalPolicy {
+        NEVER,
+        IF_COMPLETE,
+        ALWAYS;
+    }
+
     private static final NamespacedKey attackSpeedKey = NamespacedKey.fromString("cubesideutils:attackspeed");
     private static final NamespacedKey attackDamageKey = NamespacedKey.fromString("cubesideutils:attackdamage");
 
@@ -436,6 +442,10 @@ public class ItemStacks {
      * @return missing items (empty if all items are present)
      */
     public static ItemStack[] doesHave(Player player, ItemStack[] items, boolean removeIfYes, boolean includeNonStorage, DataComponentType[] ignoredComponents) {
+        return doesHave(player, items, removeIfYes ? RemovalPolicy.IF_COMPLETE : RemovalPolicy.NEVER, includeNonStorage, ignoredComponents);
+    }
+
+    public static ItemStack[] doesHave(Player player, ItemStack[] items, RemovalPolicy removal, boolean includeNonStorage, DataComponentType[] ignoredComponents) {
         items = deepCopy(items);
 
         ItemStack[] oldContents = includeNonStorage ? player.getInventory().getContents() : player.getInventory().getStorageContents();
@@ -527,16 +537,9 @@ public class ItemStacks {
             has = false;
         }
 
-        if (!has) {
-            ItemStack[] missing = shrink(items);
-            if (missing.length == 0) {
-                throw new AssertionError();
-            }
+        ItemStack[] result = has ? new ItemStack[0] : shrink(items);
 
-            return missing;
-        }
-
-        if (removeIfYes) {
+        if (removal == RemovalPolicy.ALWAYS || (removal == RemovalPolicy.IF_COMPLETE && has)) {
             if (includeNonStorage) {
                 player.getInventory().setContents(contents);
             } else {
@@ -544,7 +547,8 @@ public class ItemStacks {
             }
             player.updateInventory();
         }
-        return new ItemStack[0];
+
+        return result;
     }
 
     public static boolean equals(ItemStack[] i1, ItemStack[] i2) {
