@@ -9,6 +9,7 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.ClickEvent.Action;
+import net.kyori.adventure.text.event.ClickEvent.Payload.Text;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
@@ -22,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * Converts from &-marked colors to components and back.
  */
 public class CubesideComponentSerializer implements ComponentSerializer<Component, TextComponent, String> {
-    private final static ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder().mapper(TextComponent.class, c -> c.clickEvent() != null && c.clickEvent().action() == Action.OPEN_URL ? c.content() : c.content().replace("&", "&&")).build();
+    private final static ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder().mapper(TextComponent.class, c -> c.clickEvent() != null && c.clickEvent().action() == Action.OPEN_URL && c.clickEvent().payload() instanceof Text s ? s.value() : c.content().replace("&", "&&")).build();
     private final static LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder().character('&').hexColors().hexCharacter('x').flattener(FLATTENER).build();
     private final static LegacyComponentSerializer SERIALIZER_NO_COLOR = LegacyComponentSerializer.builder().character('&').hexColors().hexCharacter('x').build();
 
