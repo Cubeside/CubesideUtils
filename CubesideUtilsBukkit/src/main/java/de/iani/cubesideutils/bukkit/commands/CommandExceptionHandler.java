@@ -1,40 +1,37 @@
 package de.iani.cubesideutils.bukkit.commands;
 
+import de.iani.cubesideutils.bukkit.commands.exceptions.CommandRouterException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.DisallowsCommandBlockException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.IllegalSyntaxException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.InternalCommandException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.NoPermissionForPathException;
 import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 public interface CommandExceptionHandler {
 
-    public static final CommandExceptionHandler DEFAULT_HANDLER = new CommandExceptionHandler() {
-    };
+    public static final CommandExceptionHandler DEFAULT_HANDLER = new CommandExceptionHandler() {};
 
     public default boolean handleDisallowsCommandBlock(DisallowsCommandBlockException thrown) {
-        CommandSender sender = thrown.getSender();
-        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
+        sendExceptionMessage(thrown);
         return true;
     }
 
     public default boolean handleRequiresPlayer(RequiresPlayerException thrown) {
-        CommandSender sender = thrown.getSender();
-        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
+        sendExceptionMessage(thrown);
         return true;
     }
 
     public default boolean handleNoPermission(NoPermissionException thrown) {
-        CommandSender sender = thrown.getSender();
-        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
+        sendExceptionMessage(thrown);
         return true;
     }
 
     public default boolean handleNoPermissionForPath(NoPermissionForPathException thrown) {
-        CommandSender sender = thrown.getSender();
-        sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
+        sendExceptionMessage(thrown);
         return true;
     }
 
@@ -49,8 +46,7 @@ public interface CommandExceptionHandler {
 
     public default boolean handleInternalException(InternalCommandException thrown) {
         if (thrown.getMessage() != null) {
-            CommandSender sender = thrown.getSender();
-            sender.sendMessage(getErrorMessagePrefix() + thrown.getMessage());
+            sendExceptionMessage(thrown);
         }
 
         Throwable cause = thrown.getCause();
@@ -63,11 +59,18 @@ public interface CommandExceptionHandler {
         }
     }
 
-    public default String getErrorMessagePrefix() {
-        return ChatColor.RED.toString();
+    public default void sendExceptionMessage(CommandRouterException thrown) {
+        CommandSender sender = thrown.getSender();
+        Component prefix = getErrorMessagePrefix();
+        Component message = Component.text(thrown.getMessage());
+        sender.sendMessage(prefix == null ? message : prefix.append(message));
     }
 
-    public default String getHelpMessagePrefix() {
-        return "";
+    public default Component getErrorMessagePrefix() {
+        return Component.empty().color(NamedTextColor.RED);
+    }
+
+    public default Component getHelpMessagePrefix() {
+        return null;
     }
 }

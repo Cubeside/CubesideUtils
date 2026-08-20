@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -204,12 +206,22 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
                 if (subcmd.executor == null) {
                     // hat weitere subcommands
                     if (isAnySubCommandDisplayable(sender, subcmd)) {
-                        sender.sendMessage(exceptionHandler.getHelpMessagePrefix() + prefix + key + " ...");
+                        Component message = exceptionHandler.getHelpMessagePrefix();
+                        Component syntax = Component.text(prefix + key + " ...");
+                        message = message == null ? syntax : message.append(syntax);
+                        sender.sendMessage(message);
                     }
                 } else {
                     if (subcmd.executor.hasRequiredPermission(sender) && subcmd.executor.isAvailable(sender)) {
                         if (sender instanceof Player || !subcmd.executor.requiresPlayer()) {
-                            sender.sendMessage(exceptionHandler.getHelpMessagePrefix() + prefix + key + " " + subcmd.executor.getUsage(sender));
+                            Component message = exceptionHandler.getHelpMessagePrefix();
+                            Component syntax = Component.text(prefix + key + " " + subcmd.executor.getUsage(sender));
+                            Component description = subcmd.executor.getDescription();
+                            if (description != null) {
+                                syntax = syntax.hoverEvent(HoverEvent.showText(description));
+                            }
+                            message = message == null ? syntax : message.append(syntax);
+                            sender.sendMessage(message);
                         }
                     }
                 }
@@ -220,7 +232,14 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
             if (executor.hasRequiredPermission(sender) && executor.isAvailable(sender)) {
                 String prefix = getCommandString(alias, currentMap);
                 if (sender instanceof Player || !executor.requiresPlayer()) {
-                    sender.sendMessage(exceptionHandler.getHelpMessagePrefix() + prefix + executor.getUsage(sender));
+                    Component message = exceptionHandler.getHelpMessagePrefix();
+                    Component syntax = Component.text(prefix + executor.getUsage(sender));
+                    Component description = currentMap.executor.getDescription();
+                    if (description != null) {
+                        syntax = syntax.hoverEvent(HoverEvent.showText(description));
+                    }
+                    message = message == null ? syntax : message.append(syntax);
+                    sender.sendMessage(message);
                 }
             }
         }

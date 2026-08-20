@@ -9,6 +9,7 @@ import de.iani.cubesideutils.commands.ArgsParser;
 import de.iani.cubesideutils.commands.PermissionRequirer;
 import java.util.Collection;
 import java.util.Collections;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -52,6 +53,14 @@ public abstract class SubCommand implements PermissionRequirer {
 
     public String getUsage() {
         return "";
+    }
+
+    public Component getDescription(CommandSender sender) {
+        return getDescription();
+    }
+
+    public Component getDescription() {
+        return null;
     }
 
     // For convenience
