@@ -76,7 +76,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
                         register(key, locale, new MessageFormat(toMessageFormat(value), locale));
                     } catch (IllegalArgumentException e) {
                         if (!key.startsWith("translation.test")) {
-                            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load language string for locale " + locale + ": " + e.getMessage(), e);
+                            CubesideUtils.getInstance().getLogger().log(Level.SEVERE, "Could not load language string for locale " + locale + ": key='" + key + "';value='" + value + "';" + e.getMessage(), e);
                         }
                     }
                 }
@@ -110,27 +110,28 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
 
         for (int i = 0; i < input.length();) {
             char c = input.charAt(i);
+            i++;
 
             if (c != '%') {
                 appendMessageFormatLiteral(out, c);
+                continue;
+            }
+
+            if (i >= input.length()) {
+                // mojang does this..
+                // throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings: " + input);
+                out.append('%');
+                continue;
+            }
+
+            // %% als literales Prozentzeichen
+            if (input.charAt(i) == '%') {
+                out.append('%');
                 i++;
                 continue;
             }
 
-            if (i + 1 >= input.length()) {
-                throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings: " + input);
-            }
-
-            // %% als literales Prozentzeichen
-            if (input.charAt(i + 1) == '%') {
-                out.append('%');
-                i += 2;
-                continue;
-            }
-
             int placeholderStart = i;
-            i++; // '%' überspringen
-
             int explicitIndex = -1;
 
             // Prüfen auf %1$s, %2$s, ...
