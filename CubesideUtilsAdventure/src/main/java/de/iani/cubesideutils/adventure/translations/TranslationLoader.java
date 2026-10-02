@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -133,8 +134,11 @@ public class TranslationLoader {
                 File outFile = new File(langDir, fileName);
 
                 String downloadUrl = "https://resources.download.minecraft.net/" + hash.substring(0, 2) + "/" + hash;
-
-                downloadFile(downloadUrl, outFile);
+                try {
+                    downloadFile(downloadUrl, outFile);
+                } catch (Exception e) {
+                    utils.getLogger().log(Level.SEVERE, "Fehler beim Laden der Lang-Datei " + fileName, e);
+                }
                 count++;
             }
             saveMetaData(gson, metaFile, metaData);
@@ -189,8 +193,15 @@ public class TranslationLoader {
     }
 
     private static void downloadFile(String url, File target) throws IOException, URISyntaxException {
-        try (InputStream in = new URI(url).toURL().openStream()) {
-            Files.copy(in, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        URLConnection connection = new URI(url).toURL().openConnection();
+        long expectedLength = connection.getContentLengthLong();
+        byte[] data;
+        try (InputStream in = connection.getInputStream()) {
+            data = in.readAllBytes();
         }
+        if (expectedLength >= 0 && data.length != expectedLength) {
+            throw new IOException("Unvollständiger Download: erwartet " + expectedLength + " Bytes, erhalten " + data.length + " Bytes");
+        }
+        Files.write(target.toPath(), data);
     }
 }
