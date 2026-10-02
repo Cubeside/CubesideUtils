@@ -21,14 +21,14 @@ public class UtilsGlobalDataHelperVelocity extends GlobalDataHelperVelocity<Mess
     private Map<MessageType, Set<BiConsumer<GlobalServer, DataInputStream>>> handlers;
 
     public UtilsGlobalDataHelperVelocity(CubesideUtilsVelocity plugin) {
-        super(MessageType.class, GLOBAL_DATA_CHANNEL, plugin);
+        super(MessageType.class, GLOBAL_DATA_CHANNEL, plugin.getPlugin(), plugin.getLogger());
 
         this.handlers = new EnumMap<>(MessageType.class);
     }
 
     @Override
     public void registerHandler(MessageType type, BiConsumer<GlobalServer, DataInputStream> consumer) {
-        this.handlers.computeIfAbsent(type, t -> new LinkedHashSet<>()).add((source, data) -> {
+        this.handlers.computeIfAbsent(type, _ -> new LinkedHashSet<>()).add((source, data) -> {
             try {
                 consumer.accept(source, data);
             } catch (Exception | StackOverflowError e) {
