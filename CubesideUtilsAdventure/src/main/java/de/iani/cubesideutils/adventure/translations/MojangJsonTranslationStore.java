@@ -118,8 +118,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
             }
 
             if (i >= input.length()) {
-                // mojang does this..
-                // throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings: " + input);
+                // mojang allows this - throw new IllegalArgumentException("Unvollständiger Platzhalter am Ende des Strings: " + input);
                 out.append('%');
                 continue;
             }
@@ -131,7 +130,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
                 continue;
             }
 
-            int placeholderStart = i;
+            // int placeholderStart = i;
             int explicitIndex = -1;
 
             // Prüfen auf %1$s, %2$s, ...
@@ -142,12 +141,18 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
 
             if (i > numberStart) {
                 if (i >= input.length() || input.charAt(i) != '$') {
-                    throw new IllegalArgumentException("Ungültiger Platzhalter ab Position " + placeholderStart + ": " + input);
+                    // mojang allows this - throw new IllegalArgumentException("Ungültiger Platzhalter ab Position " + placeholderStart + ": " + input);
+                    i = numberStart;
+                    out.append('%');
+                    continue;
                 }
 
                 int minecraftIndex = Integer.parseInt(input.substring(numberStart, i));
                 if (minecraftIndex < 1) {
-                    throw new IllegalArgumentException("Minecraft-Argumentindizes beginnen bei 1: Position " + placeholderStart + ": " + input);
+                    // mojang allows this - throw new IllegalArgumentException("Minecraft-Argumentindizes beginnen bei 1: Position " + placeholderStart + ": " + input);
+                    i = numberStart;
+                    out.append('%');
+                    continue;
                 }
 
                 explicitIndex = minecraftIndex - 1;
@@ -155,7 +160,10 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
             }
 
             if (i >= input.length() || input.charAt(i) != 's') {
-                throw new IllegalArgumentException("Nur %s und %n$s sind erlaubt; ungültiger Platzhalter ab Position " + placeholderStart + ": " + input);
+                // mojang allows this - throw new IllegalArgumentException("Nur %s und %n$s sind erlaubt; ungültiger Platzhalter ab Position " + placeholderStart + ": " + input);
+                i = numberStart;
+                out.append('%');
+                continue;
             }
 
             i++; // 's' überspringen
