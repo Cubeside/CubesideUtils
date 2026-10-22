@@ -35,6 +35,7 @@ public final class MojangJsonTranslationStore extends AbstractTranslationStore<M
         super(Key.key("cubeside:mojangtranslations"));
 
         langDir = new File(CubesideUtils.getInstance().getDataFolder(), "minecraft_langs");
+        langDir.mkdirs();
         TranslationLoader.checkAndDownloadLangs(langDir);
 
         File[] files = langDir.listFiles((dir, name) -> name.endsWith(".json") && !name.equals("langmeta.json"));
