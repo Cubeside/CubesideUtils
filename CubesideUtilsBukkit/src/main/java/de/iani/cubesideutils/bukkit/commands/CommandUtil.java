@@ -123,6 +123,9 @@ public class CommandUtil {
         }
 
         boolean result = commandMap.register(plugin.getPluginMeta().getName(), cmd);
+        if (plugin.isEnabled() && completer instanceof CommandRouter router) {
+            router.registerAsyncTabCompletion(plugin, cmd);
+        }
         resyncCommandTabCompletions();
 
         return result ? cmd : null;

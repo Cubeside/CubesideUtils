@@ -8,9 +8,12 @@ import de.iani.cubesideutils.bukkit.commands.exceptions.RequiresPlayerException;
 import de.iani.cubesideutils.commands.ArgsParser;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class PlayerSubCommand extends SubCommand {
     @Override
@@ -74,5 +77,23 @@ public abstract class PlayerSubCommand extends SubCommand {
 
     public Collection<String> onTabComplete(Player sender, Command command, String alias, ArgsParser args) {
         return super.onTabComplete(sender, command, alias, args);
+    }
+
+    @Override
+    public final @Nullable CompletionStage<? extends Collection<String>> onTabCompleteAsync(CommandSender sender, Command command, String alias, ArgsParser args) {
+        if (sender instanceof Player player) {
+            return onTabCompleteAsync(player, command, alias, args);
+        }
+        return CompletableFuture.completedFuture(List.of());
+    }
+
+    /**
+     * Player-specific variant of
+     * {@link SubCommand#onTabCompleteAsync(CommandSender, Command, String, ArgsParser)}.
+     * Called on the main thread; return the stage immediately and keep its
+     * asynchronous work short. Returning {@code null} selects synchronous completion.
+     */
+    public @Nullable CompletionStage<? extends Collection<String>> onTabCompleteAsync(Player sender, Command command, String alias, ArgsParser args) {
+        return super.onTabCompleteAsync(sender, command, alias, args);
     }
 }

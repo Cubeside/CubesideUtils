@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.BlockCommandSender;
@@ -26,6 +27,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.StringUtil;
 
 public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSender> implements CommandExecutor, TabCompleter {
@@ -47,11 +49,8 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
     }
 
     public CommandRouter(PluginCommand command, boolean caseInsensitive, CommandExceptionHandler exceptionHandler) {
-        super(caseInsensitive);
-        command.setExecutor(this);
-        command.setTabCompleter(this);
-
-        this.exceptionHandler = Objects.requireNonNull(exceptionHandler);
+        this(caseInsensitive, exceptionHandler);
+        attachPluginCommand(command);
     }
 
     public CommandRouter() {
@@ -73,8 +72,33 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
     }
 
     public void addPluginCommand(PluginCommand command) {
+        attachPluginCommand(command);
+    }
+
+    private void attachPluginCommand(PluginCommand command) {
         command.setExecutor(this);
         command.setTabCompleter(this);
+        if (command.getPlugin().isEnabled()) {
+            AsyncTabCompletionBridge.register(command.getPlugin(), command, this);
+        }
+    }
+
+    /**
+     * Registers Paper async completion for an already registered command without
+     * changing its executor or tab completer. Call on the main thread while the
+     * owning plugin is enabled. Repeating the registration also refreshes the
+     * index of command labels and aliases without adding another listener.
+     * <p>
+     * Plugin-command constructors, {@link #addPluginCommand(PluginCommand)} and
+     * {@link CommandUtil#registerCommand(Plugin, String, CommandRouter)} do this
+     * automatically when the plugin is enabled. If the router was attached
+     * earlier, call this method explicitly from {@code onEnable}.
+     *
+     * @param plugin the plugin owning the completion registration
+     * @param command the command already present in Bukkit's command map
+     */
+    public void registerAsyncTabCompletion(Plugin plugin, Command command) {
+        AsyncTabCompletionBridge.register(plugin, command, this);
     }
 
     // untested!
@@ -93,39 +117,58 @@ public class CommandRouter extends AbstractCommandRouter<SubCommand, CommandSend
         int nr = commandMapAndArg.second;
 
         String partial = args.length > 0 ? args[args.length - 1] : "";
-        Collection<String> options = null;
-        List<String> optionsList = null;
+        Collection<String> options = Collections.emptyList();
         // get tabcomplete options from command
         if (currentMap.executor != null) {
-            options = Collections.emptyList();
             if (currentMap.executor.isExecutable(sender)) {
                 options = currentMap.executor.onTabComplete(sender, command, alias, new ArgsParser(args, nr));
             }
-        } else {
-            options = Collections.emptyList();
         }
+        List<String> subCommandOptions = new ArrayList<>();
+        collectSubCommandOptions(sender, currentMap, nr, args.length, partial, subCommandOptions);
+        return finishTabCompletion(partial, options, subCommandOptions);
+    }
+
+    // Called only on the main thread. The caller retains already collected
+    // subcommands if a permission hook or the completion provider throws.
+    CompletionStage<? extends Collection<String>> prepareAsyncTabCompletion(CommandSender sender, Command command, String alias, String[] args, List<String> subCommandOptions) {
+        Pair<CommandMap, Integer> commandMapAndArg = matchCommandMap(sender, args, 1);
+        CommandMap currentMap = commandMapAndArg.first;
+        int nr = commandMapAndArg.second;
+        String partial = args.length > 0 ? args[args.length - 1] : "";
+        collectSubCommandOptions(sender, currentMap, nr, args.length, partial, subCommandOptions);
+        if (currentMap.executor != null && currentMap.executor.isExecutable(sender)) {
+            return currentMap.executor.onTabCompleteAsync(sender, command, alias, new ArgsParser(args.clone(), nr));
+        }
+        return null;
+    }
+
+    private void collectSubCommandOptions(CommandSender sender, CommandMap currentMap, int nr, int argsLength, String partial, List<String> options) {
         // get tabcomplete options from subcommands
-        if (nr == args.length - 1 && currentMap.subCommands != null) {
+        if (nr == argsLength - 1 && currentMap.subCommands != null) {
             for (Entry<String, CommandMap> e : currentMap.subCommands.entrySet()) {
                 String key = e.getKey();
                 if (StringUtil.startsWithIgnoreCase(key, partial)) {
                     CommandMap subcmd = e.getValue();
                     if (isAnySubCommandDisplayable(sender, subcmd)) {
                         if (sender instanceof Player || subcmd.executor == null || !subcmd.executor.requiresPlayer()) {
-                            if (optionsList == null) {
-                                optionsList = options == null ? new ArrayList<>() : new ArrayList<>(options);
-                                options = optionsList;
-                            }
-                            optionsList.add(key);
+                            options.add(key);
                         }
                     }
                 }
             }
         }
-        if (options != null) {
-            optionsList = StringUtil.copyPartialMatches(partial, options, new ArrayList<String>());
-            Collections.sort(optionsList);
+    }
+
+    static List<String> finishTabCompletion(String partial, Collection<String> options, List<String> subCommandOptions) {
+        if (options == null && subCommandOptions.isEmpty()) {
+            return null;
         }
+        List<String> allOptions = options == null ? new ArrayList<>() : new ArrayList<>(options);
+        allOptions.forEach(Objects::requireNonNull);
+        allOptions.addAll(subCommandOptions);
+        List<String> optionsList = StringUtil.copyPartialMatches(partial, allOptions, new ArrayList<>());
+        Collections.sort(optionsList);
         return optionsList;
     }
 
